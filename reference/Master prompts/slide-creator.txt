@@ -1,0 +1,103 @@
+slide-creator
+
+Repository:
+Rumple12/new-yacoub-thesis
+
+Task:
+Update Slide 1 only in the existing PowerPoint deck.
+
+Deck to edit:
+presentation/deck/yacoub-thesis-presentation.pptx
+
+Use MIUN template/style from:
+presentation/sources/presentation-midswedenuniversity-2025_.pptx
+
+Useful reference files:
+presentation/sources/thesis_presentation_structure.md
+presentation/prompts/codex-rules.md
+presentation/knowledge base/intro.txt
+
+Important:
+- Do NOT rebuild the whole deck.
+- Do NOT create all slides.
+- Do NOT edit thesis files.
+- Do NOT invent results.
+- Do NOT add technical diagrams on Slide 1.
+- Keep the slide clean, professional, and readable.
+- Use a clean MIUN style or simple academic white style.
+- Speaker notes should carry the explanation.
+- Slide text should be simple and human.
+
+Before editing:
+Create a backup copy of the current deck:
+presentation/deck/yacoub-thesis-presentation.backup-before-slide-01.pptx
+
+Slide 1 title:
+Design and Evaluation of an n8n-Based Workflow-to-Action Architecture
+for IoT-Style Fan Control
+
+Subtitle:
+PC-hosted n8n, Python middleware, and Raspberry Pi middleware validation
+
+Presenter/footer info:
+Yacoub Dawli
+DT099G Bachelor Thesis
+Mid Sweden University
+
+Speaker notes:
+Hi, my name is Yacoub Dawli, and this is my bachelor thesis in DT099G.
+
+My thesis is about building and evaluating a small IoT-style workflow system. The example I use is a fan that turns on or off depending on temperature.
+
+But the important part is not the fan itself. The important part is the structure around it: how a workflow makes a decision, how that decision becomes an action, and how the result can be tested and measured.
+
+Design rules:
+- Large readable title.
+- Split the title across two lines if needed.
+- Keep subtitle smaller than title.
+- Put presenter/course information at the bottom.
+- Use MIUN-style spacing and colors if available.
+- No paragraph blocks on the slide.
+- No large architecture image yet.
+- Do not edit other slides unless absolutely necessary to preserve deck structure.
+
+Also create/update this slide spec file:
+presentation/slide-specs/slide-01-title.md
+
+If presentation/slide-specs/ does not exist, create it.
+
+slide-01-title.md should contain:
+# Slide 1 - Title
+
+## Point
+Introduce the thesis and frame it correctly: the project is about the workflow-to-action architecture, not just a fan demo.
+
+## Slide text
+Design and Evaluation of an n8n-Based Workflow-to-Action Architecture
+for IoT-Style Fan Control
+
+PC-hosted n8n, Python middleware, and Raspberry Pi middleware validation
+
+Yacoub Dawli
+DT099G Bachelor Thesis
+Mid Sweden University
+
+## Speaker notes
+Hi, my name is Yacoub Dawli, and this is my bachelor thesis in DT099G.
+
+My thesis is about building and evaluating a small IoT-style workflow system. The example I use is a fan that turns on or off depending on temperature.
+
+But the important part is not the fan itself. The important part is the structure around it: how a workflow makes a decision, how that decision becomes an action, and how the result can be tested and measured.
+
+## Possible opponent question
+Isn’t this basically just a simple fan control demo?
+
+## Answer
+The fan control is intentionally simple, because it is used as a test case. The thesis is not mainly about the fan hardware. It is about the workflow-to-action structure around it: n8n, Python middleware, deterministic and agent-enhanced workflows, contracts, evaluation evidence, and Raspberry Pi middleware validation.
+
+After editing:
+1. Save the updated deck.
+2. Show the final path of the updated deck.
+3. Show the final path of the backup deck.
+4. Show the final path of slide-01-title.md.
+5. Show a short git diff summary.

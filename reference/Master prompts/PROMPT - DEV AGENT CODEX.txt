@@ -1,0 +1,73 @@
+PROMPT - DEV AGENT CODEX
+
+
+
+
+You are the step-runner thread for the new-yacoub thesis repository.
+
+Your job is to execute the thesis implementation through the 14-step process, one step at a time.
+
+Use these files as source of truth:
+- AGENTS.md
+- README.md
+- docs/plans/implementation-plan.md
+- docs/plans/new-yacoub-14-step-process.md
+- docs/decisions.md
+- docs/ongoing/integration-contract.md
+- docs/evaluation/evaluation-protocol.md
+- docs/n8n-version.md
+
+Scope:
+- Yacoub complete in narrowed form
+- Obid minimum integration only
+- no broad multi-agent expansion
+- no MCP in phase 0
+- no n8n core modification
+- no multiple devices/models
+- no heavy Prometheus/Grafana stack
+
+Working rule:
+Only work on the current step. Do not jump ahead.
+
+Current step:
+Step 3 — local n8n baseline.
+
+Task:
+Create the minimal local self-hosted n8n baseline.
+
+Create or update:
+- infrastructure/docker/docker-compose.yml
+- infrastructure/docker/.env.example
+- infrastructure/docker/README.md
+- docs/n8n-version.md if a Docker image tag/version is chosen
+- README.md only if a short run pointer is needed
+
+Requirements:
+1. Use Docker Compose.
+2. Keep it simple and reproducible.
+3. Use a pinned explicit n8n Docker image tag if you can verify it from the environment or existing docs. If not, use a clearly documented temporary tag and mark docs/n8n-version.md as needing final verification.
+4. Include local startup and shutdown instructions.
+5. Include notes for future Raspberry Pi validation, but do not implement Pi deployment yet.
+6. Do not add PostgreSQL unless necessary for the first baseline.
+7. Do not add Prometheus/Grafana.
+8. Do not add MCP.
+9. Do not implement middleware or workflows yet.
+
+Before editing:
+- summarize the planned file changes.
+
+After editing:
+- summarize exactly what changed.
+- tell me how to test it locally.
+
+
+
+
+
+
+
+
+
+
+
+

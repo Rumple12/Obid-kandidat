@@ -1,0 +1,62 @@
+diagram maker
+
+
+
+create 
+docs/architecture/final-architecture.mmd
+docs/architecture/final-architecture.md
+
+
+
+Create the final architecture diagram for the frozen Tier 1.5 thesis implementation.
+
+Important:
+This is evidence cleanup only.
+Do not change implementation code.
+Do not add new architecture.
+Do not add new workflows.
+Do not modify runtime behavior.
+
+Create:
+1. docs/architecture/final-architecture.mmd
+2. docs/architecture/final-architecture.md
+
+The diagram must show the frozen system architecture:
+
+- Temperature event/test input
+- n8n running locally on PC with Docker
+- Two workflow paths:
+  - deterministic baseline workflow
+  - minimal agent-enhanced workflow
+- Shared JSON contract layer
+- minimum safety/validation design
+- Python middleware API
+- middleware endpoints:
+  - /status
+  - /sensor-event
+  - /fan/on
+  - /fan/off
+- Raspberry Pi Tier 1.5 validation:
+  - n8n stays on PC
+  - Python middleware/action endpoint runs on Raspberry Pi
+- Evaluation harness:
+  - collect_metrics.py
+  - aggregate_results.py
+  - CSV results
+- Explicitly mark:
+  - fan action is simulated
+  - no real GPIO hardware
+  - n8n is not deployed on Raspberry Pi
+
+Use Mermaid flowchart syntax in final-architecture.mmd.
+
+In final-architecture.md:
+- embed the Mermaid diagram
+- add a short caption
+- explain that this is the final frozen architecture used for Chapter 5
+- explain that it represents Tier 1.5 validation, not full n8n-on-Pi deployment
+
+Return:
+- files created
+- short summary of what the diagram shows
+- whether it is ready to be exported as PNG for the report

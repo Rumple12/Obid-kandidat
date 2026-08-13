@@ -1,0 +1,504 @@
+report writer (initial report)
+
+
+
+
+Before editing, first inspect the repository structure and confirm whether a LaTeX thesis folder/template already exists.
+
+Then perform only the FIRST TASK described below:
+create the LaTeX thesis skeleton and thesis/report-writing-map.md.
+
+Do not write full chapter prose yet.
+Do not modify implementation code.
+Do not invent results, references, files, endpoints, or measurements.
+
+
+
+You are my thesis-report-writer for DT099G.
+
+Goal:
+Create the actual thesis report in LaTeX using the MIUN thesis structure, the course instructions, and the existing new-yacoub-thesis project artifacts.
+
+Repository:
+Rumple12/new-yacoub-thesis
+
+Current thesis scope:
+This thesis is a narrowed Tier 1.5 proof-of-concept. The system uses PC-hosted Docker n8n as the workflow engine, Python middleware as the API/action bridge, deterministic and minimal agent-enhanced workflow paths, shared JSON contracts, a minimum safety/validation design, CSV-based evaluation, and Raspberry Pi validation where n8n stays on the PC while the Python middleware/action endpoint runs on the Raspberry Pi.
+
+Supervisor feedback to incorporate:
+- Add a Contributions section in Chapter 1.
+- Revise RQ1 and RQ2 so they are measurable, not yes/no questions.
+- Use two or three strong research questions rather than four weaker ones.
+- Connect the fan on/off proof-of-concept to broader real-world use cases in Discussion/Conclusion, such as smart building control, industrial monitoring, environmental sensing, and health/environment monitoring contexts.
+- Add diagrams and figures:
+  - proposed/final architecture
+  - workflow diagram/screenshots
+  - results chart/table
+  - optional Gantt chart only if easy
+- The report should read as an argument, not a project diary.
+
+Updated research questions:
+Use these 3 research questions.
+
+RQ1:
+How accurately and consistently does the deterministic n8n workflow produce the expected fan action across the defined temperature test cases?
+
+RQ2:
+How accurately and consistently does the minimal agent-enhanced workflow produce contract-valid action output compared with the deterministic baseline?
+
+RQ3:
+What latency, resource, and deployment behavior is observed during local execution and Raspberry Pi Tier 1.5 middleware validation?
+
+Important note about safety/contract:
+Do not create a separate weak yes/no research question for safety.
+The shared contract and minimum safety design should be evaluated as part of RQ2 and discussed in Chapter 7.
+
+The agent output is evaluated not only by fan_on/fan_off correctness, but also by whether it follows the shared action contract and stays within approved actions.
+
+Do not make the research questions broader than the implementation supports.
+
+Do not expand the implementation scope.
+Do not introduce new architecture.
+Do not claim:
+- full n8n-on-Raspberry-Pi deployment
+- real GPIO hardware
+- production-grade safety enforcement
+- broad multi-agent architecture
+- large-scale benchmarking
+- any endpoints, files, measurements, results, or implementation behavior that are not present in the repository
+
+SOURCE HIERARCHY AND FILE PLACEMENT
+
+1. Course instructions and report structure source of truth
+
+Use these files as the highest-priority source for report structure, required sections, and course expectations:
+
+- docs/course/DT099G information 2026-1 (1) (1).pdf
+- docs/templates/Miun ThesisTemplate 2026-01-21 (1).docx
+
+The Word template and course instructions define what the report must contain.
+
+Use them for:
+- chapter structure
+- required front matter
+- abstract/sammanfattning expectations
+- AI tools usage section
+- division of work / author contribution
+- terminology or notation expectations
+- appendix/source-code expectations
+- presentation/submission expectations
+- formatting expectations
+
+2. LaTeX template / output format
+
+The report should be written in LaTeX.
+
+Use the LaTeX template as the output/build format only.
+If a LaTeX template folder already exists, use it.
+If not, create a thesis/ folder with this structure:
+
+thesis/
+  main.tex
+  chapters/
+    01-introduction.tex
+    02-theory-related-work.tex
+    03-methodology.tex
+    04-choice-of-approach.tex
+    05-implementation.tex
+    06-results.tex
+    07-discussion.tex
+    08-conclusions.tex
+  frontmatter/
+    abstract.tex
+    sammanfattning.tex
+    terminology.tex
+    ai-tools.tex
+  figures/
+  tables/
+  references.bib
+  appendices/
+    appendix-a-source-code.tex
+
+Do not fight the template.
+Keep it simple and compile-ready.
+
+3. Implementation source of truth
+
+Use actual repo artifacts as the source of truth for what was implemented:
+
+- infrastructure/
+- middleware/
+- shared_interfaces/
+- cognitive_logic/
+- safety_layer/
+- evaluation/
+- scripts/
+- docs/architecture/
+- docs/decisions.md
+- README.md
+
+Do not invent files, endpoints, measurements, or implementation behavior that is not present in the repository.
+
+4. Report-note evidence summaries
+
+Use the step report notes as structured summaries of the implementation process and evidence:
+
+- docs/report-notes/step-01-lock-scope.md
+- docs/report-notes/step-02-repo-foundation.md
+- docs/report-notes/step-03-local-n8n-baseline.md
+- docs/report-notes/step-04-middleware-skeleton.md
+- docs/report-notes/step-05-shared-contract.md
+- docs/report-notes/step-06-deterministic-baseline.md
+- docs/report-notes/step-07-minimal-agent-workflow.md
+- docs/report-notes/step-08-minimum-safety-layer.md
+- docs/report-notes/step-09-measurement-evaluation-harness.md
+- docs/report-notes/step-10-raspberry-pi-validation.md
+- docs/report-notes/step-11-implementation-freeze.md
+- docs/report-notes/final-evidence-inventory.md
+
+These notes are evidence summaries, not final thesis prose.
+Do not write the thesis as “Step 1, Step 2, Step 3”.
+Reorganize the material into academic chapters.
+
+5. Results and measurement source of truth
+
+Use these folders and files as the source of truth for results:
+
+- evaluation/results/raw/
+- evaluation/results/processed/
+- evaluation/results/pi-validation/
+- evaluation/datasets/
+- evaluation/metrics/
+- scripts/collect_metrics.py
+- scripts/aggregate_results.py
+
+Do not invent measurements.
+If a value is missing, write:
+
+[CHECK VALUE: path/file]
+
+If a measurement is limited, state the limitation honestly.
+If a measurement only covers local execution, say local execution.
+If a measurement only covers Raspberry Pi middleware/action endpoint validation, say that clearly.
+Do not imply full n8n-on-Pi benchmarking.
+
+6. Figure and screenshot source of truth
+
+Use existing images as report figures where appropriate.
+
+Important figure sources include:
+
+Architecture:
+- docs/architecture/final-architecture-report.png
+- docs/architecture/final-architecture-report.md
+- docs/architecture/final-architecture-report.mmd
+- docs/architecture/final-architecture.md
+- docs/architecture/final-architecture.mmd
+
+Step 6 deterministic workflow evidence:
+- cognitive_logic/workflows/evidence/step-06/
+
+Step 7 minimal agent workflow evidence:
+- cognitive_logic/workflows/evidence/step-07/
+
+This may include:
+- high-temperature canvas screenshots
+- low-temperature canvas screenshots
+- agent output screenshots
+- parsed action screenshots
+- fan-on output screenshots
+- fan-off output screenshots
+
+Step 10 Raspberry Pi validation evidence:
+- evaluation/results/pi-validation/
+
+This may include:
+- pi-high-temp-fan-on-canvas.png
+- pi-high-temp-fan-on-output.png
+- pi-low-temp-fan-off-canvas.png
+- pi-low-temp-fan-off-output.png
+- 2. Measure direct Pi middleware latency.png
+- 3. Measure CPU_RAM of the middleware process.png
+- pi-temp-measurement.png
+- pi-terminal-high-temp-fan-on.png
+- pi-terminal-low-temp-fan-off.png
+
+Image handling rules:
+- If an image file exists and is useful for the chapter, insert it into LaTeX using \includegraphics.
+- Prefer copying final report figures into thesis/figures/ with clean filenames.
+- If an image is missing, add [FIGURE NEEDED: description] instead of inventing it.
+- Every inserted figure must have a clear caption and label.
+- Do not overload the main report with screenshots.
+- Use only the strongest figures in the main report.
+- Put extra evidence in Appendix A or mention the repository path.
+
+Suggested main-report figures:
+1. Final architecture diagram.
+2. Deterministic baseline n8n workflow canvas.
+3. Minimal agent-enhanced n8n workflow canvas.
+4. Raspberry Pi validation workflow/output screenshot.
+5. Result chart/table for latency, action correctness, contract validity, or resource behavior.
+6. Optional Gantt chart only if easy and quick.
+
+7. References
+
+Do not invent references.
+Use references.bib if it exists.
+
+If a reference is needed but not available, write:
+
+[REFERENCE NEEDED: topic]
+
+Likely reference topics:
+- n8n documentation
+- Docker documentation
+- Raspberry Pi documentation
+- IoT / edge computing scientific source
+- agentic AI or LLM agent workflow scientific source
+- workflow automation / orchestration source
+- safety / human-in-the-loop or validation source
+- JSON schema or API contract source if needed
+- middleware/API design source if needed
+
+8. Contributions section
+
+Add a Contributions section in Chapter 1.
+
+It should explain:
+- the technical contribution of the project
+- the author’s role
+- supervisor contribution
+
+Use a concise thesis-appropriate contribution paragraph, for example:
+
+This thesis contributes a small but complete proof-of-concept architecture for orchestrating IoT-style actions using a self-hosted n8n workflow, a Python middleware boundary, shared JSON contracts, a minimum validation design, and a lightweight CSV-based evaluation harness. The work also contributes limited Raspberry Pi validation by moving the middleware/action endpoint to the Pi while keeping n8n on the PC.
+
+Use a simple CRediT-style structure:
+
+- Conceptualization: author, with supervisor feedback.
+- Methodology: author, with supervisor feedback.
+- Software: author.
+- Validation: author.
+- Investigation: author.
+- Data curation: author.
+- Writing - original draft: author.
+- Writing - review and editing: author, with supervisor feedback.
+- Supervision: supervisor.
+
+Keep this concise.
+Do not overdo it.
+
+9. Broader impact / broader use-case framing
+
+In Discussion and/or Conclusion, add a subsection that connects the small fan on/off proof-of-concept to broader real-world use cases:
+
+- smart building control
+- industrial monitoring
+- environmental sensing
+- health/environment monitoring contexts
+
+Be careful:
+The report must not claim that these use cases were implemented.
+It should only explain that the architecture pattern could be extended to those contexts.
+
+For example:
+The fan scenario should be framed as a small controlled proxy for an IoT-style action pipeline. The broader relevance is not the fan itself, but the pattern of receiving an event, validating it through a contract boundary, selecting an approved action, and measuring execution behavior.
+
+WRITING RULES
+
+- Write in English.
+- Use clear academic language.
+- Do not write like a project diary.
+- Write as an argument.
+- Explain why design choices were made, not only what was built.
+- Keep the scope honest.
+- Do not overclaim.
+- Mention limitations clearly.
+- Put important limitations early in the Discussion.
+- Link results back to the research questions.
+- Explain what the agent-enhanced workflow adds, even if it is intentionally minimal.
+- Explain why the Raspberry Pi validation is Tier 1.5 and not full deployment.
+- Explain that n8n stayed on the PC and only the middleware/action endpoint ran on Raspberry Pi.
+- Explain that fan actions are simulated and no real GPIO hardware was controlled.
+- Explain that the safety layer is a minimum safety/validation design, not production-grade runtime enforcement.
+- Explain that the shared contract restricts workflow or agent output to approved action structures.
+- Explain limitations before making broader claims.
+- Do not make the report sound like a build log.
+- Do not write “then I did Step 1, then Step 2”.
+- Convert implementation evidence into academic explanation.
+
+CHAPTER STRUCTURE
+
+Create this structure.
+
+1. Introduction
+  1.1 Background and motivation
+  1.2 Problem statement
+  1.3 Aim
+  1.4 Research questions
+  1.5 Scope and limitations
+  1.6 Contributions
+  1.7 Usage of AI tools
+  1.8 Division of work / author contribution
+  1.9 Report outline
+
+2. Theory and Related Work
+  Suggested theory areas:
+  - workflow automation and orchestration
+  - n8n as a workflow automation platform
+  - middleware/API boundary design
+  - IoT-style event-action systems
+  - JSON contracts / structured action formats
+  - deterministic workflows
+  - minimal agent-enhanced workflows
+  - safety validation and human-in-the-loop concepts
+  - edge computing / Raspberry Pi validation context
+
+3. Methodology
+  Should explain:
+  - design science / proof-of-concept approach if appropriate
+  - controlled temperature-to-fan scenario
+  - deterministic baseline evaluation
+  - minimal agent-enhanced evaluation
+  - contract-validity evaluation
+  - CSV-based evaluation harness
+  - local execution measurement
+  - Raspberry Pi Tier 1.5 validation
+  - limitations of measurement scope
+
+4. Choice of Approach / System Design
+  Should explain:
+  - why a narrowed Tier 1.5 scope was chosen
+  - why n8n stayed on PC
+  - why Python middleware was used
+  - why JSON contracts were used
+  - why fan actions were simulated
+  - why deterministic and agent-enhanced paths were compared
+  - final architecture
+
+5. Implementation
+  Should explain:
+  - infrastructure setup
+  - middleware/API bridge
+  - shared interfaces/contracts
+  - deterministic baseline workflow
+  - minimal agent-enhanced workflow
+  - minimum safety/validation layer
+  - evaluation harness
+  - Raspberry Pi middleware/action endpoint validation
+
+6. Results
+  Should report:
+  - deterministic workflow action correctness
+  - agent-enhanced workflow output correctness
+  - contract validity
+  - latency results
+  - resource behavior if available
+  - Raspberry Pi validation observations
+  - missing or limited measurements honestly
+
+7. Discussion
+  Should discuss:
+  - answer RQ1, RQ2, and RQ3
+  - limitations early
+  - deterministic vs agent-enhanced comparison
+  - what the agent adds and what it does not add
+  - contract/safety limitations
+  - why this is Tier 1.5 rather than full edge deployment
+  - broader use-case relevance
+  - threats to validity
+  - ethical/societal/consequence discussion if required by template
+
+8. Conclusions
+  Should include:
+  - concise thesis conclusion
+  - direct answer to research questions
+  - what was achieved
+  - what was not achieved
+  - possible future work
+
+FIRST TASK ONLY
+
+Create the full LaTeX thesis skeleton.
+
+Do not write full chapter prose yet.
+
+Create or update:
+
+Front matter:
+- Abstract
+- Sammanfattning
+- Terminology / notation
+- Usage of AI tools
+- Division of work / author contribution if required by the template
+
+Chapters:
+1. Introduction
+   - Background and motivation
+   - Problem statement
+   - Aim
+   - Research questions
+   - Scope and limitations
+   - Contributions
+   - Usage of AI tools
+   - Division of work
+   - Report outline
+
+2. Theory and Related Work
+3. Methodology
+4. Choice of Approach / System Design
+5. Implementation
+6. Results
+7. Discussion
+8. Conclusions
+
+Back matter:
+- References
+- Appendix A: Source Code and Artifacts
+
+For each chapter and section, insert LaTeX comments explaining:
+1. what the section should discuss
+2. which repo files/report notes should feed it
+3. which figures/tables should be inserted
+4. which references are needed, if any
+5. which missing items still need to be checked
+
+Also create:
+
+thesis/report-writing-map.md
+
+This file should map every chapter/section to:
+- source files
+- report notes
+- figures
+- tables
+- result files
+- references needed
+- missing items
+- comments on scope limitations
+
+Do not invent results.
+Do not invent references.
+Do not write full prose yet.
+Do not broaden the scope.
+Do not create a project diary.
+Do not remove existing useful template structure.
+
+Return:
+- files created/updated
+- report folder structure
+- any missing required template files
+- any missing figures or result files
+- any [CHECK VALUE] placeholders inserted
+- any [REFERENCE NEEDED] placeholders inserted
+- next recommended writing order
+
+Recommended writing order after skeleton:
+1. Chapter 5 Implementation
+2. Chapter 4 Choice of Approach / System Design
+3. Chapter 6 Results
+4. Chapter 3 Methodology
+5. Chapter 7 Discussion
+6. Chapter 1 Introduction
+7. Chapter 2 Theory and Related Work
+8. Abstract and Sammanfattning last

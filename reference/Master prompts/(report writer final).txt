@@ -1,0 +1,92 @@
+(report writer final)
+
+report-fixer-final-version
+
+Repository / project:
+LaTeX thesis project:
+"C:\Users\Jake_\OneDrive - Mittuniversitetet\1. EDU\4. RED\1. kaniddat\new-yacoub-thesis\thesis\MiunThesisTemplate-master\MiunThesisTemplate-master"
+
+Task:
+Start fixing the final thesis report based on examiner feedback, one feedback item at a time.
+
+
+Important workflow:
+
+* Do NOT fix all examiner comments at once.
+* Create a clear feedback-fix checklist file first.
+* Then fix only the first issue:
+  "5.1. Kan du förklara vad du menar med att '...the workflow selects either the deterministic or agent-enhanced path...'."
+* Do not change unrelated sections yet.
+* Do not rewrite the whole report.
+* Keep the thesis claims honest and scoped.
+* Preserve the existing LaTeX structure.
+* Compile the PDF after the change.
+* Report exactly what files and sections were changed.
+
+Input files:
+* Examiner feedback: yada2100_feedback.docx
+* Current report PDF: yada2100__initial_report.pdf
+* Full LaTeX project: "C:\Users\Jake_\OneDrive - Mittuniversitetet\1. EDU\4. RED\1. kaniddat\new-yacoub-thesis\thesis\MiunThesisTemplate-master\MiunThesisTemplate-master"
+
+Create this tracking file:
+feedback_fixes.md
+
+In feedback_fixes.md, make a checklist with all examiner comments from yada2100_feedback.docx, grouped as:
+
+1. Questions
+2. Comments
+3. References / formatting
+
+Mark only the first issue as "in progress" or "fixed" after editing.
+
+First issue to fix:
+In Section 5.1 System Overview, the current wording says something like:
+"the workflow selects either the deterministic or agent-enhanced path"
+
+This is unclear because it sounds like one workflow dynamically chooses between the deterministic and agent-enhanced path at runtime.
+
+Correct meaning:
+The thesis evaluates two alternative workflow modes/configurations:
+
+1. deterministic baseline workflow
+2. minimal agent-enhanced workflow
+
+The evaluation setup / selected workflow run determines which mode is executed. The workflow itself does not dynamically decide whether to be deterministic or agent-enhanced.
+
+Required edit:
+Find the paragraph in Section 5.1 System Overview that contains:
+"the workflow selects either the deterministic or agent-enhanced path"
+
+Replace it with clearer wording like this:
+
+"The implemented system follows a temperature-event-to-action pipeline. A test input enters one of the two evaluated PC-hosted n8n workflow modes. 
+In the deterministic baseline run, n8n applies the fixed temperature-threshold rule. 
+In the agent-enhanced run, a separate minimal agent-enhanced workflow produces structured action output for the same defined temperature cases. 
+The selected mode therefore determines which workflow is executed; the workflow does not dynamically choose between the deterministic and agent-enhanced modes at runtime. 
+
+In both modes, the resulting action is represented through the shared contract and documented validation boundary, and the Python middleware routes the request to a simulated fan_on or fan_off action. The evaluation harness then records the resulting behavior as CSV evidence."
+
+Also check nearby wording in:
+
+* Section 4.3 Chosen System Design
+* Section 5.1 System Overview
+* Any figure captions or descriptions that might repeat the same confusing claim
+
+Only adjust wording if it creates the same misunderstanding. Do not change the architecture or result claims.
+
+Do NOT change:
+
+* result values
+* tables
+* figures
+* references
+* other examiner feedback items yet
+
+After editing:
+
+1. Compile the LaTeX report to PDF.
+2. Confirm compilation success or show the LaTeX error.
+3. Show a short git diff summary.
+4. Show the changed paragraph.
+5. Show the output PDF path.
+6. Update feedback_fixes.md and mark the first issue as fixed.

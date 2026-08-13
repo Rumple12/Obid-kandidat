@@ -1,0 +1,131 @@
+Thread name: image-finder
+
+Repository:
+Rumple12/new-yacoub-thesis
+
+Task:
+Find the existing presentation-relevant image files inside this repository and copy them into a clean presentation asset folder.
+
+Do NOT create new images.
+Do NOT edit the thesis report.
+Do NOT edit the PowerPoint deck.
+Do NOT rename or delete original source files.
+Only copy existing images from their current source locations into presentation/assets/.
+
+Target destination files:
+
+presentation/assets/architecture/final-architecture-report.png
+presentation/assets/docker-n8n/docker.png
+presentation/assets/docker-n8n/n8n-localhost-5678-success.png
+presentation/assets/workflows/deterministic-baseline-canvas.png
+presentation/assets/workflows/agent-workflow-canvas.png
+presentation/assets/middleware/middleware-terminal.png
+presentation/assets/evaluation/graph1.png
+presentation/assets/evaluation/graph2.png
+presentation/assets/evaluation/graph3.png
+presentation/assets/raspberry-pi/pi-validation-fan-on-output.png
+presentation/assets/raspberry-pi/pi-validation-latency-chart.png
+presentation/assets/raspberry-pi/appendix-pi-terminal-high-temp-fan-on.png
+presentation/assets/raspberry-pi/appendix-pi-terminal-low-temp-fan-off.png
+
+Search strategy:
+Search the whole repo recursively for image files with these names or close variants:
+
+- final-architecture-report.png
+- final-architecture-report(1).png
+- final-architecture-report(2).png
+- final-architecture-report.mmd.png
+- final-architecture.mmd.png
+- docker.png
+- n8n-localhost-5678-success-2026-04-25.png
+- n8n-localhost-5678-success-2026-04-25(1).png
+- deterministic-baseline-canvas.png
+- agent-workflow-canvas.png
+- middleware-terminal.png
+- graph1.png
+- graph2.png
+- graph3.png
+- pi-validation-fan-on-output.png
+- pi-validation-latency-chart.png
+- appendix-pi-terminal-high-temp-fan-on.png
+- appendix-pi-terminal-low-temp-fan-off.png
+
+If exact names are not found, search for partial names:
+- architecture
+- final-architecture
+- docker
+- localhost
+- n8n
+- deterministic
+- baseline
+- agent
+- workflow
+- middleware
+- terminal
+- graph
+- pi
+- raspberry
+- validation
+- fan-on
+- fan-off
+- high-temp
+- low-temp
+
+Destination rules:
+1. Create these folders if missing:
+   - presentation/assets/architecture/
+   - presentation/assets/docker-n8n/
+   - presentation/assets/workflows/
+   - presentation/assets/middleware/
+   - presentation/assets/evaluation/
+   - presentation/assets/raspberry-pi/
+
+2. Copy the best matching source image to the exact destination path listed above.
+
+3. If multiple matches exist:
+   - Prefer files already used in the thesis/report figures.
+   - Prefer clearer final/report versions over drafts.
+   - Prefer .png over .jpg unless only jpg exists.
+   - Do not copy random unrelated screenshots just because the keyword matches.
+   - If unsure between two possible matches, copy the most likely one and mention the alternative in the manifest.
+
+4. If a file cannot be found, do not invent it.
+   Instead, write “MISSING” in the manifest.
+
+5. Preserve original images in their source locations.
+   This task only copies images.
+
+Create a manifest file:
+
+presentation/assets/ASSET_MANIFEST.md
+
+The manifest must contain a table:
+
+| Target path | Source path found | Status | Notes |
+|---|---|---|---|
+
+For each target image, mark:
+- COPIED
+- MISSING
+- AMBIGUOUS
+
+Also include a final section:
+“Missing or ambiguous assets to review manually”
+
+After copying:
+Run a command to list the final presentation/assets tree.
+Then show:
+- copied count
+- missing count
+- ambiguous count
+- git diff summary
+
+Implementation suggestion:
+Use Python or shell commands to recursively find image files and copy them. Be careful with filenames containing spaces or parentheses.
+
+Important:
+This is only an asset collection task for presentation work.
+Do not build slides yet.
+Do not modify presentation/deck/.
+Do not modify thesis files.
+Do not modify source implementation files.
