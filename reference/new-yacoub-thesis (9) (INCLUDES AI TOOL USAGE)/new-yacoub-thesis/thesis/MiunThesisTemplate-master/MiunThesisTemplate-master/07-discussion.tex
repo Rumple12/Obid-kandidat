@@ -1,0 +1,108 @@
+\section{Discussion}\label{sec:discussion}
+
+This chapter interprets the results from Chapter~\ref{sec:results} in relation to the research questions and the design choices described in Chapters~\ref{sec:methodology}--\ref{sec:implementation}. The discussion first states the main limitations, then maps the available evidence to the research questions, and finally discusses the project method, broader relevance, and ethical considerations. The chapter analyzes the evaluated workflow-to-action architecture rather than proposing a new implementation.
+
+\subsection{Limitations of the Current Implementation}\label{subsec:discussion-limitations-current}
+
+The evaluation is limited by its scale. The system was evaluated with two defined temperature cases and one recorded final run per case, which is enough to check the implemented proof-of-concept but not enough for statistical reliability claims. The results are evidence for the defined workflow-to-action scenario rather than broad benchmarking.
+
+
+The implementation also uses simulated fan actions. The results describe workflow behavior, contract-shaped action output, middleware routing, latency measurement, and split deployment behavior. They do not evaluate electrical reliability or physical actuator behavior, which would require sensor calibration, GPIO control, and hardware safety testing.
+
+
+The Raspberry Pi validation has a specific role in the thesis. It shows that the middleware/action endpoint can run on the Raspberry Pi and be reached from the PC-hosted workflow over the network. Running the full n8n runtime on Raspberry Pi would introduce a separate deployment and resource question and is therefore treated as future work.
+
+
+The safety layer is evaluated as a documented validation design with allowed, blocked, and risky cases. It supports discussion of the contract and validation boundary, while runtime enforcement would require additional implementation and measurement.
+
+Finally, the agent-enhanced workflow is intentionally focused. It uses one prompt setup, one configured model path, and stateless execution. The result should therefore be read as evidence for whether an LLM decision step can produce contract-shaped action output for the defined scenario, not as a general evaluation of LLM reliability or multi-agent behavior.
+
+
+\subsection{Evidence Mapping for the Research Questions}\label{subsec:discussion-rq-evidence-map}
+
+Table~\ref{tab:discussion-rq-evidence-map} summarizes how the available evidence answers the three research questions. The table is not a replacement for the detailed results in Chapter~\ref{sec:results}; it shows how the factual evidence is interpreted in this chapter.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \caption{Mapping between research questions, evidence, results, and interpretation.}
+  \label{tab:discussion-rq-evidence-map}
+  \begin{tabularx}{\textwidth}{@{}L{0.16\textwidth}L{0.27\textwidth}L{0.24\textwidth}Y@{}}
+    \toprule
+    Research question & Evidence used & Result & Interpretation \\
+    \midrule
+    RQ1 & Deterministic workflow CSV rows and Table~\ref{tab:deterministic-results}. & \texttt{31.4 C} produced \texttt{fan\_on}; \texttt{24.5 C} produced \texttt{fan\_off}. & The deterministic path behaved correctly for the defined cases and provides a transparent baseline. \\
+    RQ2 & Agent workflow CSV rows, Step 7 screenshot evidence, and the shared action contract. & The agent path produced structured \texttt{fan\_on} and \texttt{fan\_off} action output for the same cases. & The agent step can fit into the same contract-shaped action pipeline, without implying broad agent autonomy. \\
+    RQ3 & Local workflow CSVs, Table~\ref{tab:final-workflow-latency-summary}, Raspberry Pi workflow CSV, and supporting resource observations. & Local and Raspberry Pi middleware-validation runs recorded latency, action outcomes, and supporting CPU/RAM/thermal evidence. & The evidence supports the defined evaluation scope and shows that PC-hosted n8n can call a Pi-hosted middleware/action endpoint. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Discussion of RQ1: Deterministic Workflow Accuracy}\label{subsec:discussion-rq1-deterministic}
+
+RQ1 asks how accurately the deterministic n8n workflow produces the expected fan action for the defined temperature test cases. The deterministic baseline behaved as expected for the final high- and low-temperature cases reported in Table~\ref{tab:deterministic-results}. The high-temperature input was routed to \texttt{fan\_on}, and the low-temperature input was routed to \texttt{fan\_off}. The deterministic workflow is therefore correct within the defined evaluation scope and evaluated run count.
+
+This result matters because the deterministic path is the reference point for the rest of the thesis. A threshold workflow is transparent: the rule is visible, the threshold is fixed, and the route from input value to action endpoint can be inspected. The deterministic path therefore verifies that the webhook path, workflow decision, middleware endpoints, and simulated fan responses can support the temperature-to-fan scenario before the agent-enhanced path is considered.
+
+The evidence is still tied to the defined cases. The evaluation does not include boundary-value tests around exactly \texttt{30.0 C}, noisy input streams, malformed temperature events, long-duration operation, or concurrent workflow executions. Within the evaluated scenario, the deterministic workflow produced the expected actions; broader operational claims would require additional testing.
+
+\subsection{Discussion of RQ2: Agent-Enhanced Contract-Valid Output}\label{subsec:discussion-rq2-agent}
+
+RQ2 asks how accurately the minimal agent-enhanced workflow produces contract-valid action output compared with the deterministic baseline for the defined cases. The agent-enhanced workflow produced the expected \texttt{fan\_on} and \texttt{fan\_off} middleware actions for the same two temperature cases, as reported in Table~\ref{tab:agent-results}. The screenshot evidence also shows that the workflow produced structured action output and parsed the action before routing it to the middleware endpoint.
+
+The agent path is useful because it tests whether an LLM decision step can be constrained to fit the same action pipeline as the deterministic baseline. In this temperature scenario, the deterministic rule is easier to explain and is sufficient for the action choice. The agent path therefore should not be interpreted as an attempt to outperform the deterministic rule. Its role is to show that generated output can be represented as an action object with fields such as \texttt{action\_id}, \texttt{target}, \texttt{reason}, and \texttt{requires\_approval}, then parsed and routed through the same middleware boundary.
+
+
+This interpretation connects the thesis to work on language-model-based reasoning and action \cite{reactYao2023}. In this thesis, that idea is applied in a focused workflow setting: the agent-enhanced path receives the same temperature cases as the deterministic baseline and is expected to return contract-shaped action output. The result is therefore mainly evidence about whether an LLM decision step can be integrated into the workflow-to-action pipeline while preserving the expected action structure.
+
+
+The RQ2 evidence is based on one prompt setup, one configured model path, and the same two temperature cases used by the deterministic baseline. Within that defined setup, the agent-enhanced workflow produced structured action output for the implemented cases and routed the expected fan actions through the middleware boundary. Because both paths were evaluated on two straightforward temperature cases, the evidence does not show a meaningful capability difference beyond output structure and latency observations.
+
+\subsection{Discussion of RQ3: Latency, Resource, and Deployment Behavior}\label{subsec:discussion-rq3-latency-resource-deployment}
+
+RQ3 asks what latency, resource, and deployment behavior is observed during local execution and Raspberry Pi middleware validation. The local evaluation harness produced raw CSV evidence for deterministic and agent-enhanced workflow runs, and the Raspberry Pi validation produced full-workflow evidence for the PC-hosted n8n workflow calling the Pi-hosted middleware endpoint. These results provide inspectable measurement artifacts rather than relying only on screenshots or manual notes.
+
+The distinction between full workflow latency and direct endpoint latency is central to interpreting the Raspberry Pi evidence. The full workflow values include the PC-hosted n8n workflow path and the HTTP call to the middleware endpoint. The direct Raspberry Pi endpoint values measure only middleware response behavior and do not include n8n webhook execution or workflow routing. For this reason, the direct endpoint values are useful supporting evidence, but they cannot replace the full workflow values in Table~\ref{tab:pi-full-workflow-results}.
+
+The CPU, RAM, and thermal observations should be treated as deployment observations rather than performance benchmarks. Local PC resource values were collected through best-effort Docker statistics where available, while local thermal values were recorded as \path{not_available}. The Raspberry Pi evidence includes middleware process CPU/RAM observations and a separately documented thermal value. These observations indicate that the evaluation harness can capture resource-related evidence, but the workload is too constrained for stable performance claims.
+
+The deployment behavior still supports the edge-computing motivation of the thesis \cite{edgeComputingSatyanarayanan,iotSurveyAtzori}. The Raspberry Pi validation demonstrates that the action endpoint side can run on separate hardware while n8n remains on the PC. This is the split architecture implemented by the thesis and should be interpreted as Raspberry Pi middleware/action-endpoint validation.
+
+\subsection{Project and Work Method Discussion}\label{subsec:discussion-project-work-method}
+
+The PC-first n8n setup was a practical and methodological choice. Running n8n locally on the PC through Docker gave a stable workflow environment and reduced the risk that the thesis would become primarily about platform deployment. This made it possible to focus the evaluation on the event-to-action path, the middleware boundary, the contract-shaped action output, and the CSV evidence.
+
+Raspberry Pi validation was focused on the middleware/action endpoint side for the same reason. Moving the Python endpoint to the Raspberry Pi tested whether the workflow could call an edge-side action boundary over HTTP, while keeping the workflow engine itself in the stable PC-hosted environment. This choice gave the thesis hardware-side validation without changing the main research question into a Raspberry Pi optimization study.
+
+The comparison between a deterministic baseline and a minimal agent-enhanced workflow was also defensible for the defined evaluation scope. The deterministic workflow established a transparent reference behavior. The agent-enhanced workflow then tested whether an LLM decision step could produce action output that still fit the same contract and middleware path. Because both paths used the same action endpoints and temperature cases, the comparison stayed focused on the decision step and output structure rather than on unrelated deployment differences.
+
+The work method also depended on traceable evidence. Report notes, audit passes, CSV output, screenshot evidence, and explicit scope boundaries helped keep the thesis aligned with the repository artifacts. Finalizing the implementation state before report writing was necessary because the report could then describe a stable evidence base instead of chasing changing workflows, scripts, or result files. As a result, thesis claims are tied to artifacts that can be inspected.
+
+\subsection{Role of Middleware, Contracts, and Validation}\label{subsec:discussion-middleware-contracts-validation}
+
+The middleware boundary is one of the central design choices in the thesis. Without it, workflow or agent output could be treated as direct action execution. By placing Python middleware between the workflow and the simulated fan action, the architecture creates a controlled place where action requests can be represented, inspected, routed, and later replaced with hardware-specific behavior if the scope is extended.
+
+The JSON contracts support this boundary by reducing ambiguity. A workflow that emits loose text is difficult to evaluate objectively because the report must infer whether the text means \texttt{fan\_on}, \texttt{fan\_off}, or something else. A contract-shaped action object gives the system explicit fields and allowed values. JSON Schema is therefore useful because it gives the report a precise structure for discussing action validity \cite{jsonSchemaDocs}.
+
+The documented validation design adds a safety-oriented interpretation of the same boundary. It distinguishes allowed fan actions, malformed actions, and risky or unknown actions.
+LLM output should not be passed directly to an action endpoint without checking what it contains. In this thesis, the validation boundary separates generated workflow output from middleware execution. If an output is unclear, risky, or outside the approved action set, it should be reviewed before any action is carried out \cite{humanInTheLoopAmershi2014}.
+
+
+In this implementation, the validation boundary defines the expected behavior for action outputs before they reach the middleware. The safety cases describe which outputs are accepted, blocked, or held back from direct execution. This gives the implementation a clear validation target, while stronger runtime enforcement can be added and measured in future work.
+
+\subsection{Broader Relevance and Possible Use Cases}\label{subsec:discussion-broader-relevance}
+
+The fan example is a controlled proxy for a broader event-validation-action pattern. An event is received, a workflow selects or produces an action, the action is represented through a shared contract, a validation boundary limits what may proceed, middleware executes the action, and the evaluation harness records evidence. The engineering value of the thesis lies in this pattern rather than in the fan action by itself.
+
+In smart building control, a similar pattern could be used for ventilation, heating, lighting, or occupancy-related actions \cite{smartBuildingsMinoli2017}. In industrial monitoring, it could support alerts or controlled responses to temperature, vibration, or process-state events \cite{industrialIotXu2018}. In environmental sensing, the same architecture could be adapted to air quality, humidity, water-level, or greenhouse monitoring. In health and environment monitoring contexts, the pattern could support event-driven notifications or approved actions where traceability and validation are important.
+
+These examples indicate possible application areas, while the present evaluation remains focused on the temperature-to-fan scenario. Further work would be required before applying the architecture to physical actuation or operational environments.
+
+\subsection{Ethical and Societal Considerations}\label{subsec:discussion-ethical-societal}
+
+Automated and AI-assisted workflows become more sensitive when their outputs can trigger physical actions. Even a fan example illustrates the issue: once a workflow decision becomes an action request, the system needs clear boundaries around what is allowed to happen. This concern grows in domains such as buildings, industrial systems, environmental monitoring, or health-related contexts, where incorrect actions may affect comfort, equipment, safety, or trust.
+
+For that reason, validation before execution is both a technical and ethical design concern. The system should make it possible to inspect what action was requested, why it was requested, whether it matched an approved contract, and whether it should require human review. The documented validation design and human-approval case point toward this responsibility: risky or unknown outputs should not be executed directly simply because a workflow or agent produced them.
+
+The report therefore relies on saved evidence rather than memory or assumptions. The CSV files show the measured runs, the screenshots show the workflow behavior, and the contracts and safety cases show the rules the system was built around. This makes the work easier to check, repeat, and build on later.

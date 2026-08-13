@@ -1,0 +1,338 @@
+{
+  "name": "new-yacoub minimal agent workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "DRAFT EXPORT CANDIDATE - Step 7 minimal agent-enhanced workflow. Verify AI node type, model credential, prompt mapping, and output field names inside n8n UI before treating this as final. This is minimum Obid-compatible integration only, not a full cognitive architecture.",
+        "height": 220,
+        "width": 460
+      },
+      "id": "d5a3c4ee-2d1d-42c7-bf0c-a6e5d77985e5",
+      "name": "Import verification note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent-minimal",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "d6e917a0-16f3-49a9-bb84-dfa44b8f9e2b",
+      "name": "Receive temperature event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -920,
+        120
+      ],
+      "webhookId": "agent-minimal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "agent-input",
+              "name": "agent_input",
+              "type": "string",
+              "value": "={{ JSON.stringify($json.body) }}"
+            },
+            {
+              "id": "system-prompt-reference",
+              "name": "system_prompt_reference",
+              "type": "string",
+              "value": "cognitive_logic/prompts/system-prompt-v1.md"
+            },
+            {
+              "id": "memory-choice-reference",
+              "name": "memory_choice",
+              "type": "string",
+              "value": "stateless_no_memory"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "595a576d-d7bd-430a-8ab6-c31e5ed73e5b",
+      "name": "Prepare agent input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -660,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Replace or verify this draft AI decision node in n8n. It must use exactly one model/provider credential, the prompt in cognitive_logic/prompts/system-prompt-v1.md, no memory, and return only the structured action JSON with action_id, target, reason, requires_approval.",
+        "height": 200,
+        "width": 420
+      },
+      "id": "edee0228-d36b-4722-a4ac-b3fdf2536c5c",
+      "name": "AI node setup note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Use the system prompt from cognitive_logic/prompts/system-prompt-v1.md. Return only a JSON object with action_id, target, reason, and requires_approval. Allowed actions are fan_on and fan_off. Allowed target is fan_1. No memory. No hardware instructions."
+            }
+          ]
+        }
+      },
+      "id": "3a96f243-812c-4fb2-ad19-9e34181eba03",
+      "name": "Minimal LLM decision",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -360,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.text ?? $json.output ?? $json.response ?? $json.message ?? JSON.stringify($json);\nconst text = typeof raw === 'string' ? raw.trim() : JSON.stringify(raw);\nconst match = text.match(/\\{[\\s\\S]*\\}/);\nconst action = JSON.parse(match ? match[0] : text);\nreturn [{ json: action }];"
+      },
+      "id": "8127c12d-25d6-4092-af5c-a0bfc6a6cf1f",
+      "name": "Parse structured action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "agent-action-fan-on",
+              "leftValue": "={{ $json.action_id }}",
+              "rightValue": "fan_on",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8a3abce3-3d5c-4f73-a050-5e9ac3b82127",
+      "name": "Action is fan_on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        180,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "c749680d-2419-45d2-96a3-e5a6871167bb",
+      "name": "POST middleware fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "agent-action-fan-off",
+              "leftValue": "={{ $json.action_id }}",
+              "rightValue": "fan_off",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "84a1e405-1088-4905-83f1-c81b171ff969",
+      "name": "Action is fan_off?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "d49c5859-7a83-4e46-a8e2-88569cd6e473",
+      "name": "POST middleware fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "unrouted-status",
+              "name": "status",
+              "type": "string",
+              "value": "unrouted_non_contract_action"
+            },
+            {
+              "id": "unrouted-note",
+              "name": "note",
+              "type": "string",
+              "value": "No middleware action executed. Step 8 will implement formal validation and approval handling."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dc2cd7ca-1262-4dae-b673-edb6da667ffc",
+      "name": "Unrouted non-contract action",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        420
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive temperature event": {
+      "main": [
+        [
+          {
+            "node": "Prepare agent input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare agent input": {
+      "main": [
+        [
+          {
+            "node": "Minimal LLM decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Minimal LLM decision": {
+      "main": [
+        [
+          {
+            "node": "Parse structured action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse structured action": {
+      "main": [
+        [
+          {
+            "node": "Action is fan_on?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action is fan_on?": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan on",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Action is fan_off?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action is fan_off?": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unrouted non-contract action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "agent-minimal-step-7-draft",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "new-yacoub-local"
+  },
+  "id": "agent-minimal",
+  "tags": []
+}

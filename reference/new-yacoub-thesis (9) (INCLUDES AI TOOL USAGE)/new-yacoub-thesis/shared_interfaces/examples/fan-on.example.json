@@ -1,0 +1,6 @@
+{
+  "action_id": "fan_on",
+  "target": "fan_1",
+  "reason": "temperature_above_threshold",
+  "requires_approval": false
+}

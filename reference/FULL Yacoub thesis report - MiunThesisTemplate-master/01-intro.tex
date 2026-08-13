@@ -1,0 +1,60 @@
+\section{Introduction}\label{sec:intro}
+
+This thesis investigates how a workflow automation system can be used as part of a measurable IoT-style action pipeline. The work focuses on a controlled "temperature to fan" scenario and examines whether a focused "workflow-to-action" architecture can be implemented and evaluated clearly without becoming a production IoT platform.
+
+\subsection{Background and Motivation}\label{subsec:background}
+
+Workflow automation platforms are often used to connect triggers, decision logic, external services, and actions. In such systems, a workflow can receive an event, process it through configured nodes, and call an external endpoint. n8n is one such workflow automation platform and can be self-hosted for local experimentation and integration work \cite{n8nDocs,workflowPatternsAalst}. This makes it suitable for a thesis prototype where the workflow engine should be visible, configurable, and testable.
+
+
+IoT systems commonly involve networked devices, sensing, and action-oriented interaction with the physical environment \cite{iotSurveyAtzori}. In this thesis, that idea is represented as an event-to-action pattern: a sensor or test event is received, a decision is made, and an action is triggered. Edge computing motivates placing parts of a system closer to the device or environment when latency, locality, or deployment context matters \cite{edgeComputingSatyanarayanan,edgeIntelligenceZhou2019}. Raspberry Pi is used in this thesis as a small edge-style validation device, while the workflow runtime remains PC-hosted \cite{raspberryPiDocs}.
+
+
+
+This thesis uses a fan on/off scenario as a controlled proxy for that broader problem. The fan itself is simple, but the architecture around it is the important part: event handling, action selection, middleware execution, and recorded evidence are evaluated together. The scenario makes it possible to study a complete "event-to-action" path without expanding into a broad hardware or automation platform.
+
+\subsection{Problem Statement}\label{subsec:problem-statement}
+
+The problem addressed in this thesis is that an IoT-style workflow is not sufficiently evaluated by showing only that a workflow can make a decision. If a workflow or agent-enhanced step can trigger an action, the system also needs a clear boundary between workflow logic and action execution. Without such a boundary, it becomes difficult to explain which component made the decision, which component executed the action, and what structure the action message was expected to follow.
+
+The thesis treats the problem as an integration and evaluation problem. The system needs structured action messages, a documented validation design, a middleware layer that separates workflow decisions from action execution, CSV-based evidence for result reporting, and limited hardware-side validation. JSON contracts are used to make the sensor and action payloads explicit \cite{jsonSchemaDocs}. The problem is investigated within a controlled proof-of-concept rather than through a large-scale deployment.
+
+\subsection{Aim}\label{subsec:aim}
+
+The aim of this thesis is to design, implement, and evaluate a self-hosted n8n-based proof-of-concept for a temperature-to-fan IoT-style action pipeline using Python middleware, structured contracts, lightweight evaluation, and Raspberry Pi middleware validation.
+
+The aim is addressed by evaluating deterministic and agent-enhanced workflow behavior, contract-shaped action output, documented validation cases, CSV evidence, and Raspberry Pi middleware validation within the same proof-of-concept.
+
+\subsection{Research Questions}\label{subsec:research-questions}
+
+The thesis is guided by three research questions:
+
+\begin{enumerate}
+  \item \textbf{RQ1:} How accurately does the deterministic n8n workflow produce the expected fan action for the defined temperature test cases?
+  \item \textbf{RQ2:} How accurately does the minimal agent-enhanced workflow produce contract-valid action output compared with the deterministic baseline for the defined cases?
+  \item \textbf{RQ3:} What latency, resource, and deployment behavior is observed during local execution and Raspberry Pi middleware validation?
+\end{enumerate}
+
+Safety is treated as part of the contract and validation analysis rather than as a separate research question. Contract validity is mainly evaluated under RQ2, while the role and limitations of the validation boundary are discussed further in Chapter~\ref{sec:discussion}.
+
+\subsection{Scope}\label{subsec:scope-limitations}
+
+The scope of this thesis is one measurable workflow-to-action pipeline. The implemented system uses a local PC-hosted n8n runtime, a Python middleware API, one temperature-event path, simulated \texttt{fan\_on} and \texttt{fan\_off} actions, a deterministic baseline workflow, a minimal agent-enhanced workflow, shared JSON contracts, a documented minimum safety and validation design, a CSV-based evaluation harness, and Raspberry Pi middleware/action-endpoint validation.
+
+The Raspberry Pi part is used to validate the middleware/action endpoint over the network, while the n8n workflow runtime remains on the PC. The thesis focuses on workflow behavior, contract-valid action output, latency observations, and deployment evidence for the middleware boundary. Full n8n deployment on Raspberry Pi, physical GPIO-based fan control, production-grade runtime safety enforcement, broad multi-agent architecture, multiple models, multiple devices, and large-scale benchmarking are outside the scope.
+
+
+
+
+
+
+
+\subsection{Use of AI Tools}\label{subsec:ai-tools}
+
+AI tools were used as support during this thesis in two main ways. During the implementation work, they were used for planning, coding assistance, debugging support, and suggestions for how to structure parts of the repository. Any suggested code was reviewed, tested, and validated against the project evidence before being included.
+AI tools were also used during the writing process as language and structure support. This included reformulating sentences, checking phrasing, improving readability, and suggesting alternative wording. The research design, implementation decisions, evaluation setup, result interpretation, references, and final report content remain the responsibility of the author. No measurement value, source file, implementation behavior, or result was accepted only because an AI tool suggested it; such material was checked against repository evidence or cited sources.
+
+
+\subsection{Report Outline}\label{subsec:outline}
+
+Chapter~\ref{sec:theory} presents the theory and related work needed to understand workflow automation, IoT-style event-action systems, contracts, agent-enhanced workflows, validation, and edge hardware context. Chapter~\ref{sec:methodology} describes the research approach and evaluation method. Chapter~\ref{sec:system-design} explains the choice of approach and justifies the final system design. Chapter~\ref{sec:implementation} describes the implemented proof-of-concept. Chapter~\ref{sec:results} reports the observed results from the deterministic workflow, agent-enhanced workflow, evaluation harness, and Raspberry Pi validation. Chapter~\ref{sec:discussion} interprets the results, answers the research questions, discusses limitations, and connects the fan scenario to broader use cases. Chapter~\ref{sec:conclusions} presents the final conclusions and future work. The appendix provides references to source code and supporting artifacts.

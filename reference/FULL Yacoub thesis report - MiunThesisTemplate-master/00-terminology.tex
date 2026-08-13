@@ -1,0 +1,27 @@
+\section*{\translate{Terminology}/\translate{Notation}}\label{sec:terminology}
+\phantomsection
+\addcontentsline{toc}{section}{Terminology / Notation}
+
+\begin{table}[ht!]
+	\caption{Terminology used in the thesis.}
+	\label{tab:terminology}
+	\begin{tabular}{@{}p{0.25\linewidth}p{0.65\linewidth}@{}}
+		\toprule
+		Term & Meaning \\
+		\midrule
+		Agent-enhanced workflow & The n8n workflow path where an LLM-based decision step produces a structured action output for the temperature-to-fan scenario. \\
+		API & Application Programming Interface. In this thesis, the API is the HTTP boundary exposed by the Python middleware. \\
+		CSV & Comma-separated values. The tabular file format used for raw and processed evaluation results. \\
+		Deterministic baseline & The rule-based n8n workflow path that selects \texttt{fan\_on} or \texttt{fan\_off} using a fixed temperature threshold. \\
+		GPIO & General-purpose input/output pins on hardware such as Raspberry Pi. Real GPIO fan control is outside the implemented scope. \\
+		HITL & Human-in-the-loop. A design idea where risky or unsupported action outputs require human review before execution. \\
+		IoT & Internet of Things. In this thesis, the term refers to the event-to-action pattern where a sensor-style event can lead to an action. \\
+		JSON contract & The shared JSON message structure that defines the expected shape of sensor events and action outputs. \\
+		LLM & Large language model. In this thesis, the LLM is used only in the agent-enhanced workflow decision step. \\
+		Middleware & The Python service that separates workflow decisions from action execution and exposes the simulated fan endpoints. \\
+		n8n & The self-hosted workflow automation engine used to build and run the deterministic and agent-enhanced workflows. \\
+		Raspberry Pi middleware validation & Validation where n8n remains on the PC while the Python middleware/action endpoint runs on the Raspberry Pi and is called over the network. \\
+		Webhook & An HTTP endpoint used by n8n to receive the temperature event or test input. \\
+		\bottomrule
+	\end{tabular}
+\end{table}

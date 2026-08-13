@@ -1,0 +1,145 @@
+\section{Implementation}\label{sec:implementation}
+
+
+
+
+This chapter describes the implemented proof-of-concept system. The implementation follows the defined Raspberry Pi middleware/action-endpoint validation scope for the thesis: one temperature-event path, two workflow decision modes, one shared action contract, one minimum safety and validation design, simulated fan actions, CSV-based evaluation, and Raspberry Pi validation limited to the middleware/action endpoint side. The implementation therefore focuses on a complete and measurable workflow-to-action slice that can be evaluated against the research questions.
+
+
+
+
+\subsection{System Overview}\label{subsec:implementation-system-overview}
+
+The overall architecture was introduced in Chapter~\ref{sec:system-design} and shown in Figure~\ref{fig:final-architecture}. This chapter focuses on how the implemented components were realized and connected.
+
+The implemented system follows a temperature-event-to-action pipeline: a test input enters the PC-hosted n8n workflow, the workflow selects either the deterministic or agent-enhanced path, the resulting action is represented through the shared contract and documented validation boundary, and the Python middleware routes the request to a simulated \texttt{fan\_on} or \texttt{fan\_off} action. The evaluation harness then records the resulting behavior as CSV evidence.
+
+The following sections describe the local n8n runtime, the Python middleware API, the shared contract layer, the deterministic and agent-enhanced workflows, the documented validation design, the evaluation harness, and the Raspberry Pi middleware/action-endpoint validation.
+
+Full repository paths for configuration files, schemas, workflow exports, scripts, and evidence files are listed in Appendix~\ref{sec:appendix-source-code}.
+
+\subsection{Local n8n Runtime with Docker}\label{subsec:implementation-n8n-docker}
+
+The workflow engine was implemented as a local self-hosted n8n runtime on the PC. The runtime is defined by the Docker Compose configuration and uses the pinned container image \texttt{n8nio/n8n:1.123.37}. The compose file exposes n8n on port \texttt{5678}, persists n8n data in a Docker volume, and uses local development settings such as disabled secure cookies and disabled diagnostics/version notifications \cite{dockerDocs,n8nDocs}.
+
+Figure~\ref{fig:docker-n8n-runtime} shows the local Docker Desktop runtime with the n8n container running. The log output indicates that n8n was ready on port 5678, which supports the PC-hosted workflow runtime used in the implementation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/docker.png}
+    \caption{Docker Desktop showing the local n8n container running and ready on port 5678.}
+    \label{fig:docker-n8n-runtime}
+\end{figure}
+
+The PC-hosted Docker setup was chosen for stability and repeatability. It allowed the workflow engine, middleware, contracts, and evaluation harness to be developed in a controlled local environment before adding Raspberry Pi validation. This also reduced the risk of turning the thesis into a deployment study of n8n on constrained hardware. Full n8n deployment on the Raspberry Pi was intentionally outside the implemented scope. The Raspberry Pi validation therefore appears later in the implementation as a split validation of the middleware/action endpoint side, not as a replacement for the PC-hosted n8n baseline.
+
+The local n8n runtime is the basis for both implemented workflow modes. The deterministic baseline and the minimal agent-enhanced workflow both receive temperature events through n8n webhook flows and route their resulting fan action to the middleware. Keeping the workflow engine constant makes the two workflow modes easier to compare in the evaluation chapter.
+
+Runtime verification evidence for the local n8n setup is listed in Appendix~\ref{sec:appendix-source-code}.
+
+
+
+
+
+
+
+\subsection{Python Middleware API Bridge}\label{subsec:implementation-middleware}
+
+The Python middleware implements the boundary between workflow decisions and action execution. It can be started with \texttt{python -m middleware.api.app}. The HTTP request handling uses Python standard-library HTTP server components \cite{pythonHttpServerDocs}, while the simulated sensor and fan state are implemented in the middleware support files.
+
+Figure~\ref{fig:pi-middleware-ssh-start} shows the Python middleware started on the Raspberry Pi through an SSH session. The middleware is bound to \texttt{0.0.0.0:8000}, which makes it suitable for network-based validation from the PC-hosted workflow.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/terminal middleware pi.png}
+    \caption{Python middleware started on the Raspberry Pi through SSH and bound to port 8000.}
+    \label{fig:pi-middleware-ssh-start}
+\end{figure}
+
+The middleware exposes four implemented endpoints. \texttt{GET /status} returns the middleware status and the current simulated hardware state. \texttt{POST /sensor-event} accepts a temperature event, normalizes it with a minimal inline check, stores it as the latest sensor event, and can forward it to n8n when a webhook URL is configured. \texttt{POST /fan/on} changes the simulated fan state to \texttt{on}, and \texttt{POST /fan/off} changes the simulated fan state to \texttt{off}. The fan endpoints return JSON responses that include the action name, the resulting fan state, a \texttt{simulated} flag, and a reason field.
+
+This middleware boundary is important because it prevents workflow nodes from being treated as direct hardware controllers. Even in the Raspberry Pi validation, the action remains a simulated middleware action. No GPIO library, real fan driver, or physical actuator path is implemented in the final implementation. This keeps the implementation aligned with the thesis scope: the work evaluates an IoT-style action pipeline and contract boundary, not physical electronics control.
+
+\subsection{Shared JSON Contracts}\label{subsec:implementation-contracts}
+
+The shared interface layer defines the data structures that connect the middleware side and the workflow/agent side. The main reason for using structured JSON contracts was to avoid loose text as an action boundary. A free-form agent response or informal workflow payload would make routing and validation ambiguous. A small schema-based contract, by contrast, makes the expected fields explicit and gives the safety design a precise object to check \cite{jsonSchemaDocs}.
+
+The input-side schema defines the temperature sensor event used by the thesis scenario. It requires \texttt{sensor\_id}, \texttt{timestamp}, \texttt{type}, \texttt{value}, and \texttt{unit}. The supported sensor type is \texttt{temperature}, and the supported unit is \texttt{C}. This intentionally small input contract keeps the scenario measurable and avoids expanding into multiple sensors or device families.
+
+The output-side schema defines the fan action object that workflow-produced actions should follow. It requires \texttt{action\_id}, \texttt{target}, \texttt{reason}, and \texttt{requires\_approval}. The allowed action identifiers are \texttt{fan\_on} and \texttt{fan\_off}, and the allowed target is \texttt{fan\_1}. The schema also disallows additional properties. These restrictions support predictable routing: after validation, \texttt{fan\_on} maps to \texttt{POST /fan/on}, and \texttt{fan\_off} maps to \texttt{POST /fan/off}.
+
+The repository also includes example payloads for a valid sensor event, a valid fan-on action, and a blocked action example. These examples support reportability and later evaluation, but they should not be interpreted as proof of production runtime enforcement. The contract layer defines the expected boundary; the safety layer defines how the boundary should be checked.
+
+\subsection{Deterministic Baseline Workflow}\label{subsec:implementation-deterministic}
+
+The deterministic baseline workflow is implemented in the deterministic workflow files. It is the non-AI comparison anchor for the thesis. The workflow receives a temperature event through an n8n Webhook node, reads the event value from the parsed request body, applies one threshold rule, and then calls one of the simulated fan endpoints.
+
+The rule is intentionally simple:
+
+\begin{quote}
+if temperature \(\geq 30.0\) C, request \texttt{fan\_on}; otherwise, request \texttt{fan\_off}.
+\end{quote}
+
+When the temperature is at or above the threshold, the workflow creates an action object corresponding to \texttt{fan\_on} and calls the local \texttt{POST /fan/on} endpoint. When the temperature is below the threshold, it creates an action object corresponding to \texttt{fan\_off} and calls the local \texttt{POST /fan/off} endpoint. The host-Docker bridge address is used because n8n runs inside Docker while the middleware runs on the host during local PC execution.
+
+The deterministic workflow exists for two reasons. First, it provides a predictable reference behavior for the same temperature-to-fan task used by the agent-enhanced workflow. Second, it gives the evaluation a simple baseline against which action correctness and latency observations can be compared. The baseline does not use prompts, memory, model calls, safety approval nodes, GPIO, or Raspberry Pi deployment.
+
+The deterministic n8n workflow canvas is shown in Figure~\ref{fig:deterministic-workflow-canvas}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figures/deterministic-baseline-canvas.png}
+  \caption{Deterministic baseline n8n workflow canvas.}
+  \label{fig:deterministic-workflow-canvas}
+\end{figure}
+
+\subsection{Agent-Enhanced Workflow}\label{subsec:implementation-agent}
+
+The minimal agent-enhanced workflow is implemented in the agent workflow files. It uses the same temperature-event scenario and the same middleware fan endpoints as the deterministic baseline, but it replaces the fixed threshold decision node with a constrained LLM decision step.
+
+The workflow receives the temperature event through a Webhook node, prepares the current event as agent input, sends it to one LLM decision step, parses the returned action object, and routes supported fan actions to the middleware. The Step 7 evidence identifies the configured model node as Google Gemini Chat Model. The workflow uses one prompt set and one documented memory choice. The chosen memory strategy is stateless execution with no memory node connected.
+
+The prompt constrains the LLM to return a structured JSON action object rather than a free-form explanation. The expected output follows the same action contract used elsewhere in the thesis: \texttt{action\_id}, \texttt{target}, \texttt{reason}, and \texttt{requires\_approval}. The workflow then parses this structured output and routes \texttt{fan\_on} to \texttt{POST /fan/on} or \texttt{fan\_off} to \texttt{POST /fan/off}. A minimal unrouted branch exists for output outside the expected action values, but this branch is not the formal safety layer.
+
+
+The purpose of this workflow is focused. It tests whether an agent-style decision step can produce contract-valid structured action output for the same temperature-to-fan task as the deterministic baseline. The workflow is configured with one prompt setup, one model path, and stateless execution so that its behavior can be compared directly with the deterministic path.
+The agent-enhanced workflow canvas is shown in Figure~\ref{fig:agent-workflow-canvas}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figures/agent-workflow-canvas.png}
+  \caption{Minimal agent-enhanced n8n workflow canvas.}
+  \label{fig:agent-workflow-canvas}
+\end{figure}
+
+\subsection{Safety and Validation Design}\label{subsec:implementation-safety}
+
+The safety layer is implemented as a minimum design and specification layer. It consists of an action policy, an output validation design, a human-in-the-loop approval design, and three documented example cases. The action policy, parser and validation design, and approval design are listed with the other source artifacts in Appendix~\ref{sec:appendix-source-code} \cite{humanInTheLoopAmershi2014}.
+
+The safety design is based on the shared action contract. An action is allowed to proceed without human approval only when it parses as JSON, matches the action schema, uses \texttt{fan\_on} or \texttt{fan\_off}, targets \texttt{fan\_1}, contains a non-empty reason, has no unexpected fields, and sets \texttt{requires\_approval} to \texttt{false}. A malformed action, an action with missing fields, an unknown action, an unknown target, or an action with unexpected fields is blocked by the policy. A risky or unknown action may be shown for human review as evidence, but policy version 1 does not allow an unknown action or target to be approved into a middleware call.
+
+The repository includes one allowed case, one blocked malformed case, and one risky/unknown case. The allowed case describes a valid \texttt{fan\_on} action targeting \texttt{fan\_1}. The blocked case describes an incomplete action missing required fields. The risky case describes an invented \texttt{open\_window} action targeting an unknown device, which is outside the thesis scenario and must not reach the fan endpoints.
+
+This safety layer matters because it defines the boundary that workflow and agent output should satisfy before action execution. However, it is not a production-grade runtime safety framework. It is also not evidence that all unsafe actions are blocked by an implemented runtime gate. In the final implementation, it should be interpreted as the minimum validation and approval design required to make the contract boundary explicit and discussable in the report.
+
+\subsection{Evaluation Harness}\label{subsec:implementation-evaluation-harness}
+
+The evaluation harness is implemented through the evaluation data files and supporting scripts. Its purpose is to make the proof-of-concept measurable without adding a heavy observability stack. The harness uses standard-library Python scripts and CSV files so that test execution and aggregation remain lightweight and transparent \cite{pythonCsvDocs,csvRfc4180}.
+
+The test cases include deterministic workflow cases, agent workflow cases, and safety-mode cases. The metric fields are documented in the evaluation metrics schema. Raw result files and processed summaries are written to the evaluation result folders listed in Appendix~\ref{sec:appendix-source-code}.
+
+The collection script posts the selected test payloads to a supplied n8n webhook URL. For workflow modes, it records the mode, test case identifier, run index, input temperature, expected action, observed action, HTTP status, success flag, latency, observed response, and error/notes fields. It also attempts to collect CPU and RAM values through Docker statistics when available \cite{dockerStatsDocs}, and it records thermal data only when a supported thermal source exists. The aggregation script reads raw CSV files and writes processed summaries for latency, resources, safety outcomes, and baseline-versus-agent comparison.
+
+Chapter~\ref{sec:results} reports the numerical outcomes from these CSV files. This implementation chapter describes the harness structure and the measured fields, while final latency, resource, and correctness values are presented in the Results chapter.
+
+\subsection{Raspberry Pi Middleware/Action-Endpoint Validation Setup}\label{subsec:implementation-pi}
+
+The Raspberry Pi work was implemented as middleware/action-endpoint validation rather than full deployment. In this setup, n8n stayed on the PC and continued to run inside Docker. The Raspberry Pi ran only the Python middleware/action endpoint side. The middleware was started on the Pi with the host bound to \texttt{0.0.0.0}, allowing the PC-hosted n8n workflow to call the Pi over the network using HTTP \cite{raspberryPiDocs}.
+
+The validation reused the same temperature-to-fan scenario. High-temperature and low-temperature cases were sent through the PC-hosted n8n workflow, and the workflow called the Raspberry Pi middleware endpoints for \texttt{/fan/on} and \texttt{/fan/off}. The Raspberry Pi validation evidence includes the final workflow-run CSV, notes, startup/IP transcript, canvas and output screenshots, direct endpoint latency evidence, CPU/RAM evidence, and thermal evidence.
+
+This split validation strengthens the edge-computing angle of the thesis without changing the core architecture. It shows that the action endpoint side of the system can be moved from the PC to the Raspberry Pi while preserving the PC-hosted workflow engine. At the same time, its limitations are important: n8n was not deployed on the Raspberry Pi, the whole system was not moved to the Pi, the fan action remained simulated, and no real GPIO hardware was controlled.
+
+\subsection{Summary of Implementation}\label{subsec:implementation-summary}
+
+The implemented system forms one complete proof-of-concept pipeline. A temperature event can be sent into a PC-hosted n8n workflow, evaluated either by a deterministic threshold path or by a minimal agent-enhanced path, represented through a shared JSON action contract, constrained by a minimum validation and approval design, executed through Python middleware as a simulated fan action, and recorded through a CSV-based evaluation harness. Raspberry Pi validation extends this pipeline by moving the middleware/action endpoint to the Pi while keeping n8n on the PC. This focused implementation is complete enough to support the thesis evaluation of action correctness, contract-valid agent output, latency, resource behavior, and deployment limitations.

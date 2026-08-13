@@ -1,0 +1,201 @@
+# Step 4 middleware smoke test evidence - 2026-04-25
+
+Scope:
+
+- Step 4 middleware skeleton only.
+- Mock sensor data only.
+- Simulated fan action only.
+- No real GPIO.
+- No Step 5 shared schemas.
+- No Step 6 n8n workflow.
+- No Step 7 agent workflow.
+- No Step 8 safety layer.
+
+## Command used to start middleware
+
+Working directory:
+
+```text
+C:\Users\Jake_\OneDrive - Mittuniversitetet\EDU\4. RED\1. kaniddat\new-yacoub-thesis
+```
+
+Command:
+
+```powershell
+python -m middleware.api.app
+```
+
+Observed startup output:
+
+```text
+new-yacoub middleware running at http://127.0.0.1:8000
+Press Ctrl+C to stop.
+```
+
+## Tested endpoints
+
+- `GET /status`
+- `POST /fan/on`
+- `POST /fan/off`
+- `POST /sensor-event` with a valid temperature event
+- `POST /sensor-event` with a malformed event
+
+Observed server log:
+
+```text
+127.0.0.1 - "GET /status HTTP/1.1" 200 -
+127.0.0.1 - "POST /fan/on HTTP/1.1" 200 -
+127.0.0.1 - "POST /fan/off HTTP/1.1" 200 -
+127.0.0.1 - "POST /sensor-event HTTP/1.1" 202 -
+127.0.0.1 - "POST /sensor-event HTTP/1.1" 400 -
+```
+
+## GET /status result
+
+Command:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://127.0.0.1:8000/status"
+```
+
+Observed result:
+
+```text
+status message            state
+------ -------            -----
+ok     middleware running @{fan=off; last_sensor_event=; hardware=simulated}
+```
+
+Result summary:
+
+- HTTP status: `200`
+- Middleware status: `ok`
+- Hardware mode: `simulated`
+- Fan state before action tests: `off`
+
+## POST /fan/on result
+
+Command:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/fan/on"
+```
+
+Observed result:
+
+```text
+status    : ok
+action    : fan_on
+fan       : on
+simulated : True
+reason    : manual_api_call
+```
+
+Result summary:
+
+- HTTP status: `200`
+- Simulated fan state changed to `on`
+
+## POST /fan/off result
+
+Command:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/fan/off"
+```
+
+Observed result:
+
+```text
+status    : ok
+action    : fan_off
+fan       : off
+simulated : True
+reason    : manual_api_call
+```
+
+Result summary:
+
+- HTTP status: `200`
+- Simulated fan state changed to `off`
+
+## Valid POST /sensor-event result
+
+Command:
+
+```powershell
+$body = @{
+  sensor_id = "temp_sensor_1"
+  timestamp = "2026-04-25T20:00:00Z"
+  type = "temperature"
+  value = 31.4
+  unit = "C"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/sensor-event" -ContentType "application/json" -Body $body
+```
+
+Observed result:
+
+```text
+status   message                             event
+------   -------                             -----
+accepted sensor event received by middleware @{sensor_id=temp_sensor_1; timestamp=2026-04-25T20:00:00Z; value=31,4; ...
+```
+
+Result summary:
+
+- HTTP status: `202`
+- Middleware accepted the temperature event.
+- Event source: `temp_sensor_1`
+- Event type: `temperature`
+- Event value: `31.4 C`
+
+## n8n forwarding note
+
+n8n forwarding is intentionally skipped unless `N8N_WEBHOOK_URL` is configured.
+
+This is expected for Step 4 because the n8n workflow is not implemented until
+Step 6. The middleware bridge has a configurable placeholder, but this smoke
+test did not connect to a real n8n workflow.
+
+## Malformed POST /sensor-event result
+
+Command:
+
+```powershell
+$badBody = @{
+  sensor_id = "temp_sensor_1"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/sensor-event" -ContentType "application/json" -Body $badBody
+```
+
+Observed result:
+
+```text
+Invoke-RestMethod : {
+  "error": "missing_required_field",
+  "missing": [
+    "timestamp",
+    "type",
+    "value",
+    "unit"
+  ],
+  "message": "Step 4 uses a minimal inline check; JSON schemas come in Step 5."
+}
+```
+
+Result summary:
+
+- HTTP status: `400`
+- Missing fields were reported.
+- The response explicitly notes that Step 4 uses a minimal inline check and
+  JSON schemas come in Step 5.
+
+## Evidence conclusion
+
+The Step 4 middleware skeleton ran locally on PC with simulated sensor and fan
+state. All required initial endpoints responded, valid sensor input was
+accepted, simulated fan actions worked, and malformed sensor input returned
+HTTP `400`.

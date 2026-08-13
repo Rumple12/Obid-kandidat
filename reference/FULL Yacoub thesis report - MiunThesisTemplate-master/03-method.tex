@@ -1,0 +1,77 @@
+\section{Methodology}\label{sec:methodology}
+
+This chapter describes how the thesis work was carried out and how the proof-of-concept system was evaluated. The method was chosen to match the defined proof-of-concept scope: one controlled temperature-to-fan scenario, two workflow decision modes, lightweight measurement, and Raspberry Pi middleware/action-endpoint validation.
+
+\subsection{Research Approach}\label{subsec:research-approach}
+
+The thesis uses a design-and-evaluate proof-of-concept approach. The work first defines a limited technical problem, then builds an artifact that addresses that problem, evaluates the artifact with defined test cases, and finally discusses the limitations of the evidence. The approach fits the thesis because the research questions are not answered only by theoretical comparison; they require an implemented system that can produce observable workflow behavior, action outputs, latency values, resource observations, and deployment evidence \cite{designScienceHevner,designSciencePeffers}.
+
+The evaluated artifact is a focused workflow-to-action system with PC-hosted n8n, middleware-based action execution, structured contracts, and file-based evaluation evidence. The evaluation is therefore artifact-centered and scenario-based rather than a benchmark of many platforms, devices, or language models.
+
+\subsection{Development Method}\label{subsec:development-method}
+
+The implementation was developed through controlled stages. This staged method was used to reduce scope risk and keep each part of the system testable before adding the next one. The work first defined the evaluation scope, then implemented the runtime setup, middleware boundary, shared contracts, workflow modes, validation design, evaluation harness, and Raspberry Pi middleware validation.
+
+Each stage introduced one necessary layer and produced evidence before the next layer was added. The runtime setup established the workflow execution environment. The middleware provided the action boundary. The shared contracts made the event and action payloads explicit. The workflow modes provided the deterministic and agent-enhanced comparison. The evaluation harness made the system measurable through CSV files, and the Raspberry Pi validation tested the middleware/action endpoint on separate hardware.
+
+
+Once the evaluated system had produced enough evidence for the research questions, the implementation was kept stable during result reporting. Larger extensions, such as deeper Raspberry Pi deployment, physical hardware control, broader agent behavior, and larger-scale evaluation, were kept outside the evaluated implementation and are treated as future work.
+
+
+
+\subsection{Evaluation Design}\label{subsec:evaluation-design}
+
+The evaluation was designed around one temperature-to-fan scenario. The same input cases were used for the deterministic baseline workflow and the minimal agent-enhanced workflow so that the two modes could be compared on the same task. The evaluation also included documented safety and validation cases and a separate Raspberry Pi validation setup.
+
+The deterministic baseline was evaluated by checking whether the fixed n8n threshold rule produced the expected fan action for the defined high- and low-temperature cases. The minimal agent-enhanced workflow was evaluated by checking whether the agent path produced the expected fan action and whether the output followed the shared action contract shape. The safety and validation cases were evaluated as documented design cases: one allowed action, one malformed blocked action, and one risky or unsupported action that should not be executed directly. The Raspberry Pi validation evaluated whether PC-hosted n8n could call a Raspberry Pi-hosted middleware/action endpoint for the same temperature-to-fan scenario.
+
+The defined high- and low-temperature workflow cases used in the evaluation are listed in Table~\ref{tab:method-test-cases}. Full repository paths for the dataset, scripts, and result files are listed in Appendix~\ref{sec:appendix-source-code}.
+
+\begin{table}[H]
+  \centering
+  \caption{Defined workflow test cases.}
+  \label{tab:method-test-cases}
+  \begin{tabular}{@{}p{0.32\linewidth}p{0.22\linewidth}p{0.20\linewidth}p{0.16\linewidth}@{}}
+    \toprule
+    Test case type & Input temperature & Expected action & Mode \\
+    \midrule
+    High-temperature workflow case & 31.4 C & \texttt{fan\_on} & Deterministic and agent \\
+    Low-temperature workflow case & 24.5 C & \texttt{fan\_off} & Deterministic and agent \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The safety cases in the dataset use action objects rather than temperature events. The allowed case contains a complete \texttt{fan\_on} action for \texttt{fan\_1}. The blocked case omits required fields. The risky case uses an unsupported \texttt{open\_window} action and an unknown target. These safety cases provide design evidence for the documented validation boundary rather than proof of production runtime enforcement.
+
+\subsection{Metrics and Data Collection}\label{subsec:metrics-data-collection}
+
+The evaluation records both behavioral and measurement-oriented fields. The behavioral fields include the expected action, observed action, success or failure, expected safety result, and observed safety result where applicable. The measurement fields include latency, CPU values where available, RAM values where available, and thermal observations where available. Contract validity is considered where workflow or agent output is expected to follow the shared action object structure.
+
+Data collection is CSV-based. Raw result rows and processed summaries are written to the evaluation result folders listed in Appendix~\ref{sec:appendix-source-code}. The collection script posts test payloads to the configured workflow webhook and records the raw result fields. For workflow modes, success is recorded when the HTTP request succeeds and the observed action matches the expected action. The script measures latency using Python timing around the webhook HTTP request. It also attempts best-effort CPU and RAM collection through Docker statistics when available \cite{dockerStatsDocs}. Thermal values are not fabricated; when no supported thermal source is available, the field is recorded as \texttt{not\_available}.
+
+The aggregation script aggregates raw CSV files into processed latency, resource, safety-outcome, and baseline-versus-agent summaries. CSV is used as a simple tabular exchange format, with Python's standard \texttt{csv} module used by the scripts \cite{csvRfc4180,pythonCsvDocs}. These files support the Results chapter by separating raw observations from summarized comparison tables. The evaluation protocol also notes that safety-mode rows can document expected safety behavior without proving runtime enforcement unless enforcement logic is implemented and logged.
+
+\subsection{Raspberry Pi Validation Method}\label{subsec:pi-validation-method}
+
+
+
+Raspberry Pi validation was used to test the middleware/action endpoint on separate hardware, while n8n remained running on the PC. The PC-hosted n8n workflow called the Raspberry Pi middleware over HTTP.
+
+The Raspberry Pi validation checks whether the middleware/action endpoint can run on the Raspberry Pi and be called over the network while the n8n workflow remains PC-hosted. In this setup, the Raspberry Pi represents the action-endpoint side of the architecture rather than the full workflow runtime. The fan action is simulated, so the validation focuses on networked middleware behavior and deployment observations rather than physical GPIO-based fan control.
+
+
+The Raspberry Pi evidence was stored with the evaluation artifacts listed in Appendix~\ref{sec:appendix-source-code}. The method included the same high- and low-temperature fan cases, full workflow latency collection for the PC-to-Pi workflow path, supporting direct endpoint latency observations, CPU/RAM observations for the middleware process, and thermal observation from the Raspberry Pi evidence.
+
+\subsection{Validity and Limitations of the Method}\label{subsec:method-validity-limitations}
+
+
+The evaluation method is designed for a controlled proof-of-concept rather than broad benchmarking. The number of test cases is small because the thesis focuses on one temperature-to-fan scenario and compares the defined deterministic and agent-enhanced workflow paths under the same inputs. The results are evidence for the implemented workflow-to-action pipeline, not general performance claims for all n8n, IoT, or agentic AI systems.
+
+
+
+The Raspberry Pi validation focuses on the middleware/action-endpoint side of the architecture while the n8n workflow remains PC-hosted. The fan action is simulated, so the method evaluates workflow behavior, contract-valid action output, middleware routing, latency observations, and deployment evidence rather than physical GPIO-based fan control or production runtime safety.
+
+
+	\subsection{Summary of Method}\label{subsec:method-summary}
+
+The method supports the research questions by combining a controlled implementation artifact with repeatable, file-based evaluation evidence. It compares the two workflow decision modes under the same temperature cases, records action outcomes and measurements where available, and uses Raspberry Pi middleware validation as separate-hardware deployment evidence.

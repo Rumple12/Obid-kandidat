@@ -1,0 +1,26 @@
+\section{Conclusions}\label{sec:conclusions}
+
+\subsection{Answers to Research Questions}\label{subsec:conclusion-research-questions}
+
+\textbf{RQ1} asked how accurately the deterministic n8n workflow produced the expected fan action for the defined temperature cases. The deterministic workflow produced the expected result for both tested cases: the high-temperature case led to \texttt{fan\_on}, and the low-temperature case led to \texttt{fan\_off}. This evidence supports the deterministic baseline for the defined scenario and run count reported in Chapter~\ref{sec:results}.
+
+\textbf{RQ2} asked how accurately the minimal agent-enhanced workflow produced contract-valid action output compared with the deterministic baseline for the defined cases. The agent-enhanced workflow produced structured, contract-shaped output for the same defined cases and routed the resulting actions through the same middleware boundary. The result shows that an LLM decision step can be integrated into the workflow-to-action pipeline while preserving the expected action structure for the implemented cases.
+
+
+\textbf{RQ3} asked what latency, resource, and deployment behavior was observed during local execution and Raspberry Pi middleware validation. The CSV-based evaluation captured local workflow outcomes and latency evidence, while the Raspberry Pi validation showed that PC-hosted n8n could call the Pi-hosted middleware/action endpoint and receive the expected simulated fan responses. Because the latency values are based on single runs, they should be treated as proof-of-concept observations rather than stable benchmark measurements. The resource and thermal observations provide supporting evidence for this defined deployment pattern, but not a large-scale benchmark or full n8n-on-Pi result.
+
+\subsection{Final Conclusion}\label{subsec:final-conclusion}
+
+
+The thesis demonstrates a focused n8n-based workflow-to-action architecture for the temperature-to-fan scenario. Its contribution is the evaluated integration of workflow orchestration, middleware-based action execution, structured contracts, documented validation cases, CSV-based measurement, and Raspberry Pi middleware validation into one measurable proof-of-concept.
+The work shows that a workflow-to-action system can be made structured, measurable, and clear enough to evaluate when its contract boundaries and implementation scope are kept explicit. The Raspberry Pi validation strengthens the edge-computing part of the architecture by showing that the middleware/action endpoint can run on separate hardware and be called over the network from the PC-hosted workflow.
+
+
+
+\subsection{Future Work}\label{subsec:future-work}
+
+Future work could extend the proof-of-concept by deploying the full n8n stack on Raspberry Pi or another edge device and comparing that deployment with the PC-hosted workflow used in this thesis. Another natural extension would be to replace the simulated \texttt{fan\_on} and \texttt{fan\_off} endpoints with GPIO-connected sensor and actuator hardware, while preserving the middleware and contract boundary.
+
+The evaluation could also be expanded with more temperature cases, repeated runs, and clearer visual summaries of latency and resource behavior. The current validation design could be developed into stronger runtime safety enforcement, including stricter schema validation, clearer approval handling, and more explicit rejection of unknown or risky actions. The agent-enhanced workflow could be evaluated with additional prompts, models, and memory strategies, provided that such work remains grounded in measurable action outputs rather than broad claims about autonomy.
+
+Finally, the architecture could be adapted to more realistic IoT contexts, such as smart building control, industrial monitoring, environmental sensing, or health and environment monitoring. These extensions would need their own validation and safety analysis, but they follow naturally from the same pattern used here: receive an event, convert it into a structured action decision, validate the action boundary, execute through middleware, and record evidence.

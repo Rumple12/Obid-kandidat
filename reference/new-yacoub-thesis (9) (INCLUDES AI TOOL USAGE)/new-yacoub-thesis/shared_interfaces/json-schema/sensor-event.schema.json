@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://new-yacoub-thesis.local/shared_interfaces/json-schema/sensor-event.schema.json",
+  "title": "Sensor Event",
+  "description": "Minimal Step 5 sensor-event contract matching the Step 4 middleware input shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sensor_id",
+    "timestamp",
+    "type",
+    "value",
+    "unit"
+  ],
+  "properties": {
+    "sensor_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier for the simulated or physical sensor source."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 event timestamp."
+    },
+    "type": {
+      "type": "string",
+      "const": "temperature",
+      "description": "First scenario supports temperature events only."
+    },
+    "value": {
+      "type": "number",
+      "description": "Measured temperature value."
+    },
+    "unit": {
+      "type": "string",
+      "const": "C",
+      "description": "Temperature unit for the first scenario."
+    }
+  }
+}

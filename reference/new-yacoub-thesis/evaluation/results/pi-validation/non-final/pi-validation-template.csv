@@ -1,0 +1,1 @@
+template_note,timestamp,device,scenario,mode,test_case_id,expected_action,observed_action,success,latency_ms,cpu_percent,ram_mb,thermal_c,notes

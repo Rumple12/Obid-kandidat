@@ -1,0 +1,5 @@
+mode,test_case_id,run_count,success_count,failure_count,average_latency_ms,min_latency_ms,max_latency_ms,expected_action,observed_action,cpu_available_count,ram_available_count,thermal_available_count,cpu_percent_values,ram_usage_values,ram_percent_values,thermal_c_values
+agent,agent_high_temp,1,1,0,2668.036,2668.036,2668.036,fan_on,fan_on,1,1,0,0.20%,413.4MiB / 7.655GiB,5.27%,
+agent,agent_low_temp,1,1,0,1995.094,1995.094,1995.094,fan_off,fan_off,1,1,0,0.05%,413MiB / 7.655GiB,5.27%,
+deterministic,deterministic_high_temp,1,1,0,480.398,480.398,480.398,fan_on,fan_on,1,1,0,0.03%,412.7MiB / 7.655GiB,5.27%,
+deterministic,deterministic_low_temp,1,1,0,176.778,176.778,176.778,fan_off,fan_off,1,1,0,0.03%,412.7MiB / 7.655GiB,5.27%,

@@ -1,0 +1,5 @@
+mode,test_case_id,run_count,success_count,failure_count,average_latency_ms,min_latency_ms,max_latency_ms,expected_action,observed_action
+agent,agent_high_temp,1,1,0,2668.036,2668.036,2668.036,fan_on,fan_on
+agent,agent_low_temp,1,1,0,1995.094,1995.094,1995.094,fan_off,fan_off
+deterministic,deterministic_high_temp,1,1,0,480.398,480.398,480.398,fan_on,fan_on
+deterministic,deterministic_low_temp,1,1,0,176.778,176.778,176.778,fan_off,fan_off

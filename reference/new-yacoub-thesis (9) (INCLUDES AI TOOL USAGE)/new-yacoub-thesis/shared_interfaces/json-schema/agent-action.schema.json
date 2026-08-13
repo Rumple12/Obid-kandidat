@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://new-yacoub-thesis.local/shared_interfaces/json-schema/agent-action.schema.json",
+  "title": "Agent Action",
+  "description": "Minimal Step 5 action contract for workflow-produced fan actions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action_id",
+    "target",
+    "reason",
+    "requires_approval"
+  ],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "enum": [
+        "fan_on",
+        "fan_off"
+      ],
+      "description": "Minimal allowed action set for the first scenario."
+    },
+    "target": {
+      "type": "string",
+      "enum": [
+        "fan_1"
+      ],
+      "description": "Minimal allowed target set for the first scenario."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short explanation of why the action was proposed."
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "description": "Whether the action must pause for human approval before execution."
+    }
+  }
+}

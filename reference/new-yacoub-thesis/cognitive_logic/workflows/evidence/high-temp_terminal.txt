@@ -1,0 +1,11 @@
+$webhookUrl = "http://localhost:5678/webhook-test/deterministic-baseline"
+
+$highBody = @{
+  sensor_id = "temp_sensor_1"
+  timestamp = "2026-04-25T20:00:00Z"
+  type = "temperature"
+  value = 31.4
+  unit = "C"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri $webhookUrl -ContentType "application/json" -Body $highBody

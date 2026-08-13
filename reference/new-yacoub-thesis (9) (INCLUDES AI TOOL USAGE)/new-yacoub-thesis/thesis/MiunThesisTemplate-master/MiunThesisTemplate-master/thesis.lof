@@ -1,0 +1,10 @@
+\babel@toc {english}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Conceptual event-to-action pattern used to frame the thesis.}}{4}{figure.caption.9}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Report-level architecture of the implemented workflow-to-action system.}}{16}{figure.caption.11}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Docker Desktop showing the local n8n container running and ready on port 5678.}}{21}{figure.caption.12}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Python middleware started on the Raspberry Pi through SSH and bound to port 8000.}}{22}{figure.caption.13}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Deterministic baseline n8n workflow canvas.}}{24}{figure.caption.14}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Minimal agent-enhanced n8n workflow canvas.}}{25}{figure.caption.15}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Raspberry Pi middleware/action-endpoint validation latency.}}{34}{figure.caption.22}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Raspberry Pi middleware/action-endpoint validation output for the high-temperature fan-on case.}}{35}{figure.caption.24}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Local n8n runtime verification at localhost port 5678.}}{2}{figure.caption.27}%

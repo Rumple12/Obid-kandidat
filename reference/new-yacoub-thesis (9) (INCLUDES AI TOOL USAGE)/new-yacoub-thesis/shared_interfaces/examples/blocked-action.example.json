@@ -1,0 +1,6 @@
+{
+  "action_id": "open_window",
+  "target": "unknown_device",
+  "reason": "hallucinated_action_outside_first_scenario",
+  "requires_approval": true
+}

@@ -1,0 +1,76 @@
+\section{Theory and Related Work}\label{sec:theory}
+
+This chapter presents the theoretical background and related work needed to understand the workflow-to-action architecture evaluated in this thesis. The chapter is organized around the conceptual chain used by the implemented system: a sensor or event input enters a workflow, the workflow makes either a deterministic or agent-enhanced decision, the decision is represented as a structured action object, the object is considered at a validation boundary, and the final action request is sent through a middleware/API layer to an IoT-style action endpoint.
+
+The purpose of the chapter is not to survey all workflow engines, IoT platforms, edge devices, or language-model agent designs. Instead, it explains the concepts that support the defined evaluation scope and positions the thesis among related areas of research.
+
+Figure~\ref{fig:theory-background-flow} summarizes this conceptual event-to-action chain.
+
+\begin{figure}[H]
+  \centering
+  \makebox[\textwidth][c]{%
+    \includegraphics[width=1.08\textwidth]{Figures/theory-background-flow.png}%
+  }
+  \caption{Conceptual event-to-action pattern used to frame the thesis.}
+  \label{fig:theory-background-flow}
+\end{figure}
+
+\subsection{Workflow Automation and Orchestration}\label{subsec:workflow-automation}
+
+Workflow automation concerns the coordination of tasks, decisions, and integrations through an explicit process structure. A workflow can start from an event, apply decision logic, transform data, and call external systems. Workflow automation is therefore relevant for event-action systems, where the goal is to connect an incoming event to a controlled response rather than to perform isolated computation. Workflow patterns provide a research basis for describing recurring control-flow structures such as branching, routing, and synchronization \cite{workflowPatternsAalst}.
+
+In this thesis, workflow automation is used as the orchestration layer. The workflow engine receives a temperature event, evaluates it, and calls middleware endpoints. n8n is the concrete platform used for this purpose; it provides a self-hostable workflow environment with trigger nodes, data-handling nodes, and HTTP integration nodes \cite{n8nDocs}. The thesis does not compare n8n against other workflow platforms. It uses n8n as the practical workflow engine in a controlled implementation where workflow behavior can be evaluated.
+
+\subsection{IoT Event-Action Systems and Edge Computing}\label{subsec:iot-edge}
+
+IoT systems commonly connect sensors, software services, networks, and actions in a physical or operational environment. A sensor event may represent a temperature reading, a state change, or another observation that requires a response. The response may be an alert, a control action, or a decision to do nothing. This event-action pattern is central to the thesis scenario, where a temperature event is used to select a simulated fan action. General IoT research describes sensing, communication, processing, and actuation as core parts of Internet of Things systems \cite{iotSurveyAtzori}.
+
+Edge computing becomes relevant when processing or action endpoints are moved closer to devices or operational environments instead of relying entirely on remote infrastructure. Edge computing can support latency-sensitive behavior and local context handling, and edge-intelligence research connects this placement of computation to AI-related processing closer to devices \cite{edgeComputingSatyanarayanan,edgeIntelligenceZhou2019}. Raspberry Pi is relevant in this context because it is a compact computing platform that can run software services and connect to hardware interfaces \cite{raspberryPiDocs}. In this thesis, Raspberry Pi is used for middleware/action-endpoint validation while the workflow engine remains PC-hosted. The evaluation stays focused on the workflow-to-action boundary rather than on a complete edge deployment.
+
+\subsection{Middleware and API Boundaries}\label{subsec:middleware-theory}
+
+Middleware is useful when decision logic should be separated from action execution. In a workflow-to-action architecture, the workflow should not automatically become the hardware-facing control component. A middleware/API layer can receive a structured action request, expose a defined endpoint set, and isolate the workflow from the internal details of the action implementation. The separation makes the system easier to analyze because workflow logic, structured contracts, validation design, and action execution can be discussed as distinct parts of the architecture.
+
+REST and HTTP provide established architectural and communication concepts for networked systems \cite{fieldingRest2000,httpSemanticsRfc9110}. In this thesis, the middleware/API boundary is used in a focused form: workflow output is routed to middleware endpoints rather than directly to a physical actuator. This boundary is also what allows the same action pipeline to be used for both deterministic workflow output and minimal agent-enhanced output.
+
+\subsection{Structured Data, JSON Contracts, and Validation}\label{subsec:json-contracts}
+
+Structured data formats reduce ambiguity between connected components. If a workflow emits free text, the receiving system must infer the intended action. If the workflow emits a structured object, the receiving system can inspect fields, allowed values, and missing data against an explicit structure. This is why structured sensor and action messages matter in a workflow-to-action architecture.
+
+JSON Schema provides a vocabulary for describing and validating the structure of JSON data \cite{jsonSchemaDocs}. A schema can define required fields, allowed values, and whether unexpected fields are permitted. In this thesis, structured contracts describe the expected shape of sensor events and action outputs. The contracts support predictable routing and provide a basis for discussing validation. They do not by themselves create production-grade safety enforcement, but they make the expected action boundary explicit.
+
+\subsection{Deterministic Workflows}\label{subsec:deterministic-workflows}
+
+A deterministic workflow uses fixed logic to map inputs to outputs. Given the same input and the same workflow configuration, the expected decision path is the same. In the thesis scenario, the deterministic baseline uses a temperature threshold: a value at or above the threshold leads to \texttt{fan\_on}, while a lower value leads to \texttt{fan\_off}.
+
+Deterministic workflows are useful as baselines because their behavior is transparent and inspectable. The rule can be stated directly, the expected output can be defined before execution, and deviations can be identified clearly. For this thesis, the deterministic path establishes a reference point for evaluating action correctness and latency observations before considering the agent-enhanced path.
+
+\subsection{Minimal Agent-Enhanced Workflows}\label{subsec:agent-enhanced-workflows}
+
+An agent-enhanced workflow includes a decision step where a language model contributes to selecting or producing an action. In broader research, language-model agents and agentic AI are discussed as systems that connect model output to reasoning, tool use, and action-oriented tasks \cite{reactYao2023,agenticAiHosseini2025,agenticTaxonomySapkota2025}. The thesis uses a controlled version of this idea: one language-model decision step is placed inside a workflow and is asked to produce structured action output for the same temperature-to-fan task as the deterministic baseline.
+
+The relevant theoretical issue is whether an LLM-based workflow step can be constrained so that its output fits a shared action contract and can be routed through the same middleware boundary as a rule-based decision. This framing keeps the agent-enhanced path connected to the workflow-to-action architecture rather than treating it as a general multi-agent system.
+
+\subsection{Safety, Validation, and Human-in-the-Loop Concepts}\label{subsec:safety-hitl-theory}
+
+When workflow or agent output may trigger an action, validation becomes part of the architecture. A system should be able to distinguish between an allowed action, a malformed action, and a risky or unsupported action. In the thesis scenario, allowed actions are restricted to the simulated fan actions, while malformed or unknown actions should not be treated as valid action requests.
+
+Human-in-the-loop concepts are relevant when automated output may require review before execution. Human involvement can help with cases where output is uncertain, risky, or outside the expected action set. Research on interactive machine learning describes the role of humans in guiding and controlling machine-assisted systems \cite{humanInTheLoopAmershi2014}. In this thesis, the safety material is a documented validation and approval design. It provides material for discussing allowed, blocked, and risky cases, without being presented as production-grade runtime safety enforcement.
+
+\subsection{Related Work and Positioning}\label{subsec:related-work-positioning}
+
+This thesis draws on several related research areas rather than belonging to only one of them. IoT and edge computing research explains why event-driven systems and local action endpoints are relevant for systems that connect sensor input to operational responses \cite{iotSurveyAtzori,edgeComputingSatyanarayanan}. Workflow research describes how explicit process structures can coordinate triggers, decisions, routing, and service calls \cite{workflowPatternsAalst}. Research on language-model agents shows how LLMs can be connected to action-oriented tasks and tool use, while this thesis applies that idea in a single agent-enhanced workflow step \cite{reactYao2023}.
+
+
+Structured contracts and API boundaries connect these areas at the system-design level. JSON Schema provides a way to describe expected message structures \cite{jsonSchemaDocs}, while REST and HTTP concepts support the separation between workflow logic and networked action endpoints \cite{fieldingRest2000,httpSemanticsRfc9110}. Human-in-the-loop and validation concepts further support the idea that action-producing systems should not treat every generated output as directly executable \cite{humanInTheLoopAmershi2014}.
+
+The temperature-to-fan scenario is intentionally simple, but the architectural pattern is relevant to broader application areas. Smart-building research discusses IoT architectures for building-management contexts \cite{smartBuildingsMinoli2017}, and industrial IoT research discusses connected monitoring and cyber-physical systems in operational environments \cite{industrialIotXu2018}. These areas are not implemented in this thesis, but they show why a workflow-to-action pipeline can be useful beyond the fan example.
+
+
+The gap addressed in this thesis is the practical integration of these concepts in one measurable implementation. Existing work discusses IoT systems, edge computing, workflow orchestration, and agent-based tool use, but this thesis evaluates how these ideas can be combined in a controlled workflow-to-action architecture. The implemented system connects a self-hosted workflow engine, structured action output, middleware/API boundaries, validation concepts, CSV-based measurement, and Raspberry Pi middleware/action-endpoint validation in one temperature-to-fan scenario. The contribution is an evaluated integration that can be inspected, reproduced, and extended in future work.
+
+
+
+\subsection{Summary of Theory}\label{subsec:theory-summary}
+
+The theory in this chapter prepares the reader for the methodology and system design chapters. Workflow automation explains the orchestration layer, IoT and edge computing explain the event-action context, middleware and API boundaries explain the separation between decisions and actions, structured contracts explain the message boundary, and validation/HITL concepts explain why generated or workflow-produced actions need constraints before execution. The following chapters use this background to define how the proof-of-concept was developed, why the final architecture was chosen, and how its behavior was evaluated.

@@ -1,0 +1,1 @@
+The middleware terminal did not visibly print request lines during this test, but the n8n HTTP Request node returned the middleware JSON response. This confirms that the middleware endpoint was reached successfully.

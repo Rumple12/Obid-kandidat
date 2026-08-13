@@ -1,0 +1,219 @@
+\section{Results}\label{sec:results}
+
+This chapter reports the observed results from the defined proof-of-concept. The chapter is limited to factual reporting of the available evidence. Interpretation of what the results mean for the research questions is left to Chapter~\ref{sec:discussion}.
+
+\subsection{Overview of Evaluated System}\label{subsec:results-overview}
+
+The results cover the evaluated workflow modes, documented validation cases, CSV outputs, and Raspberry Pi middleware validation. The local workflow tests used the same two temperature cases defined in the evaluation dataset: a high-temperature case of \texttt{31.4 C}, expected to produce \texttt{fan\_on}, and a low-temperature case of \texttt{24.5 C}, expected to produce \texttt{fan\_off}.
+
+The local workflow results are recorded in raw CSV files, and the processed summaries are stored in the processed result files. Raspberry Pi validation evidence is stored with the Raspberry Pi result artifacts. Full repository paths for these evidence files are listed in Appendix~\ref{sec:appendix-source-code}.
+
+\subsection{Deterministic Baseline Results}\label{subsec:results-deterministic}
+
+The deterministic baseline applies the fixed threshold rule documented in the workflow evidence: temperatures greater than or equal to \texttt{30.0 C} are routed to \texttt{fan\_on}, and lower temperatures are routed to \texttt{fan\_off}. The Step 6 runtime verification notes report that both required branches were verified locally through the n8n test webhook. The final raw deterministic CSV contains one successful row for each defined deterministic test case. Table~\ref{tab:deterministic-results} summarizes the deterministic baseline results for the two defined temperature cases. The source file is listed in Appendix~\ref{sec:appendix-source-code}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Deterministic baseline results.}
+  \label{tab:deterministic-results}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{@{}L{0.30\textwidth}L{0.10\textwidth}L{0.14\textwidth}L{0.14\textwidth}L{0.08\textwidth}Y@{}}
+    \toprule
+    Test case & Input (C) & Expected & Observed & HTTP & Latency (ms) \\
+    \midrule
+    \codepath{deterministic\_high\_temp} & 31.4 & \texttt{fan\_on} & \texttt{fan\_on} & 200 & 480.398 \\
+    \codepath{deterministic\_low\_temp} & 24.5 & \texttt{fan\_off} & \texttt{fan\_off} & 200 & 176.778 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Both deterministic CSV rows have \texttt{success=true}. The observed middleware responses also identify the fan action as simulated. For the high-temperature case, the response contains \texttt{action=fan\_on} and \texttt{fan=on}. For the low-temperature case, the response contains \texttt{action=fan\_off} and \texttt{fan=off}. These rows are the final successful deterministic raw result rows. A previous deterministic production-webhook setup attempt returned HTTP \texttt{404}; that file is treated as setup evidence rather than final action-correctness evidence.
+
+\subsection{Agent-Enhanced Workflow Results}\label{subsec:results-agent}
+
+The agent-enhanced workflow was evaluated with the same high- and low-temperature inputs. The Step 7 runtime verification evidence reports that the workflow was imported into n8n, connected to a Google Gemini Chat Model, and tested with both defined temperature cases. The evidence includes screenshots for the agent output, parsed action, and resulting middleware fan action. The workflow was configured for stateless execution with no memory node.
+
+For the high-temperature case, the evidence reports that the agent selected \texttt{fan\_on}, produced structured action output containing \path{action_id=fan_on}, and routed the parsed action to the \path{/fan/on} middleware endpoint. For the low-temperature case, the evidence reports that the agent selected \texttt{fan\_off}, produced structured action output containing \path{action_id=fan_off}, and routed the parsed action to the \path{/fan/off} middleware endpoint. The raw agent CSV records the observed middleware actions and response status for these two cases. Table~\ref{tab:agent-results} summarizes the  agent-enhanced workflow results for the same two input cases. The source file is listed in Appendix~\ref{sec:appendix-source-code}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Agent-enhanced workflow results.}
+  \label{tab:agent-results}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{@{}L{0.26\textwidth}L{0.10\textwidth}L{0.14\textwidth}L{0.14\textwidth}L{0.08\textwidth}Y@{}}
+    \toprule
+    Test case & Input (C) & Expected & Observed & HTTP & Latency (ms) \\
+    \midrule
+    \codepath{agent\_high\_temp} & 31.4 & \texttt{fan\_on} & \texttt{fan\_on} & 200 & 2668.036 \\
+    \codepath{agent\_low\_temp} & 24.5 & \texttt{fan\_off} & \texttt{fan\_off} & 200 & 1995.094 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Both agent CSV rows have \texttt{success=true}. The CSV file records the final observed middleware action, while the screenshot evidence records the structured agent output and parsed action routing. Together, the evidence supports the claim that the agent workflow produced contract-shaped \texttt{fan\_on} and \texttt{fan\_off} actions for the defined cases. The evidence is limited to this workflow setup and is not a model comparison or multi-agent evaluation.
+
+\subsection{Safety and Validation Case Results}\label{subsec:results-contract-safety}
+
+The safety and validation evidence consists of documented cases and expected policy outcomes.  The safety-case files are listed in Appendix~\ref{sec:appendix-source-code}. The Step 8 policy defines the allowed actions as \texttt{fan\_on} and \texttt{fan\_off}, the allowed target as \texttt{fan\_1}, and the required fields as \path{action_id}, \texttt{target}, \texttt{reason}, and \path{requires_approval}.
+
+The documented safety and validation cases are summarized in Table~\ref{tab:safety-validation-cases}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Documented safety and validation cases from Step 8.}
+  \label{tab:safety-validation-cases}
+  \renewcommand{\arraystretch}{1.18}
+  \begin{tabularx}{\textwidth}{@{}L{0.15\textwidth}Y L{0.25\textwidth}L{0.17\textwidth}@{}}
+    \toprule
+    Case & Input summary & Expected policy outcome & Middleware endpoint \\
+    \midrule
+    Allowed &
+    Complete \texttt{fan\_on} action for \texttt{fan\_1}; \texttt{requires\_approval=false}. &
+    Allow after validation. &
+    \texttt{POST /fan/on} \\
+    Blocked &
+    \texttt{fan\_on} action missing required fields such as \texttt{reason} and \texttt{requires\_approval}. &
+    Block. &
+    None \\
+    Risky / approval &
+    \texttt{open\_window} action targeting \texttt{unknown\_device}; \texttt{requires\_approval=true}. &
+    Reject for direct execution; may be shown for review. &
+    None \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The safety result is based on documented validation cases rather than runtime enforcement logs. The processed safety-outcome file contains only the header row, so the safety layer should be interpreted as a validation design and future implementation target rather than as measured runtime enforcement.
+
+\subsection{Evaluation Harness Outputs}\label{subsec:results-harness-outputs}
+
+The evaluation harness produced both raw CSV files and processed summary files. The raw CSV files contain one successful deterministic run for each deterministic case and one successful agent run for each agent case. A previous misconfigured deterministic webhook attempt is preserved as setup evidence and records HTTP \texttt{404} responses because the production webhook was not registered at the time of that setup attempt.
+
+The evaluation output files used as report evidence are summarized in Table~\ref{tab:evaluation-output-files}. The full repository paths for the raw and processed evidence files are listed in Appendix~\ref{sec:appendix-source-code}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \caption{Evaluation harness output files.}
+  \label{tab:evaluation-output-files}
+  \begin{tabularx}{\textwidth}{@{}L{0.25\textwidth}Y@{}}
+    \toprule
+    Artifact & Observed content/status \\
+    \midrule
+    Final deterministic raw CSV & Two successful local deterministic workflow rows: high temperature and low temperature. \\
+    Final agent raw CSV & Two successful local agent workflow rows: high temperature and low temperature. \\
+    Non-final setup evidence & Earlier HTTP \texttt{404} webhook setup evidence; not used as final action-correctness evidence. \\
+    Latency summary & Processed latency summary regenerated from the final raw workflow CSV files. \\
+    Resource summary & Processed resource summary with local CPU/RAM fields where available and no local thermal values. \\
+    Baseline versus agent summary & Processed baseline-versus-agent summary regenerated from the final raw workflow CSV files. \\
+    Safety outcome summary & Header only; no runtime safety outcome rows. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The processed summaries were regenerated from the final raw CSV files after setup-failure evidence had been separated from the final raw aggregation input. The processed deterministic and agent summaries therefore contain one successful row per defined local workflow test case. The earlier deterministic \texttt{404} setup attempt remains preserved as non-final setup evidence, but it is not part of the regenerated final processed summaries.
+
+For the local PC runs, CPU and RAM fields were available in the raw and processed CSV files through best-effort Docker statistics. Local thermal values were recorded as \texttt{not\_available}, which matches the metrics schema expectation for the Windows/PC setup.
+
+Table~\ref{tab:final-workflow-latency-summary} summarizes the final full-workflow latency rows reported in this chapter. The local deterministic and local agent rows come from the final raw workflow CSV files. The Raspberry Pi validation rows come from the Raspberry Pi validation CSV. Direct Raspberry Pi endpoint latency is supporting evidence only and is not mixed with the full workflow latency values.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \caption{Final workflow latency summary.}
+  \label{tab:final-workflow-latency-summary}
+  \begin{tabularx}{\textwidth}{@{}L{0.24\textwidth}L{0.18\textwidth}L{0.10\textwidth}L{0.13\textwidth}L{0.10\textwidth}Y@{}}
+    \toprule
+    Source & Test case & Input (C) & Observed & Success & Latency (ms) \\
+    \midrule
+    Local deterministic & High temperature & 31.4 & \texttt{fan\_on} & \texttt{true} & 480.398 \\
+    Local deterministic & Low temperature & 24.5 & \texttt{fan\_off} & \texttt{true} & 176.778 \\
+    Local agent & High temperature & 31.4 & \texttt{fan\_on} & \texttt{true} & 2668.036 \\
+    Local agent & Low temperature & 24.5 & \texttt{fan\_off} & \texttt{true} & 1995.094 \\
+    Raspberry Pi validation & High temperature & 31.4 & \texttt{fan\_on} & \texttt{true} & 437.003 \\
+    Raspberry Pi validation & Low temperature & 24.5 & \texttt{fan\_off} & \texttt{true} & 200.206 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The internal CSV test identifiers are retained in the raw result files; the table uses human-readable labels for readability.
+
+\subsection{Raspberry Pi Middleware Validation Results}\label{subsec:results-pi-validation}
+
+The Raspberry Pi validation used a split deployment. n8n stayed on the PC, while the Raspberry Pi ran the Python middleware/action endpoint. The middleware was started on the Raspberry Pi with the host bound to \texttt{MIDDLEWARE\_HOST=0.0.0.0}. The PC-hosted n8n production webhook then called the Raspberry Pi middleware over HTTP.
+
+The main full-workflow Pi validation evidence is stored in the Raspberry Pi validation CSV. It records two successful workflow calls: one high-temperature case and one low-temperature case. Table~\ref{tab:pi-full-workflow-results} summarizes the Raspberry Pi middleware/action-endpoint full-workflow validation rows.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \caption{Raspberry Pi middleware/action-endpoint full-workflow validation.}
+  \label{tab:pi-full-workflow-results}
+  \begin{tabularx}{\textwidth}{@{}L{0.30\textwidth}L{0.10\textwidth}L{0.14\textwidth}L{0.14\textwidth}L{0.08\textwidth}Y@{}}
+    \toprule
+    Test case & Input (C) & Expected & Observed & HTTP & Latency (ms) \\
+    \midrule
+    \codepath{deterministic\_high\_temp} & 31.4 & \texttt{fan\_on} & \texttt{fan\_on} & 200 & 437.003 \\
+    \codepath{deterministic\_low\_temp} & 24.5 & \texttt{fan\_off} & \texttt{fan\_off} & 200 & 200.206 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+These latency values are full workflow values for the PC-hosted n8n workflow calling the Raspberry Pi middleware. They are separate from direct middleware endpoint latency. The direct endpoint measurements are supporting evidence only because they do not include n8n webhook execution or workflow routing.
+
+The Raspberry Pi high-temperature full-workflow latency is slightly lower than the corresponding local deterministic latency. This should not be interpreted as evidence that the Raspberry Pi setup is generally faster. The latency values are single-run observations and can be affected by webhook execution, Docker state, network timing, and normal runtime variation. Repeated runs would be needed before making a stable performance comparison.
+
+Figure~\ref{fig:pi-validation-latency-chart} visualizes the two full-workflow latency values from the Raspberry Pi middleware/action-endpoint validation. The chart is a validation visualization, not a statistical benchmark.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figures/pi-validation-latency-chart.png}
+  \caption{Raspberry Pi middleware/action-endpoint validation latency.}
+  \label{fig:pi-validation-latency-chart}
+\end{figure}
+
+The observed middleware process was \texttt{python3 -m middleware.api.app}. The supporting endpoint and resource observations are summarized in Table~\ref{tab:pi-supporting-observations}.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \caption{Supporting Raspberry Pi middleware observations.}
+  \label{tab:pi-supporting-observations}
+  \begin{tabularx}{\textwidth}{@{}L{0.28\textwidth}L{0.28\textwidth}Y@{}}
+    \toprule
+    Observation & Value & Interpretation \\
+    \midrule
+    Direct \texttt{fan\_on} endpoint latency & 135.44 ms & Direct middleware endpoint call, not full workflow latency \\
+    Direct \texttt{fan\_off} endpoint latency & 233.27 ms & Direct middleware endpoint call, not full workflow latency \\
+    Middleware CPU usage & 0.0 \% & Instantaneous process observation \\
+    Middleware memory usage & 0.5 \% & Instantaneous process observation \\
+    Middleware RSS & 21048 KB & Resident memory size of the middleware process \\
+    Calculated middleware RAM & 20.95 MB & RSS converted to MB \\
+    Raspberry Pi temperature & 49.6 C & Device thermal observation during validation \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The full-workflow CSV retains the Step 9-style fields and records \path{thermal_c=not_available}. The Raspberry Pi thermal value of \texttt{49.6 C} is documented separately in the Pi validation notes and thermal screenshot evidence, which uses the Raspberry Pi \texttt{vcgencmd} utility context \cite{raspberryPiVcgencmdDocs}. Figure~\ref{fig:results-pi-validation-fan-on-output} shows the selected Raspberry Pi validation output screenshot for the high-temperature fan-on case.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figures/pi-validation-fan-on-output.png}
+  \caption{Raspberry Pi middleware/action-endpoint validation output for the high-temperature fan-on case.}
+  \label{fig:results-pi-validation-fan-on-output}
+\end{figure}
+
+The Pi validation result is not a full n8n deployment on the Raspberry Pi. It shows that the PC-hosted n8n workflow could call the Pi-hosted middleware/action endpoint for the defined high- and low-temperature cases. The fan actions remained simulated middleware actions, and no real GPIO hardware was controlled.
+
+\subsection{Summary of Results}\label{subsec:results-summary}
+
+The results show the behavior of the same evaluated system across local workflow execution, documented validation cases, and Raspberry Pi middleware validation. The deterministic baseline produced the expected \texttt{fan\_on} and \texttt{fan\_off} actions for the two defined temperature cases in the final raw deterministic CSV. The agent-enhanced workflow produced structured, contract-shaped action output for the same defined cases according to the Step 7 screenshot evidence, and the raw agent CSV records successful middleware responses.
+
+The processed deterministic and agent summaries contain one successful row per defined local workflow test case, while the safety outcome summary currently contains only headers. The Raspberry Pi middleware validation showed that PC-hosted n8n could call a Raspberry Pi-hosted middleware/action endpoint for the two deterministic temperature cases. The results are proof-of-concept evidence for the defined workflow-to-action scenario rather than broad benchmark results.

@@ -1,0 +1,31 @@
+﻿# n8n runtime proof - verified 2026-04-25
+
+Working directory:
+
+```text
+C:\Users\Jake_\OneDrive - Mittuniversitetet\EDU\4. RED\1. kaniddat\new-yacoub-thesis\infrastructure\docker
+```
+
+## Verification result
+
+Runtime status: verified locally on Windows with Docker Desktop.
+
+Observed result:
+
+- Docker Desktop was installed locally on Windows.
+- `docker compose up -d` started the local n8n baseline.
+- n8n opened at `http://localhost:5678`.
+- Browser showed the n8n owner account setup screen.
+- `docker compose down` later stopped and removed the local n8n container and default network.
+
+Screenshot proof:
+
+```text
+infrastructure/docker/evidence/n8n-localhost-5678-success-2026-04-25.png
+```
+
+## Historical note
+
+The first runtime verification attempt on 2026-04-25 failed because the
+`docker` command was not available in PowerShell. That blocker was resolved by
+installing Docker Desktop locally. The current verification status is successful.

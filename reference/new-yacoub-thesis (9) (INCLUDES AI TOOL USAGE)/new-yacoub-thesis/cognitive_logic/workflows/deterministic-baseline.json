@@ -1,0 +1,246 @@
+{
+  "name": "new-yacoub deterministic baseline",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "DRAFT EXPORT CANDIDATE - Step 6 deterministic baseline. Verify node parameters inside n8n UI before treating this as the final exported workflow. Non-AI rule: if $json.body.value >= 30.0 C, call host middleware through host.docker.internal.",
+        "height": 180,
+        "width": 420
+      },
+      "id": "f1d89956-7e7c-4cd5-bb36-c532d93dbf18",
+      "name": "Import verification note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deterministic-baseline",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "7c43d4f7-8a7e-4e55-bc60-8a0c7fc0bcb3",
+      "name": "Receive temperature event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        120
+      ],
+      "webhookId": "deterministic-baseline"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "temperature-threshold-rule",
+              "leftValue": "={{ $json.body.value }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c4a47ed5-bd8d-44d4-8980-b2a7f6c2b8df",
+      "name": "Temperature >= 30.0 C?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fan-on-action-id",
+              "name": "action_id",
+              "type": "string",
+              "value": "fan_on"
+            },
+            {
+              "id": "fan-on-target",
+              "name": "target",
+              "type": "string",
+              "value": "fan_1"
+            },
+            {
+              "id": "fan-on-reason",
+              "name": "reason",
+              "type": "string",
+              "value": "temperature_at_or_above_threshold"
+            },
+            {
+              "id": "fan-on-approval",
+              "name": "requires_approval",
+              "type": "boolean",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "45e50a1b-f5c1-4c2a-9c3c-d93b8df1428b",
+      "name": "Action fan_on",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "b46d1aef-42d1-4e26-bb7d-97f9bfe13788",
+      "name": "POST middleware fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fan-off-action-id",
+              "name": "action_id",
+              "type": "string",
+              "value": "fan_off"
+            },
+            {
+              "id": "fan-off-target",
+              "name": "target",
+              "type": "string",
+              "value": "fan_1"
+            },
+            {
+              "id": "fan-off-reason",
+              "name": "reason",
+              "type": "string",
+              "value": "temperature_below_threshold"
+            },
+            {
+              "id": "fan-off-approval",
+              "name": "requires_approval",
+              "type": "boolean",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4ea0868f-766f-4bcf-b006-b8b497473c64",
+      "name": "Action fan_off",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "b9b34e52-44f0-4d57-aa74-e68e1ec0571b",
+      "name": "POST middleware fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        240
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive temperature event": {
+      "main": [
+        [
+          {
+            "node": "Temperature >= 30.0 C?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Temperature >= 30.0 C?": {
+      "main": [
+        [
+          {
+            "node": "Action fan_on",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Action fan_off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action fan_on": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan on",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action fan_off": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "deterministic-baseline-step-6-draft",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "new-yacoub-local"
+  },
+  "id": "deterministic-baseline",
+  "tags": []
+}

@@ -1,0 +1,88 @@
+\section{Source Code and Artifacts}\label{sec:appendix-source-code}
+% Appendix A purpose: point to repository source code, final artifacts, workflow exports, screenshots, and result files.
+% Course/template source: the MIUN template says source code should generally be linked from the appendix rather than printed in full.
+% Source repository: Rumple12/new-yacoub-thesis.
+% Main artifact groups:
+% - infrastructure/
+% - middleware/
+% - shared_interfaces/
+% - cognitive_logic/
+% - safety_layer/
+% - evaluation/
+% - scripts/
+% - docs/report-notes/
+
+\subsection{Repository Reference}\label{subsec:appendix-repository}
+% What to include: GitHub URL, final commit hash or release tag, and note that source code is provided in the repository.
+
+\subsection{Main Repository Artifact Paths}\label{subsec:appendix-artifact-paths}
+
+The main implementation and report-support artifacts are available in the project repository. Key source paths are:
+
+\begin{itemize}
+    \item \path{infrastructure/docker/docker-compose.yml} - Docker Compose configuration for the local n8n runtime.
+    \item \path{middleware/api/routes.py} - middleware HTTP route handling.
+    \item \path{middleware/gpio/mock_sensor.py} - simulated sensor and fan state.
+    \item \path{shared_interfaces/json-schema/sensor-event.schema.json} - sensor event schema.
+    \item \path{shared_interfaces/json-schema/agent-action.schema.json} - shared action schema.
+    \item \path{shared_interfaces/examples/} - example sensor and action payloads.
+    \item \path{cognitive_logic/workflows/deterministic-baseline.md} - deterministic workflow description.
+    \item \path{cognitive_logic/workflows/deterministic-baseline.json} - deterministic workflow export.
+    \item \path{cognitive_logic/workflows/agent-minimal.md} - minimal agent-enhanced workflow description.
+    \item \path{cognitive_logic/workflows/agent-minimal.json} - minimal agent-enhanced workflow export.
+    \item \path{cognitive_logic/prompts/system-prompt-v1.md} - prompt used by the minimal agent-enhanced workflow.
+    \item \path{cognitive_logic/memory/memory-choice-v1.md} - documented memory choice for the agent-enhanced workflow.
+    \item \path{safety_layer/policies/action-policy-v1.md} - documented action policy.
+    \item \path{safety_layer/parsers/output-validation-v1.md} - output validation design.
+    \item \path{safety_layer/approvals/hitl-v1.md} - human-in-the-loop approval design.
+    \item \path{safety_layer/examples/} - allowed, blocked, and risky validation examples.
+    \item \path{docs/architecture/final-architecture-report.mmd} - report-level architecture diagram source.
+    \item \path{docs/architecture/final-architecture-report.md} - report-level architecture diagram notes.
+    \item \path{docs/architecture/theory-background-flow.mmd} - Chapter 2 conceptual diagram source.
+    \item \path{docs/architecture/theory-background-flow.md} - Chapter 2 conceptual diagram notes.
+\end{itemize}
+
+\subsection{Local n8n Runtime Evidence}\label{subsec:appendix-n8n-runtime-evidence}
+
+The local n8n runtime was verified by starting the Docker Compose setup and opening n8n at localhost port 5678. Figure~\ref{fig:appendix-n8n-runtime-proof} shows the n8n owner account setup page, which confirms that the local runtime was reachable in the browser.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{Figures/n8n-localhost-5678-success-2026-04-25.png}
+    \caption{Local n8n runtime verification at localhost port 5678.}
+    \label{fig:appendix-n8n-runtime-proof}
+\end{figure}
+
+\subsection{Workflow and Screenshot Evidence}\label{subsec:appendix-workflow-evidence}
+% What to include: paths to additional workflow screenshots not used in the main report.
+% Sources: cognitive_logic/workflows/evidence/step-06/ style files and cognitive_logic/workflows/evidence/step-07/.
+
+Additional workflow screenshot evidence is stored under:
+
+\begin{itemize}
+    \item \path{cognitive_logic/workflows/evidence/step-06/} - deterministic baseline workflow evidence.
+    \item \path{cognitive_logic/workflows/evidence/step-07/} - minimal agent-enhanced workflow evidence.
+    \item \path{evaluation/results/pi-validation/} - Raspberry Pi middleware/action-endpoint validation screenshots and notes.
+\end{itemize}
+
+\subsection{Evaluation Artifacts}\label{subsec:appendix-evaluation-artifacts}
+% What to include: raw/processed CSV paths, Pi validation CSVs, and notes explaining non-final setup files that should not be used as final evidence.
+% Sources: evaluation/results/raw/, evaluation/results/processed/, evaluation/results/pi-validation/.
+
+The full raw and processed CSV files are available in the project repository. The main files used for the report are:
+
+\begin{itemize}
+    \item \path{evaluation/datasets/test-cases.json} - defined workflow and safety test cases.
+    \item \path{evaluation/metrics/metrics-schema.md} - evaluation metric fields.
+    \item \path{scripts/collect_metrics.py} - collection script for workflow test runs.
+    \item \path{scripts/aggregate_results.py} - aggregation script for processed summaries.
+    \item \path{evaluation/results/raw/run_20260429T165733Z_deterministic.csv} - final deterministic workflow rows.
+    \item \path{evaluation/results/raw/run_20260429T165859Z_agent.csv} - final agent-enhanced workflow rows.
+    \item \path{evaluation/results/raw/dump/run_20260429T165702Z_deterministic.csv} - non-final HTTP 404 webhook setup evidence.
+    \item \path{evaluation/results/processed/summary_latency.csv} - processed latency summary.
+    \item \path{evaluation/results/processed/summary_resources.csv} - processed resource summary.
+    \item \path{evaluation/results/processed/baseline_vs_agent.csv} - processed baseline-versus-agent summary.
+    \item \path{evaluation/results/processed/safety_outcomes.csv} - safety outcome summary file.
+    \item \path{evaluation/results/pi-validation/pi-workflow-run-final.csv} - Raspberry Pi middleware/action-endpoint validation rows.
+    \item \path{evaluation/results/pi-validation/pi-validation-notes.md} - Raspberry Pi validation notes.
+\end{itemize}
