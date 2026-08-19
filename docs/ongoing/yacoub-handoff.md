@@ -76,6 +76,8 @@ Frozen example:
 
 The middleware's `normalize_sensor_event()` checks required fields, `type`, and numeric coercion, but it does not enforce the JSON Schema's timestamp format, unit constant, additional-properties rule, or all field types. Obid must not mistake this inline check for full runtime schema validation.
 
+Frozen-source inspection also verified that a zero-length request body is parsed as `{}` and that either this result or an explicit empty object causes `normalize_sensor_event()` to substitute the generated default mock temperature event (`temp_sensor_1`, `temperature`, `31.4 C`, with a generated timestamp). Empty-body/empty-object transformation is inherited middleware behavior and integration/context evidence; it is not Obid agent decision correctness.
+
 ## Action contract
 
 Source: `shared_interfaces/json-schema/agent-action.schema.json`
@@ -228,6 +230,6 @@ Historical directories such as `reference/new-yacoub-thesis (9) (INCLUDES AI TOO
 2. **Step 3:** Record the actual n8n runtime version used by Obid and verify compatibility with Yacoub's pinned `n8nio/n8n:1.123.37` without upgrading silently.
 3. **Step 4:** Verify the exact Obid webhook URL/path and the `N8N_WEBHOOK_URL` forwarding path end to end.
 4. **Step 6:** Recover or recreate a reproducible minimal-agent baseline export with the connected Google model node.
-5. **Step 6:** Record the exact Gemini model name/version, credential-independent node settings, and generation parameters. The frozen handoff only evidences “Google Gemini Chat Model.”
+5. **Step 6:** Record the exact Gemini model name/version, credential-independent node settings, and generation parameters. The frozen handoff only evidences "Google Gemini Chat Model."
 6. **Step 6:** Reconfirm both inherited baseline outputs under the Obid runtime before beginning the extended workflow comparison.
 7. **Step 5:** Decide how a valid schema-conforming `requires_approval: true` fan action will be generated as the risky/HITL test case without expanding the allowed action or target set.

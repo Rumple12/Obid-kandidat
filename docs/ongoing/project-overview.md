@@ -16,7 +16,8 @@ The project must show whether an n8n-based agentic decision layer can produce th
 
 Yacoub supplies the inherited workflow/action-side handoff:
 
-- local n8n and workflow-to-action infrastructure
+- prior pinned n8n setup/configuration, Yacoub workflow/runtime assumptions, and Yacoub runtime evidence
+- workflow-to-action infrastructure
 - Python middleware/action API
 - shared sensor-event and action contracts
 - deterministic threshold baseline
@@ -25,6 +26,7 @@ Yacoub supplies the inherited workflow/action-side handoff:
 
 Obid supplies the new cognitive/reliability contribution:
 
+- creation/configuration of the Step 3 Obid runtime environment, compatibility verification against the frozen Yacoub configuration, and new Obid runtime evidence
 - stronger single-agent decision design
 - system-prompt design and explicit tool use
 - controlled ReAct-style behavior
@@ -64,7 +66,7 @@ The locked research questions measure:
 
 The exact wording and evidence map are in [research-questions.md](research-questions.md).
 
-Step 5 will freeze the evaluation cases. It must cover at least high temperature, low temperature, the decision boundary, malformed or missing input, unsupported/invalid action, a risky/HITL case, and a state-dependent/bounded-memory case if feasible. The preferred initial design target is five repetitions per case per evaluated core configuration, subject to Step 5 finalization. No evaluation runs have occurred in this repository at Step 1.
+Step 5 will freeze the evaluation cases. It must cover at least high temperature, low temperature, the decision boundary, malformed or missing input, unsupported/invalid action, a risky/HITL case, and at least one state-dependent/bounded-memory case using the one bounded-memory configuration. The state-dependent case must define an explicit expected state transition or expected state-dependent outcome, and Step 10 must execute it. This remains one narrow case, not a comparison of memory strategies. The preferred initial design target is five repetitions per case per evaluated core configuration, subject to Step 5 finalization. No evaluation runs have occurred in this repository at Step 1.
 
 ## Source reconciliation and contradictions
 

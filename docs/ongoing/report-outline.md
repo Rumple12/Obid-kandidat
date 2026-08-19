@@ -57,8 +57,9 @@ Likely topics:
 - collaboration/provenance method
 - controlled case design and frozen expected outcomes
 - configurations and repetition protocol
-- reliability and latency metrics
-- handling of failures, missing data, and human wait time
+- reliability and latency metrics, including a common comparable automated case subset for the baseline-versus-Obid latency result
+- exclusion of human wait from the automated comparison; separate HITL pre-wait processing, human wait, post-decision processing, and total elapsed timing where technically possible
+- handling of failures, missing data, and instrumentation limits without guessed timing components
 - validity, reproducibility, ethical/safety, and AI-tool-use considerations
 
 Likely evidence/inputs:
@@ -127,8 +128,9 @@ Likely topics:
 - RQ1 accuracy and consistency by case
 - malformed, unsupported, boundary, and state-dependent outcomes
 - RQ2 allowed/blocked/HITL outcomes and any control failures
-- RQ3 reliability and latency comparison
-- human-wait versus automated latency where available
+- RQ3 reliability and automated latency comparison over the common comparable automated case subset
+- separately reported HITL pre-wait processing, human wait, post-decision processing, and total elapsed time; human wait is never merged into the main automated comparison
+- explicit limitations for timing components that instrumentation could not separate
 - failures, timeouts, missing data, and negative results
 - optional validator-agent results only in a clearly supplementary subsection
 

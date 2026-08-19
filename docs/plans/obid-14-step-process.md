@@ -229,8 +229,10 @@ Create the versioned experimental boundary: adopt the inherited contracts with p
 
 - Adopt the exact frozen sensor-event and action contracts without claiming authorship.
 - Add provenance and compatibility checks around the adopted copies/references.
-- Define expected outcomes for normal high, normal low, `30.0 C` boundary, malformed/missing input, unsupported/invalid action, risky/HITL, and state-dependent/bounded-memory behavior if feasible.
-- Define comparison configurations, run-order controls, timing boundaries, success/failure categories, and handling of missing data.
+- Define expected outcomes for normal high, normal low, `30.0 C` boundary, malformed/missing input, unsupported/invalid action, risky/HITL, and at least one state-dependent/bounded-memory case using the one bounded-memory configuration. Give the state-dependent case an explicit expected state transition or expected state-dependent outcome; do not compare memory strategies.
+- For every relevant case, record the injection point, component under test, expected terminal stage, expected outcome, and ownership/attribution of that outcome.
+- Attribute inherited middleware handling of malformed sensor events to integration/context evidence, not automatically to Obid decision correctness. Put malformed or invalid agent-generated action output tested against Obid validation/policy under RQ2, and design RQ1 malformed cases so the measured behavior is attributable to the Obid decision layer.
+- Define comparison configurations, run-order controls, timing boundaries, success/failure categories, and handling of missing data. Freeze a common comparable automated case subset for the baseline-versus-Obid latency result, exclude human wait from that result, and define separate HITL component-timing rules.
 - Finalize the repetition count; start from the preferred target of five per case/configuration.
 - Define a valid `requires_approval: true` case without expanding allowed actions/targets.
 
@@ -249,6 +251,7 @@ Create the versioned experimental boundary: adopt the inherited contracts with p
 - contract comparison against frozen Yacoub commit
 - review showing every required case category is represented
 - unambiguous expected action/control outcome per case
+- explicit expected state transition or expected state-dependent outcome for the required bounded-memory case
 - documented repetition and timing rules
 
 ### Which thesis chapters it feeds
@@ -338,7 +341,7 @@ Implement the bounded Obid-owned cognitive contribution while preserving the inh
 - Implement bounded ReAct-style behavior with limits on iterations, tools, and actions.
 - Implement one bounded-memory configuration with documented reset, inclusion, and eviction behavior.
 - Produce structured action output matching the inherited action contract.
-- Add configuration identifiers and raw reasoning/tool/memory trace evidence appropriate to the platform without exposing secrets.
+- Add configuration identifiers and observable/reproducible evidence: model input/output where appropriate, final structured model output, tool calls and results, workflow execution metadata, bounded iteration/termination behavior, observable memory inclusion/eviction/reset state, and applicable validation/error/failure traces. Do not request or store hidden/internal chain-of-thought.
 
 ### Expected artifacts
 
@@ -353,6 +356,7 @@ Implement the bounded Obid-owned cognitive contribution while preserving the inh
 
 - normal high/low/boundary decisions in an isolated or simulated path
 - explicit tool-use trace
+- tool-result and workflow-execution metadata
 - bounded iteration/termination proof
 - memory inclusion/eviction/reset proof
 - contract-shaped raw output examples, including retained failures
@@ -496,10 +500,13 @@ Execute the frozen Step 5 protocol against the identified core configurations an
 ### Work to complete
 
 - Lock exact runtime/model/workflow/prompt/memory/validator/policy/HITL configuration IDs.
-- Run the frozen cases with the finalized repetition count.
-- Use the same applicable cases for the inherited minimal-agent baseline and extended Obid workflow.
+- Run the frozen cases with the finalized repetition count, including the required state-dependent case with the one bounded-memory configuration.
+- Use the same applicable frozen cases for inherited-minimal-agent-versus-Obid reliability comparisons.
+- Use only the common comparable automated case subset for the main inherited-minimal-agent-versus-Obid automated latency result.
 - Record raw model/action/control/endpoint/timing outcomes for every attempt.
-- Separate automated processing latency from human wait time where feasible.
+- Exclude human approval wait time from the automated baseline-versus-Obid latency comparison.
+- For HITL cases, record separately where technically possible the automated processing before the wait, human wait time, automated processing after the approval/rejection decision, and total HITL elapsed time.
+- Report HITL human wait time separately and never merge it into the main automated comparison. If instrumentation cannot separate a component, report the limitation rather than guessing.
 - Summarize accuracy, consistency, blocked/released outcomes, failures, and latency without altering raw data.
 
 ### Expected artifacts
@@ -517,6 +524,7 @@ Execute the frozen Step 5 protocol against the identified core configurations an
 - every planned case/configuration represented
 - traceability from summaries to raw run IDs
 - retained failures, rejects, timeouts, and missing measurements
+- verified common automated comparison subset and separate HITL timing treatment
 - calculation/aggregation verification
 
 ### Which thesis chapters it feeds

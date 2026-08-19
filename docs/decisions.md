@@ -42,7 +42,7 @@ Decisions are numbered, dated, and active until an explicit later entry supersed
 - **Date:** 2026-08-19
 - **Status:** Accepted
 - **Decision:** Core implementation and evaluation use one primary LLM/model configuration. The exact model and settings must be recorded before reportable runs.
-- **Reason/impact:** Model-family benchmarking is out of scope. An additional model is optional only after the core succeeds.
+- **Reason/impact:** Model-family benchmarking and any additional model configuration are out of scope.
 
 ## D-007 - One main agent design
 
@@ -65,11 +65,11 @@ Decisions are numbered, dated, and active until an explicit later entry supersed
 - **Decision:** Runtime structured-output validation, deterministic action-policy enforcement, and a real approve/reject HITL path are mandatory Tier 1.5 behavior.
 - **Reason/impact:** Yacoub's safety/HITL artifacts are specification-only, so documentation alone cannot answer RQ2.
 
-## D-010 - Validator/two-agent work is optional
+## D-010 - Minimal validator-agent/two-agent comparison is optional
 
 - **Date:** 2026-08-19
 - **Status:** Accepted
-- **Decision:** A validator agent or minimal two-agent comparison may be considered only after Step 9 core stability and is not required by any core research question.
+- **Decision:** One minimal validator-agent/two-agent comparison may be considered only after Step 9 core stability and is not required by any core research question.
 - **Reason/impact:** Optional work must not consume validation, HITL, evaluation, evidence, or writing capacity.
 
 ## D-011 - Repeated evaluation is required

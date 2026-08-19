@@ -14,12 +14,12 @@
 - consistency across repeated runs of the same case
 - handling of normal high/low and threshold inputs
 - behavior on malformed or missing input
-- behavior where bounded state is relevant, if feasible
+- behavior in at least one frozen state-dependent case using the one bounded-memory configuration
 - failure categories rather than only an aggregate success rate
 
 ### Planned evidence
 
-- Step 5 frozen test-case definitions and expected outcomes
+- Step 5 frozen test-case definitions, including at least one state-dependent/bounded-memory case with an explicit expected state transition or expected state-dependent outcome
 - versioned workflow/model/prompt/memory configuration identifiers
 - raw structured outputs for every repetition
 - expected-versus-observed action records
@@ -28,9 +28,9 @@
 
 ### Feeding steps
 
-- Step 5 freezes cases and expected results.
+- Step 5 freezes cases and expected results, including the required state-dependent case and its expected state transition or state-dependent outcome.
 - Steps 6-9 establish the baseline and extended workflow configurations.
-- Step 10 runs the repeated evaluation.
+- Step 10 runs the repeated evaluation and executes the frozen state-dependent case with the one bounded-memory configuration.
 - Step 11 freezes evidence.
 - Steps 12-14 report and interpret the results.
 
@@ -75,21 +75,24 @@
 - difference in expected-action success rate
 - difference in run-to-run consistency
 - difference in blocked/failed/timeout rates
-- end-to-end latency under equivalent cases
-- overhead introduced by the extended decision, validation, policy, memory, and HITL path
+- automated processing latency under a common comparable automated case subset
+- separately reported HITL component and total elapsed times, without mixing human wait time into the automated baseline-versus-Obid comparison
 
 ### Planned evidence
 
 - a verified, versioned inherited minimal-agent baseline
 - a versioned Obid workflow configuration
-- identical frozen cases and repetition rules for comparable paths
+- a common comparable automated case subset and identical repetition rules for the baseline-versus-Obid automated latency result
 - raw start/end timestamps or monotonic elapsed-time records
 - per-configuration latency distributions and reliability summaries
-- explicit separation of non-HITL and human-wait time where feasible
+- exclusion of human approval wait time from the automated baseline-versus-Obid latency comparison
+- for HITL cases, separate records where technically possible for automated processing before the wait, human wait time, automated processing after approval/rejection, and total HITL elapsed time
+- HITL human wait time reported separately and never merged into the main automated baseline-versus-Obid latency result
+- an explicit instrumentation limitation whenever a timing component cannot be separated; no component is guessed
 
 ### Feeding steps
 
-- Step 5 freezes common cases and measurement rules.
+- Step 5 freezes the common comparable automated case subset and the separate HITL timing rules.
 - Step 6 verifies the inherited baselines.
 - Steps 7-9 create the extended Obid configuration.
 - Step 10 runs the comparison.
@@ -106,7 +109,15 @@ Step 5 will generate and freeze the actual dataset. It must include at least:
 - malformed or missing input
 - unsupported/invalid action
 - risky/HITL case
-- state-dependent/bounded-memory case if feasible
+- at least one state-dependent/bounded-memory case using the one bounded-memory configuration, with an explicit expected state transition or expected state-dependent outcome
+
+Step 5 must record each relevant case's injection point, component under test, expected terminal stage, expected outcome, and ownership/attribution of that outcome. Step 10 must execute the frozen state-dependent case. The case remains narrow and does not introduce a comparison of memory strategies.
+
+## Malformed-case attribution locked in Step 1
+
+- Malformed sensor-event handling performed by inherited Yacoub middleware is integration/context evidence and is not automatically counted as Obid agent decision correctness.
+- Malformed or invalid agent-generated action output tested against Obid runtime validation or policy belongs to RQ2.
+- RQ1 malformed cases must be injected and terminated so that the measured behavior is attributable to the Obid decision layer.
 
 The preferred initial target is **five repetitions per case per evaluated core configuration**, subject to Step 5 finalization. This is a plan, not a claim that runs have occurred.
 

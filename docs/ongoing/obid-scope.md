@@ -64,11 +64,9 @@ Obid will implement and evaluate one stronger single-agent n8n decision layer fo
 
 Only after the Step 9 core is stable and evidenced may the project consider:
 
-- one minimal validator-agent comparison;
-- one minimal two-agent comparison;
-- an additional model configuration;
-- an additional device; or
-- a broader architecture illustration.
+- one minimal validator-agent/two-agent comparison.
+
+An architecture illustration remains normal documentation work and is not an implementation extension.
 
 Optional work is omitted if it threatens validation, HITL, repeated evaluation, evidence quality, or writing time. The core research questions do not depend on optional work.
 
@@ -80,7 +78,7 @@ Obid may configure, integrate, test, and compare inherited artifacts as part of 
 
 ## Success boundary
 
-The Obid thesis passes at Tier 1.5 when the core pipeline runs end to end, invalid or risky actions are demonstrably stopped or approved at runtime, and repeated evidence answers RQ1-RQ3 without relying on optional multi-agent, multiple-device, or multiple-model work.
+The Obid thesis passes at Tier 1.5 when the core pipeline runs end to end, invalid or risky actions are demonstrably stopped or approved at runtime, and repeated evidence answers RQ1-RQ3 without relying on the optional validator-agent/two-agent comparison or adding multiple-device or multiple-model work.
 
 ## Change control
 

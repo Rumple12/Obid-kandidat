@@ -8,7 +8,8 @@
 
 | Area | Yacoub-owned / inherited | Obid-owned | Shared use |
 | --- | --- | --- | --- |
-| Workflow/action infrastructure | Existing local n8n setup and workflow-to-action path | Compatible integration only | Runtime used for end-to-end tests |
+| n8n runtime context | Prior pinned setup/configuration, Yacoub workflow/runtime assumptions, and Yacoub runtime evidence | Create/configure the Step 3 Obid runtime, verify frozen-configuration compatibility, and generate new Obid runtime evidence | A compatible version/configuration does not transfer authorship |
+| Workflow/action infrastructure | Existing workflow-to-action path | Compatible integration only | Runtime used for end-to-end tests |
 | Middleware/action API | Python API, mock state, sensor forwarding, fan endpoints | Must not rebuild; may call through compatible boundary | Observable action execution boundary |
 | Contracts | Frozen sensor-event and agent-action schemas and examples | Runtime validation and policy enforcement of those contracts | Common interface and evaluation vocabulary |
 | Baselines | Deterministic threshold workflow and minimal agent workflow | Verify, preserve, and compare; do not claim authorship | Common comparison configurations |
@@ -43,7 +44,7 @@ COMPARISON ANCHORS: inherited deterministic baseline and minimal agent baseline
 
 ## Yacoub-owned components
 
-- `infrastructure/docker/` local n8n baseline in the frozen source
+- `infrastructure/docker/` prior pinned n8n setup/configuration in the frozen source, with Yacoub's workflow/runtime assumptions and runtime evidence
 - `middleware/` API, sensor normalization/forwarding, and simulated fan actions
 - `shared_interfaces/` schemas and examples
 - `cognitive_logic/workflows/deterministic-baseline.*`
@@ -55,6 +56,7 @@ COMPARISON ANCHORS: inherited deterministic baseline and minimal agent baseline
 
 ## Obid-owned components
 
+- creation/configuration of the Step 3 Obid runtime environment, compatibility verification against the frozen Yacoub configuration, and new Obid runtime evidence
 - system-prompt design for the extended workflow
 - stronger single-agent decision layer
 - explicit tools exposed to and used by the agent
@@ -81,6 +83,8 @@ The shared integration surface is deliberately small:
 - trace identifiers and evidence conventions later added without changing the contracts, if possible
 
 Any shared artifact retains its original provenance. Reuse, configuration, test execution, and comparison do not transfer authorship.
+
+Using the same n8n version or a compatible configuration does not make the Obid-created Step 3 environment Yacoub-authored.
 
 ## Inherited components and Obid upgrades
 
@@ -118,7 +122,7 @@ Compatibility means preserving interface behavior, not copying Yacoub implementa
 - Label inherited implementations, screenshots, measurements, and Raspberry Pi evidence as Yacoub-provided.
 - Label Obid-created validators, policy gates, HITL nodes, prompts, memory, workflows, and results as Obid-authored only after they exist.
 - Separate inherited evidence from newly collected Obid evidence in filenames, tables, and report prose.
-- Do not use wording such as “we created” for an inherited contract, API, baseline, or Pi result.
+- Do not use wording such as "we created" for an inherited contract, API, baseline, or Pi result.
 - If Obid makes a compatibility fix, record the original artifact, the changed file, why it was necessary, and whether semantics changed.
 - Never rewrite history by replacing a raw failure or unsuccessful approval/action trace.
 - Never silently change a shared contract. Record a decision and obtain explicit authorization first.

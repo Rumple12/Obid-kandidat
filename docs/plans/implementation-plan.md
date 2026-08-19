@@ -99,11 +99,13 @@ Step 5 will freeze the actual cases and run protocol. At minimum the cases will 
 - malformed or missing input
 - unsupported/invalid action
 - risky/HITL behavior
-- state-dependent/bounded-memory behavior if feasible
+- at least one state-dependent/bounded-memory case using the one bounded-memory configuration, with an explicit expected state transition or expected state-dependent outcome
 
-The preferred initial target is five repetitions per case per evaluated core configuration, subject to Step 5 finalization. Comparable inherited-baseline and Obid runs use the same cases and record configuration IDs, action outcomes, validation/policy/HITL outcomes, errors, and end-to-end latency.
+For every relevant case, Step 5 records the injection point, component under test, expected terminal stage, expected outcome, and ownership/attribution of that outcome. Malformed sensor-event handling performed by inherited Yacoub middleware is integration/context evidence, not automatically Obid agent decision correctness. Malformed or invalid agent-generated action output tested against Obid validation/policy belongs to RQ2. RQ1 malformed cases must measure behavior attributable to the Obid decision layer.
 
-Human wait time should be separated from automated processing time where feasible. Missing or failed measurements are recorded as missing/failed, not replaced or discarded.
+The preferred initial target is five repetitions per case per evaluated core configuration, subject to Step 5 finalization. Comparable inherited-baseline and Obid runs use the same applicable cases and record configuration IDs, action outcomes, validation/policy/HITL outcomes, errors, and timing evidence. Step 10 must execute the frozen state-dependent case with the one bounded-memory configuration; no memory-strategy comparison is added.
+
+The main baseline-versus-Obid automated latency comparison uses only a common comparable automated case subset and excludes human approval wait time. For HITL cases, record separately where technically possible: automated processing before the wait, human wait time, automated processing after the approval/rejection decision, and total HITL elapsed time. Human wait time is reported separately and is never merged into the main automated comparison. If instrumentation cannot separate a timing component, report that limitation rather than guessing. Missing or failed measurements are recorded as missing/failed, not replaced or discarded.
 
 ## 7. Freeze implementation and evidence
 
@@ -152,7 +154,7 @@ Exact schemas and storage locations are Step 5 work and are not created in Step 
 
 | Risk | Control |
 | --- | --- |
-| Scope expands to professor brief's broad suggestions | Treat multi-agent, multi-model, multi-device, hardware, and scalability work as optional/out of scope |
+| Scope expands to professor brief's broad suggestions | Keep only the minimal validator-agent/two-agent comparison optional; multi-model, multi-device, hardware, and scalability work remain out of scope |
 | Yacoub work is misattributed | Preserve commit/path provenance and label inherited evidence |
 | Contract drift | Freeze exact fields/actions/targets; require explicit decision for change |
 | Safety exists only on paper | Require runtime validation, policy, endpoint non-execution proof, and actual HITL |
