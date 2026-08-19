@@ -4,8 +4,8 @@ Repository mode:
 Obid bachelor thesis.
 
 Current development model:
-Work proceeds through numbered thesis steps.
-Execute only the explicitly requested current step.
+Work proceeds through bounded repository tasks and numbered thesis steps.
+Execute only the explicitly requested current task or step.
 
 Primary Obid contribution:
 Agentic decision-making and reliability extending the
