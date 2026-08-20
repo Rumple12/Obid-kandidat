@@ -40,6 +40,8 @@ The running image contains `n8n-nodes-base` version `1.121.25` and `@n8n/n8n-nod
 - The Compose file exposes `TZ` as a separate safe setting; the observed `GENERIC_TIMEZONE` and `TZ` values both match the frozen Stockholm setting.
 - `host.docker.internal` resolves from the running container. Endpoint reachability and shared-interface behavior remain Step 4 work.
 
-## Current limitation
+## Application-state persistence
 
-The fresh UI is reachable and presents the owner-account setup screen. A human has not yet created the local owner account, so named-volume/runtime persistence is verified but owner/application-state persistence remains **PENDING MANUAL CONFIRMATION**. No credential or model configuration is stored in this manifest.
+Owner/application initialization persistence is **VERIFIED**. After the human reported completing the private local owner setup, a bounded verification on 2026-08-20 used `docker compose down` without `-v`, confirmed that `obid-n8n-data` still existed, and restarted the service with `docker compose up -d`. The recreated container remounted the volume at `/home/node/.n8n`, reported n8n `1.123.37`, and returned HTTP `200`.
+
+A privacy-safe browser check after restart found that both `/` and an explicit `/setup` request resolved to `/signin`: the owner-setup prompt was absent and the sign-in prompt was present. This verifies that the persisted instance no longer behaved as a fresh uninitialized instance. No owner identity, credential, or secret was requested, inspected, or recorded.

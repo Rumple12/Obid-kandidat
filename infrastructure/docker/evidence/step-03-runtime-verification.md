@@ -1,6 +1,6 @@
 # Step 3 Runtime Verification Evidence
 
-**Execution window:** 2026-08-20, approximately 13:49-13:56 CEST (`UTC+02:00`)
+**Execution windows:** 2026-08-20, approximately 13:49-13:56 CEST for initial runtime verification and 14:18-14:20 CEST for the owner-state persistence continuation (`UTC+02:00`)
 
 **Evidence provenance:** `OBID_CREATED`
 
@@ -15,9 +15,9 @@
 | Exact n8n version | `VERIFIED` | Requested tag, image metadata, startup log, and `n8n --version` agree on `1.123.37`. |
 | Container state | `VERIFIED` | `obid-n8n` was `running` after initial startup and after the persistence restart. |
 | Host HTTP | `VERIFIED` | `GET http://localhost:5678/` returned HTTP `200` with n8n HTML. No middleware endpoint was called. |
-| Browser/UI | `VERIFIED` | The in-app browser loaded the n8n "Set up owner account" screen before and after restart. No fields were filled and no credentials were created or captured. |
+| Browser/UI | `VERIFIED` | The initial pre-owner restart returned to the setup screen; after private owner setup and the second restart, both `/` and `/setup` resolved to `/signin`. No credentials were created by or captured in the verification. |
 | Named-volume persistence | `VERIFIED` | `obid-n8n-data` remained after `docker compose down`, remounted at `/home/node/.n8n`, and retained the initialized SQLite file after `docker compose up -d`. |
-| Application/owner-state persistence | `PENDING` | Owner setup requires human-chosen private credentials and was not completed. |
+| Application/owner-state persistence | `VERIFIED` | After private manual owner setup, a non-destructive restart retained initialization: both `/` and `/setup` resolved to `/signin`, and the owner-setup prompt was absent. |
 | Required node capability | `VERIFIED` | All node identities required by the frozen workflow exports plus the Google Gemini Chat Model node were present in installed runtime packages. |
 | Docker-to-host name resolution | `VERIFIED` | `host.docker.internal` resolved inside `obid-n8n` to IPv4 `192.168.65.254`. No endpoint request was made. |
 | Frozen-version compatibility | `VERIFIED` | Actual Obid runtime version exactly matches Yacoub's pinned `1.123.37`; no version substitution occurred. |
@@ -86,7 +86,21 @@ The persistence sequence was:
 5. The SQLite file still had size `659456` bytes and modification time `2026-08-20T11:50:14.364Z`.
 6. Runtime version remained `1.123.37` and host HTTP again returned `200`.
 
-Result: volume and initialized runtime-file persistence are `VERIFIED`. Owner/application-state persistence is `PENDING` until a human creates the local owner account and repeats a persistence-safe restart.
+The initial sequence verified volume and initialized runtime-file persistence while owner setup was still pending.
+
+### Owner/application-state continuation
+
+After the human reported completing local owner setup without supplying any identity or credential information, the following bounded continuation was observed on 2026-08-20:
+
+1. At `14:18:36+02:00`, `obid-n8n` was running, HTTP returned `200`, and `obid-n8n-data` was mounted read/write at `/home/node/.n8n`.
+2. `docker compose down` began at `14:19:13+02:00` and exited `0`. The `-v` option was not used.
+3. `docker volume inspect obid-n8n-data` succeeded while the container was down.
+4. `docker compose up -d` began at `14:19:15+02:00` and exited `0`.
+5. The recreated container mounted `obid-n8n-data` read/write at `/home/node/.n8n` and reached HTTP `200` by `14:19:28+02:00`.
+6. The restarted runtime reported `1.123.37`; logs reported readiness on port `5678` and editor availability.
+7. A privacy-safe browser probe returned `/signin` for both `/` and an explicit `/setup` request. The probe recorded only route and prompt-presence booleans: the owner-setup prompt was absent and the sign-in prompt was present.
+
+Final result: named-volume, initialized runtime-file, and owner/application-state persistence are all `VERIFIED`. No account identity, form value, credential, cookie, or secret was inspected or recorded.
 
 ## Required node-capability matrix
 
@@ -121,7 +135,7 @@ This verifies name resolution only. `/status`, `/sensor-event`, `/fan/on`, and `
 - **Ownership separation:** Compose project, container, and volume names are Obid-specific by design.
 - **Secret handling difference:** Obid requires an explicit ignored local encryption key instead of allowing a runtime placeholder. This does not change workflow compatibility.
 - **Startup warnings:** n8n emitted future-facing deprecation notices for SQLite pool size, task runners, Code-node environment access, and Git bare-repository behavior. They did not prevent startup. No speculative configuration expansion was made in Step 3.
-- **Manual check:** local owner creation and persistence of that owner state are pending. Credentials must never be sent to Codex, chat, Git, or evidence.
+- **Resolved manual checkpoint:** the human reported local owner setup succeeded without sharing credentials. The subsequent non-destructive restart and privacy-safe `/signin` result verified persisted initialization. No owner data was captured.
 
 ## Scope confirmation
 
