@@ -2,7 +2,7 @@
 
 **Created:** Step 2
 
-**Status:** Future checks only. No runtime, schema adoption, baseline import, or evaluation check in this file has been executed during Step 2.
+**Status:** Step 3 runtime-compatibility checks are completed and evidenced. Step 4-6 checks remain future and unticked; provenance/adoption prerequisite checks remain future until their assigned steps. When this checklist was created during Step 2, no Step 3 runtime work had yet been executed.
 
 ## How to use this checklist
 

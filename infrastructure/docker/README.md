@@ -64,9 +64,18 @@ docker compose config --quiet
 docker compose ps
 docker compose logs --tail 100 n8n
 docker exec obid-n8n n8n --version
-docker inspect obid-n8n
 docker volume inspect obid-n8n-data
 ```
+
+Inspect only the required safe container metadata with narrow formats:
+
+```powershell
+docker inspect --format '{{.Config.Image}}' obid-n8n
+docker inspect --format '{{json (index .NetworkSettings.Ports "5678/tcp")}}' obid-n8n
+docker inspect --format '{{range .Mounts}}{{printf "%s | %s | %s | rw=%t\n" .Type .Source .Destination .RW}}{{end}}' obid-n8n
+```
+
+Do not store generic `docker inspect obid-n8n` output as evidence because the complete container JSON may contain environment secrets such as `N8N_ENCRYPTION_KEY`.
 
 The Step 3 manifest and evidence note record the observed environment and any pending manual UI checks.
 
