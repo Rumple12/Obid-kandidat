@@ -1,0 +1,25 @@
+name: obid-step3
+
+services:
+  n8n:
+    image: n8nio/n8n:1.123.37
+    container_name: obid-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_HOST_PORT:-5678}:5678"
+    environment:
+      N8N_HOST: "${N8N_HOST:-localhost}"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "http"
+      N8N_SECURE_COOKIE: "${N8N_SECURE_COOKIE:-false}"
+      N8N_ENCRYPTION_KEY: "${N8N_ENCRYPTION_KEY:?Set N8N_ENCRYPTION_KEY in the ignored .env file}"
+      GENERIC_TIMEZONE: "${GENERIC_TIMEZONE:-Europe/Stockholm}"
+      TZ: "${TZ:-Europe/Stockholm}"
+      N8N_DIAGNOSTICS_ENABLED: "${N8N_DIAGNOSTICS_ENABLED:-false}"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "${N8N_VERSION_NOTIFICATIONS_ENABLED:-false}"
+    volumes:
+      - obid_n8n_data:/home/node/.n8n
+
+volumes:
+  obid_n8n_data:
+    name: obid-n8n-data

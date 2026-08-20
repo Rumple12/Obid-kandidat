@@ -21,10 +21,10 @@ The local nested reference state has been documented in Step 2. Whether it was i
 
 ## Step 3 - Obid n8n runtime compatibility
 
-- [ ] **`[CHECK-S3-01]` Exact Obid n8n version:** Record image/package identifier, resolved version, configuration source, and evidence path.
-- [ ] **`[CHECK-S3-02]` Frozen-version comparison:** Compare the Obid runtime with Yacoub's pinned `n8nio/n8n:1.123.37` without silently upgrading or changing assumptions.
-- [ ] **`[CHECK-S3-03]` Required node availability:** Verify the built-in and LangChain node types needed to import/reproduce the inherited workflows.
-- [ ] **`[CHECK-S3-04]` Compatibility decision:** Record any unavoidable version/configuration deviation and whether it preserves interface/baseline semantics.
+- [x] **`[CHECK-S3-01]` Exact Obid n8n version:** `n8nio/n8n:1.123.37`, image ID/digest `sha256:913c83834b7130d701a121aab50c16dedd1739ab9317caa19d7ba2686d1de885`, and runtime-reported version `1.123.37` were verified. Evidence: `infrastructure/docker/evidence/step-03-runtime-verification.md`.
+- [x] **`[CHECK-S3-02]` Frozen-version comparison:** The actual Obid runtime exactly matches Yacoub's pinned `n8nio/n8n:1.123.37`; no silent upgrade or port deviation occurred. Evidence: `infrastructure/docker/runtime-manifest.md` and the Step 3 runtime evidence.
+- [x] **`[CHECK-S3-03]` Required node availability:** All built-in node types in the frozen deterministic/minimal-agent exports, `@n8n/n8n-nodes-langchain.chainLlm`, and the Google Gemini Chat Model capability were verified from installed runtime packages without importing a workflow or configuring credentials. Evidence: the capability matrix in the Step 3 runtime evidence.
+- [x] **`[CHECK-S3-04]` Compatibility decision:** `VERIFIED` compatible for the Step 4/6 prerequisites. Obid-specific names and required secret injection preserve the frozen single-service, SQLite, port, version, node, timezone, and Docker-to-host assumptions. Owner-state persistence remains a separately documented manual check and no shared-interface behavior has been claimed.
 
 Step 3 evidence should identify the new runtime as `OBID_CREATED`. Matching a Yacoub version/configuration does not transfer authorship.
 
