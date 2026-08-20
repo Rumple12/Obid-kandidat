@@ -2,7 +2,7 @@
 
 **Created:** Step 2
 
-**Status:** Step 3 runtime-compatibility checks are completed and evidenced. Step 4-6 checks remain future and unticked; provenance/adoption prerequisite checks remain future until their assigned steps. When this checklist was created during Step 2, no Step 3 runtime work had yet been executed.
+**Status:** Step 3 runtime-compatibility and Step 4 integration-boundary checks are completed and evidenced. Step 5-6 checks remain future and unticked; provenance/adoption prerequisite checks remain future until their assigned steps. When this checklist was created during Step 2, no later runtime work had yet been executed.
 
 ## How to use this checklist
 
@@ -30,14 +30,14 @@ Step 3 evidence should identify the new runtime as `OBID_CREATED`. Matching a Ya
 
 ## Step 4 - Integration boundary
 
-- [ ] **`[CHECK-S4-01]` Obid webhook path:** Record the exact test/active webhook path and mode used by the Step 4 boundary.
-- [ ] **`[CHECK-S4-02]` `N8N_WEBHOOK_URL`:** Verify the configured forwarding destination end to end without exposing secrets.
-- [ ] **`[CHECK-S4-03]` Middleware reachability:** Record host/container addressing and prove the collaborator-provided middleware boundary is reachable.
-- [ ] **`[CHECK-S4-04]` `GET /status`:** Verify the documented status/state response and retain evidence.
-- [ ] **`[CHECK-S4-05]` `POST /sensor-event`:** Verify a locked compatible sensor event is accepted/forwarded as documented.
-- [ ] **`[CHECK-S4-06]` `POST /fan/on`:** Verify the simulated `fan_on` behavior and endpoint mapping.
-- [ ] **`[CHECK-S4-07]` `POST /fan/off`:** Verify the simulated `fan_off` behavior and endpoint mapping.
-- [ ] **`[CHECK-S4-08]` No competing middleware:** Confirm no Obid middleware architecture was introduced. If a substitute was unavoidable and explicitly authorized, label it `TEST_DOUBLE` and document fidelity/limits.
+- [x] **`[CHECK-S4-01]` Obid webhook path:** Verified active production paths `obid-yacoub-compat`, `obid-yacoub-compat-fan-on`, and `obid-yacoub-compat-fan-off` under host `/webhook/`; `/webhook-test/` was not used. Evidence: `integration/yacoub_compat/evidence/step-04-integration-verification.md`.
+- [x] **`[CHECK-S4-02]` `N8N_WEBHOOK_URL`:** Actual Yacoub middleware forwarded end to end through `http://127.0.0.1:5678/webhook/obid-yacoub-compat`, returning nested forwarding status `sent` and n8n status 200.
+- [x] **`[CHECK-S4-03]` Middleware reachability:** The exact frozen middleware ran on host bind `0.0.0.0:8000`; host tests used `127.0.0.1:8000`, and `obid-n8n` reached it through `host.docker.internal:8000`.
+- [x] **`[CHECK-S4-04]` `GET /status`:** Host and container-side requests returned 200 with the inherited status/message/state shape and simulated hardware state.
+- [x] **`[CHECK-S4-05]` `POST /sensor-event`:** One compatible five-field temperature event returned 202, forwarded successfully, and appeared with matching values in successful n8n execution 1.
+- [x] **`[CHECK-S4-06]` `POST /fan/on`:** The Obid n8n HTTP Request node called actual Yacoub `/fan/on`; execution 2 succeeded, response reported simulated `fan_on`, and `/status` showed `on`.
+- [x] **`[CHECK-S4-07]` `POST /fan/off`:** The Obid n8n HTTP Request node called actual Yacoub `/fan/off`; execution 3 succeeded, response reported simulated `fan_off`, and final `/status` showed `off`.
+- [x] **`[CHECK-S4-08]` No competing middleware:** Actual frozen Yacoub middleware was used from a clean detached temporary checkout. No middleware copy, adapter, stub, or `TEST_DOUBLE` was created in Obid.
 
 ## Step 5 - Shared contracts and evaluation-boundary preparation
 

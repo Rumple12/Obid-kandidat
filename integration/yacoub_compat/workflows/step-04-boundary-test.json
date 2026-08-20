@@ -1,0 +1,147 @@
+[
+  {
+    "id": "step4-yacoub-compat",
+    "name": "Step 4 - Yacoub compatibility boundary",
+    "active": true,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "obid-yacoub-compat",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "345f3458-2b73-465e-a0f3-0f20e7559089",
+        "name": "Receive Yacoub sensor event",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [-420, -220],
+        "webhookId": "0b4d7f20-574b-46c5-9c58-934f7f6c9302"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "0f3632ee-1e91-4d5b-b936-519b79c6ed20",
+                "name": "boundary_status",
+                "type": "string",
+                "value": "received"
+              },
+              {
+                "id": "93adb46e-24c8-4414-be47-9604ff29a15e",
+                "name": "sensor_id",
+                "type": "string",
+                "value": "={{ $json.body.sensor_id }}"
+              },
+              {
+                "id": "3adf3122-e7a9-4e97-8371-2966f9ed3393",
+                "name": "timestamp",
+                "type": "string",
+                "value": "={{ $json.body.timestamp }}"
+              },
+              {
+                "id": "7f9249a1-a843-4a27-ae51-2137416ec23c",
+                "name": "type",
+                "type": "string",
+                "value": "={{ $json.body.type }}"
+              },
+              {
+                "id": "8e015e5e-40a0-43e5-b582-19890b4ef6ae",
+                "name": "value",
+                "type": "number",
+                "value": "={{ $json.body.value }}"
+              },
+              {
+                "id": "4ca1157d-4066-4a0b-8cf7-1cfdfbda8652",
+                "name": "unit",
+                "type": "string",
+                "value": "={{ $json.body.unit }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "829491e8-c744-42b7-9dbc-71c6987f0051",
+        "name": "Record inbound boundary",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [-140, -220]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "obid-yacoub-compat-fan-on",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "0a9f7828-ed55-47d7-8d83-36a32b7b2038",
+        "name": "Trigger fan_on boundary",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [-420, 20],
+        "webhookId": "d641975e-0f75-455e-868a-ef108689b875"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://host.docker.internal:8000/fan/on",
+          "options": {}
+        },
+        "id": "8c86b267-13a3-48d2-88e8-33a65a80f55e",
+        "name": "POST actual Yacoub fan_on",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [-140, 20]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "obid-yacoub-compat-fan-off",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "23e1e2e1-5a49-454d-a5e2-f9749fc43d94",
+        "name": "Trigger fan_off boundary",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [-420, 260],
+        "webhookId": "93f1c62f-9150-4aef-bd0f-5fb6639bc3ec"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://host.docker.internal:8000/fan/off",
+          "options": {}
+        },
+        "id": "96353aa1-7d32-46a9-879a-77d3c963f9d4",
+        "name": "POST actual Yacoub fan_off",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [-140, 260]
+      }
+    ],
+    "connections": {
+      "Receive Yacoub sensor event": {
+        "main": [[{"node": "Record inbound boundary", "type": "main", "index": 0}]]
+      },
+      "Trigger fan_on boundary": {
+        "main": [[{"node": "POST actual Yacoub fan_on", "type": "main", "index": 0}]]
+      },
+      "Trigger fan_off boundary": {
+        "main": [[{"node": "POST actual Yacoub fan_off", "type": "main", "index": 0}]]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "55d23351-df0a-469f-8d71-b52023fa1fad",
+    "activeVersionId": "55d23351-df0a-469f-8d71-b52023fa1fad",
+    "tags": []
+  }
+]
