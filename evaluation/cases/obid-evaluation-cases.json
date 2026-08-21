@@ -1,0 +1,480 @@
+{
+  "manifest_id": "OBID-EVALUATION-CASES-V1",
+  "status": "FROZEN_EXPECTED_ORACLE_NOT_EXECUTED",
+  "frozen_at": "2026-08-21T13:21:36+02:00",
+  "provenance": "OBID_CREATED",
+  "authoritative_yacoub_commit": "278318340bfa4e4650a97a2baba73f63bd868ed9",
+  "shared_contracts": {
+    "sensor_event": {
+      "path": "shared_interfaces/json-schema/sensor-event.schema.json",
+      "sha256": "416cec7d396912672171e1fbfdce828820017c9218e2c418de3f784e329ee007",
+      "provenance": "SHARED_INTERFACE"
+    },
+    "agent_action": {
+      "path": "shared_interfaces/json-schema/agent-action.schema.json",
+      "sha256": "55f0cb93e933a0791aab50a2430ed8afa9372b5ca576405e2f4b8d4bb4048d5b",
+      "provenance": "SHARED_INTERFACE"
+    }
+  },
+  "inherited_decision_rule": {
+    "threshold_celsius": 30.0,
+    "at_or_above": "fan_on",
+    "below": "fan_off",
+    "target": "fan_1",
+    "provenance": "YACOUB_INHERITED"
+  },
+  "core_configurations": [
+    {
+      "configuration_id": "CONFIG-BASELINE",
+      "title": "Inherited minimal Yacoub-compatible agent baseline",
+      "provenance": "YACOUB_INHERITED",
+      "memory_configuration": "stateless_no_memory",
+      "implementation_status": "pending_step_6_reproduction"
+    },
+    {
+      "configuration_id": "CONFIG-OBID",
+      "title": "Extended Obid single-agent workflow",
+      "provenance": "OBID_CREATED",
+      "memory_configuration": "one_bounded_memory_configuration",
+      "implementation_status": "planned_for_steps_7_to_9"
+    }
+  ],
+  "injection_points": [
+    {
+      "injection_point_id": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "definition": "The comparable n8n ingress of the selected core configuration, immediately before its decision processing begins. The same schema-valid sensor event is supplied to each configuration."
+    },
+    {
+      "injection_point_id": "EVAL_DIRECT_PRE_DECISION_INGRESS",
+      "definition": "An OBID_CREATED direct evaluation seam after transport decoding and immediately before the selected configuration's input-handling and decision layer. It bypasses Yacoub POST /sensor-event and its empty-object normalization.",
+      "configuration_routes": {
+        "CONFIG-BASELINE": "BASELINE_EVAL_PRE_DECISION_INGRESS",
+        "CONFIG-OBID": "OBID_EVAL_PRE_AGENT_INGRESS"
+      }
+    },
+    {
+      "injection_point_id": "OBID_POST_AGENT_PRE_VALIDATOR",
+      "definition": "An OBID_CREATED fault-injection seam after candidate agent output and immediately before the future Obid runtime validator and policy, before the shared action interface."
+    },
+    {
+      "injection_point_id": "OBID_POLICY_INPUT",
+      "definition": "An OBID_CREATED safety-test seam after a schema-valid action proposal has been formed and validated but before internal policy and HITL handling. Evaluation-only policy context is supplied separately from both shared contracts."
+    }
+  ],
+  "repetition_policy": {
+    "automated_repetitions_per_case_per_applicable_configuration": 5,
+    "hitl_controlled_repetitions_per_variant": 5,
+    "memory_sequence_repetitions_per_applicable_configuration": 5,
+    "memory_sequence_order": [
+      "EVAL-MEMORY-01A",
+      "EVAL-MEMORY-01B",
+      "EVAL-MEMORY-01C"
+    ],
+    "execution_status": "not_started"
+  },
+  "cases": [
+    {
+      "case_id": "EVAL-HIGH-01",
+      "title": "Representative high temperature",
+      "category": "normal_high",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:00:00Z",
+        "type": "temperature",
+        "value": 31.4,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset"
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision layer",
+      "expected_decision": "fan_on",
+      "expected_shared_action": {
+        "action_id": "fan_on",
+        "target": "fan_1",
+        "reason": "temperature is at or above the inherited threshold",
+        "requires_approval": false
+      },
+      "reason_exact_match_required": false,
+      "expected_requires_approval": false,
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_ON",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "on"},
+      "expected_action_endpoint": "POST /fan/on",
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": true,
+      "run_mode": "automated",
+      "provenance_notes": "Threshold and action semantics are YACOUB_INHERITED; the frozen case and observations produced later are OBID_CREATED."
+    },
+    {
+      "case_id": "EVAL-LOW-01",
+      "title": "Representative low temperature",
+      "category": "normal_low",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:01:00Z",
+        "type": "temperature",
+        "value": 25.0,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "on",
+        "configuration_state": "reset"
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision layer",
+      "expected_decision": "fan_off",
+      "expected_shared_action": {
+        "action_id": "fan_off",
+        "target": "fan_1",
+        "reason": "temperature is below the inherited threshold",
+        "requires_approval": false
+      },
+      "reason_exact_match_required": false,
+      "expected_requires_approval": false,
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_OFF",
+      "expected_state_before": {"simulated_fan": "on"},
+      "expected_state_after": {"simulated_fan": "off"},
+      "expected_action_endpoint": "POST /fan/off",
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": true,
+      "run_mode": "automated",
+      "provenance_notes": "Threshold and action semantics are YACOUB_INHERITED; the frozen case and observations produced later are OBID_CREATED."
+    },
+    {
+      "case_id": "EVAL-THRESHOLD-01",
+      "title": "Exact inherited threshold",
+      "category": "threshold_exact",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:02:00Z",
+        "type": "temperature",
+        "value": 30.0,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset"
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision layer",
+      "expected_decision": "fan_on",
+      "expected_shared_action": {
+        "action_id": "fan_on",
+        "target": "fan_1",
+        "reason": "temperature equals the inherited threshold",
+        "requires_approval": false
+      },
+      "reason_exact_match_required": false,
+      "expected_requires_approval": false,
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_ON",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "on"},
+      "expected_action_endpoint": "POST /fan/on",
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": true,
+      "run_mode": "automated",
+      "provenance_notes": "The inclusive 30.0 C threshold is YACOUB_INHERITED and is not a JSON Schema constraint."
+    },
+    {
+      "case_id": "EVAL-MALFORMED-01",
+      "title": "Sensor event missing value at Obid-controlled ingress",
+      "category": "malformed_missing_value",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:03:00Z",
+        "type": "temperature",
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset",
+        "yacoub_middleware_bypassed": true
+      },
+      "injection_point": "EVAL_DIRECT_PRE_DECISION_INGRESS",
+      "owning_component": "OBID_CREATED evaluation ingress and selected configuration input handler",
+      "expected_decision": "reject_missing_required_sensor_field",
+      "expected_shared_action": null,
+      "reason_exact_match_required": false,
+      "expected_requires_approval": null,
+      "expected_terminal_stage": "SAFE_INPUT_REJECTION_BEFORE_SHARED_INTERFACE",
+      "configuration_specific_terminal_expectations": {
+        "CONFIG-BASELINE": "Record the actual inherited terminal stage; correctness requires no shared action, and any differing or unsafe outcome remains visible.",
+        "CONFIG-OBID": "OBID_INPUT_HANDLING"
+      },
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "off"},
+      "expected_action_endpoint": null,
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": false,
+      "run_mode": "automated",
+      "provenance_notes": "This stimulus bypasses Yacoub normalization so its terminal behavior is attributable to the evaluated decision/input layer. A baseline failure remains a recorded result."
+    },
+    {
+      "case_id": "EVAL-INVALID-ACTION-01",
+      "title": "Unsupported action blocked before shared interface",
+      "category": "unsupported_action_fault_injection",
+      "rq_links": ["RQ2"],
+      "core_or_safety_case": "safety",
+      "stimulus": {
+        "action_id": "fan_reverse",
+        "target": "fan_1",
+        "reason": "fault-injection case",
+        "requires_approval": false
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset"
+      },
+      "injection_point": "OBID_POST_AGENT_PRE_VALIDATOR",
+      "owning_component": "future OBID_CREATED runtime validator and policy path",
+      "expected_decision": "reject_unsupported_action",
+      "expected_shared_action": null,
+      "reason_exact_match_required": false,
+      "expected_requires_approval": null,
+      "expected_terminal_stage": "OBID_RUNTIME_VALIDATOR",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "off"},
+      "expected_action_endpoint": null,
+      "applicable_configurations": ["CONFIG-OBID"],
+      "comparison_eligible": false,
+      "latency_comparison_eligible": false,
+      "run_mode": "automated",
+      "provenance_notes": "The payload is intentionally outside the SHARED_INTERFACE action schema. It tests future OBID_CREATED enforcement and does not change the schema."
+    },
+    {
+      "case_id": "EVAL-HITL-01A",
+      "scenario_family_id": "EVAL-HITL-01",
+      "title": "Approval-required fan action approved",
+      "category": "hitl_approval",
+      "rq_links": ["RQ2"],
+      "core_or_safety_case": "safety",
+      "stimulus": {
+        "proposed_action": {
+          "action_id": "fan_on",
+          "target": "fan_1",
+          "reason": "temperature requires a policy-controlled fan activation",
+          "requires_approval": false
+        },
+        "internal_policy_context": {
+          "policy_case_id": "POLICY-HITL-REQUIRED",
+          "approval_required": true,
+          "shared_contract_field": false
+        },
+        "controlled_human_decision": "approve"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset",
+        "reviewer_available": true
+      },
+      "injection_point": "OBID_POLICY_INPUT",
+      "owning_component": "future OBID_CREATED action policy and HITL gate",
+      "expected_decision": "hold_then_release_after_approval",
+      "expected_shared_action": {
+        "action_id": "fan_on",
+        "target": "fan_1",
+        "reason": "temperature requires a policy-controlled fan activation",
+        "requires_approval": true
+      },
+      "expected_shared_action_while_pending": null,
+      "reason_exact_match_required": false,
+      "expected_requires_approval": true,
+      "expected_intermediate_stages": ["OBID_HITL_PENDING"],
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_ON",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "on"},
+      "expected_action_endpoint": "POST /fan/on only after approval",
+      "applicable_configurations": ["CONFIG-OBID"],
+      "comparison_eligible": false,
+      "latency_comparison_eligible": false,
+      "run_mode": "controlled_hitl",
+      "provenance_notes": "Policy context is internal evaluation metadata, not a shared schema field. Nothing may cross while pending; approval releases the unchanged schema-valid requires_approval:true action."
+    },
+    {
+      "case_id": "EVAL-HITL-01B",
+      "scenario_family_id": "EVAL-HITL-01",
+      "title": "Approval-required fan action denied",
+      "category": "hitl_denial",
+      "rq_links": ["RQ2"],
+      "core_or_safety_case": "safety",
+      "stimulus": {
+        "proposed_action": {
+          "action_id": "fan_on",
+          "target": "fan_1",
+          "reason": "temperature requires a policy-controlled fan activation",
+          "requires_approval": false
+        },
+        "internal_policy_context": {
+          "policy_case_id": "POLICY-HITL-REQUIRED",
+          "approval_required": true,
+          "shared_contract_field": false
+        },
+        "controlled_human_decision": "deny"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "configuration_state": "reset",
+        "reviewer_available": true
+      },
+      "injection_point": "OBID_POLICY_INPUT",
+      "owning_component": "future OBID_CREATED action policy and HITL gate",
+      "expected_decision": "hold_then_block_after_denial",
+      "expected_shared_action": null,
+      "expected_shared_action_while_pending": null,
+      "reason_exact_match_required": false,
+      "expected_requires_approval": true,
+      "expected_intermediate_stages": ["OBID_HITL_PENDING"],
+      "expected_terminal_stage": "OBID_HITL_DENIED",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "off"},
+      "expected_action_endpoint": null,
+      "applicable_configurations": ["CONFIG-OBID"],
+      "comparison_eligible": false,
+      "latency_comparison_eligible": false,
+      "run_mode": "controlled_hitl",
+      "provenance_notes": "Policy context is internal evaluation metadata, not a shared schema field. Nothing may cross while pending or after denial."
+    },
+    {
+      "case_id": "EVAL-MEMORY-01A",
+      "sequence_id": "EVAL-MEMORY-01",
+      "sequence_position": 1,
+      "title": "Memory sequence starts fan from off",
+      "category": "state_dependent_memory",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:10:00Z",
+        "type": "temperature",
+        "value": 31.4,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "off",
+        "sequence_reset": true
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision/state layer",
+      "expected_decision": "fan_on",
+      "expected_shared_action": {
+        "action_id": "fan_on",
+        "target": "fan_1",
+        "reason": "temperature is high and fan is off",
+        "requires_approval": false
+      },
+      "reason_exact_match_required": false,
+      "expected_requires_approval": false,
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_ON",
+      "expected_state_before": {"simulated_fan": "off"},
+      "expected_state_after": {"simulated_fan": "on"},
+      "configuration_specific_state_expectations": {
+        "CONFIG-BASELINE": {"memory_state": "not_applicable"},
+        "CONFIG-OBID": {"bounded_memory_before": "off", "bounded_memory_after": "on"}
+      },
+      "expected_action_endpoint": "POST /fan/on",
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": false,
+      "run_mode": "automated_ordered_sequence",
+      "provenance_notes": "First record in the mandatory A-B-C sequence. CONFIG-BASELINE remains stateless; that limitation is retained in comparison evidence."
+    },
+    {
+      "case_id": "EVAL-MEMORY-01B",
+      "sequence_id": "EVAL-MEMORY-01",
+      "sequence_position": 2,
+      "title": "Memory sequence suppresses duplicate fan-on",
+      "category": "state_dependent_memory",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:10:01Z",
+        "type": "temperature",
+        "value": 31.4,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "on",
+        "preceding_case_id": "EVAL-MEMORY-01A"
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision/state layer",
+      "expected_decision": "suppress_duplicate_fan_on",
+      "expected_shared_action": null,
+      "reason_exact_match_required": false,
+      "expected_requires_approval": null,
+      "expected_terminal_stage": "INTERNAL_STATE_AWARE_NO_OP",
+      "expected_state_before": {"simulated_fan": "on"},
+      "expected_state_after": {"simulated_fan": "on"},
+      "configuration_specific_state_expectations": {
+        "CONFIG-BASELINE": {"memory_state": "not_applicable"},
+        "CONFIG-OBID": {"bounded_memory_before": "on", "bounded_memory_after": "on"}
+      },
+      "expected_action_endpoint": null,
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": false,
+      "run_mode": "automated_ordered_sequence",
+      "provenance_notes": "No-op is an internal terminal outcome represented by no shared action. It is not a new action_id. A stateless baseline duplicate remains a visible incorrect result."
+    },
+    {
+      "case_id": "EVAL-MEMORY-01C",
+      "sequence_id": "EVAL-MEMORY-01",
+      "sequence_position": 3,
+      "title": "Memory sequence turns fan off",
+      "category": "state_dependent_memory",
+      "rq_links": ["RQ1", "RQ3"],
+      "core_or_safety_case": "core",
+      "stimulus": {
+        "sensor_id": "temp_sensor_1",
+        "timestamp": "2026-01-01T00:10:02Z",
+        "type": "temperature",
+        "value": 25.0,
+        "unit": "C"
+      },
+      "precondition": {
+        "simulated_fan": "on",
+        "preceding_case_id": "EVAL-MEMORY-01B"
+      },
+      "injection_point": "CORE_CONFIG_WORKFLOW_INGRESS",
+      "owning_component": "selected core configuration decision/state layer",
+      "expected_decision": "fan_off",
+      "expected_shared_action": {
+        "action_id": "fan_off",
+        "target": "fan_1",
+        "reason": "temperature is low and fan is on",
+        "requires_approval": false
+      },
+      "reason_exact_match_required": false,
+      "expected_requires_approval": false,
+      "expected_terminal_stage": "YACOUB_ACTION_ENDPOINT_POST_FAN_OFF",
+      "expected_state_before": {"simulated_fan": "on"},
+      "expected_state_after": {"simulated_fan": "off"},
+      "configuration_specific_state_expectations": {
+        "CONFIG-BASELINE": {"memory_state": "not_applicable"},
+        "CONFIG-OBID": {"bounded_memory_before": "on", "bounded_memory_after": "off"}
+      },
+      "expected_action_endpoint": "POST /fan/off",
+      "applicable_configurations": ["CONFIG-BASELINE", "CONFIG-OBID"],
+      "comparison_eligible": true,
+      "latency_comparison_eligible": false,
+      "run_mode": "automated_ordered_sequence",
+      "provenance_notes": "Final record in the mandatory sequence; reset state after this record before unrelated cases or the next sequence repetition."
+    }
+  ]
+}

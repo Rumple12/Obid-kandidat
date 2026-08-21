@@ -6,7 +6,7 @@
 
 **Frozen commit:** `278318340bfa4e4650a97a2baba73f63bd868ed9`
 
-**Step 2 status:** Provenance reference frozen; no active schema, middleware, workflow, baseline, safety runtime, or evidence copy adopted.
+**Step 5 status:** The two frozen schemas are actively adopted as exact `SHARED_INTERFACE` copies with matching SHA-256 evidence. Middleware, workflows, baselines, safety runtime, and inherited evidence remain unadopted except in their separately authorized steps.
 
 ## Provenance rule
 
@@ -22,7 +22,7 @@ Obid-kandidat/
 
 It is not a copied Yacoub project presented as Obid work.
 
-Use the provenance vocabulary defined in `docs/ongoing/repository-structure.md`. A Yacoub-authored contract is both collaborator-originated and a `SHARED_INTERFACE`; the frozen source remains `REFERENCE_ONLY` until Step 5 adopts an active, provenance-labelled copy or immutable equivalent.
+Use the provenance vocabulary defined in `docs/ongoing/repository-structure.md`. A Yacoub-authored contract is both collaborator-originated and a `SHARED_INTERFACE`. The frozen Yacoub Git object remains immutable collaborator source; Step 5's active exact copies are provenance-labelled `SHARED_INTERFACE` artifacts and do not transfer authorship.
 
 ## Frozen-source authority and local reference caveat
 
@@ -57,10 +57,10 @@ Its nested Git `HEAD` identifies the frozen commit, but its working tree is not 
 | Frozen source path | `shared_interfaces/json-schema/sensor-event.schema.json` |
 | Frozen source | `Rumple12/new-yacoub-thesis` at `278318340bfa4e4650a97a2baba73f63bd868ed9` |
 | Provenance | `SHARED_INTERFACE`; original authorship remains Yacoub |
-| Step 2 active-copy status | Not copied or adopted |
-| Later adoption | Step 5 may adopt/verify an exact provenance-labelled active interface artifact or immutable reference |
+| Step 5 active-copy status | Adopted as an exact byte copy; source and destination SHA-256 `416cec7d396912672171e1fbfdce828820017c9218e2c418de3f784e329ee007` |
+| Active destination | `shared_interfaces/json-schema/sensor-event.schema.json` |
 | Modification rule | Obid may not modify the Yacoub source. Active semantics may not change without explicit authorization and a new compatibility decision. |
-| Future action | Step 5 schema adoption and no-drift verification |
+| Adoption reason/result | Required active collaboration contract for later compatibility and runtime validation; no drift verified in `shared_interfaces/contract-freeze.md` |
 
 The frozen schema also requires one object, the five required fields, a numeric `value`, a non-empty `sensor_id`, a `date-time` string, and no additional properties. The inherited middleware performs only partial inline normalization/checking; that behavior is not full schema enforcement.
 
@@ -83,10 +83,10 @@ The frozen schema also requires one object, the five required fields, a numeric 
 | Frozen source path | `shared_interfaces/json-schema/agent-action.schema.json` |
 | Frozen source | `Rumple12/new-yacoub-thesis` at `278318340bfa4e4650a97a2baba73f63bd868ed9` |
 | Provenance | `SHARED_INTERFACE`; original authorship remains Yacoub |
-| Step 2 active-copy status | Not copied or adopted |
-| Later adoption | Step 5 may adopt/verify an exact provenance-labelled active interface artifact or immutable reference |
+| Step 5 active-copy status | Adopted as an exact byte copy; source and destination SHA-256 `55f0cb93e933a0791aab50a2430ed8afa9372b5ca576405e2f4b8d4bb4048d5b` |
+| Active destination | `shared_interfaces/json-schema/agent-action.schema.json` |
 | Modification rule | Obid may not modify the Yacoub source or silently widen fields, actions, targets, or types. |
-| Future action | Step 5 schema adoption, risky-case design, and no-drift verification |
+| Adoption reason/result | Required active collaboration contract and safety-output boundary; no drift verified in `shared_interfaces/contract-freeze.md` |
 
 The frozen schema requires exactly the four fields, a non-empty `reason`, Boolean `requires_approval`, and no additional properties.
 
@@ -187,3 +187,14 @@ They must not be copied into active Obid folders merely to populate the reposito
 ## Step 2 freeze statement
 
 Step 2 freezes this handoff and provenance reference only. Active schema adoption/verification belongs to Step 5, baseline reproduction belongs to Step 6, runtime safety belongs to Steps 8-9, and reportable repeated evaluation belongs to Step 10.
+
+## Step 5 active adoption record
+
+Step 5 fulfilled the schema-adoption portion of the Step 2 handoff without transferring authorship:
+
+| Active artifact | Origin | Boundary role | Frozen source | Active destination | Adoption reason | Exact-copy verification |
+| --- | --- | --- | --- | --- | --- | --- |
+| Sensor-event schema | `YACOUB_INHERITED` | `SHARED_INTERFACE` | `Rumple12/new-yacoub-thesis@278318340bfa4e4650a97a2baba73f63bd868ed9:shared_interfaces/json-schema/sensor-event.schema.json` | `shared_interfaces/json-schema/sensor-event.schema.json` | Preserve the exact compatible event boundary for future Obid processing and validation | Source/destination SHA-256 match: `416cec7d396912672171e1fbfdce828820017c9218e2c418de3f784e329ee007` |
+| Agent-action schema | `YACOUB_INHERITED` | `SHARED_INTERFACE` | `Rumple12/new-yacoub-thesis@278318340bfa4e4650a97a2baba73f63bd868ed9:shared_interfaces/json-schema/agent-action.schema.json` | `shared_interfaces/json-schema/agent-action.schema.json` | Preserve the exact compatible action boundary and future validator oracle | Source/destination SHA-256 match: `55f0cb93e933a0791aab50a2430ed8afa9372b5ca576405e2f4b8d4bb4048d5b` |
+
+The byte source was the frozen Git object, not the dirty/pruned local working tree. `shared_interfaces/contract-freeze.md` records the full constraints and hash comparison. The schemas remain Yacoub-authored; Obid's adoption record, no-drift verification, evaluation manifest, and future enforcement are `OBID_CREATED` work around that inherited boundary.

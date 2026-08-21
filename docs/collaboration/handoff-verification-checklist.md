@@ -2,7 +2,7 @@
 
 **Created:** Step 2
 
-**Status:** Step 3 runtime-compatibility and Step 4 integration-boundary checks are completed and evidenced. Step 5-6 checks remain future and unticked; provenance/adoption prerequisite checks remain future until their assigned steps. When this checklist was created during Step 2, no later runtime work had yet been executed.
+**Status:** Step 3 runtime compatibility, Step 4 integration boundary, and Step 5 contract/evaluation freeze are completed and evidenced. Step 6 checks remain future and unticked. When this checklist was created during Step 2, no later runtime work had yet been executed.
 
 ## How to use this checklist
 
@@ -14,8 +14,8 @@
 
 ## Provenance prerequisite before later adoption
 
-- [ ] **`[CHECK-PROV-01]` Before Step 5/6 adoption:** Use `Rumple12/new-yacoub-thesis` commit `278318340bfa4e4650a97a2baba73f63bd868ed9` and exact source paths as authority; do not use the dirty/pruned local nested working-tree state as an exact checkout.
-- [ ] **`[CHECK-PROV-02]` Before any active copy:** Record origin, frozen path, provenance label, reason for adoption, destination path, and comparison/repair result.
+- [x] **`[CHECK-PROV-01]` Before Step 5/6 adoption:** Step 5 used the exact Git objects from `Rumple12/new-yacoub-thesis` commit `278318340bfa4e4650a97a2baba73f63bd868ed9`; the dirty/pruned local working tree was not content authority. Evidence: `shared_interfaces/contract-freeze.md`.
+- [x] **`[CHECK-PROV-02]` Before any active copy:** Origin, frozen path, `YACOUB_INHERITED`/`SHARED_INTERFACE` provenance, adoption reason, destination, source/destination SHA-256, and no-drift result are recorded in `shared_interfaces/contract-freeze.md` and `docs/collaboration/shared-interface-provenance.md`.
 
 The local nested reference state has been documented in Step 2. Whether it was intentionally pruned cannot be established from repository contents and does not authorize cleaning or modifying `reference/`.
 
@@ -41,14 +41,20 @@ Step 3 evidence should identify the new runtime as `OBID_CREATED`. Matching a Ya
 
 ## Step 5 - Shared contracts and evaluation-boundary preparation
 
-- [ ] **`[CHECK-S5-01]` Sensor schema adoption:** Adopt or immutably reference `shared_interfaces/json-schema/sensor-event.schema.json` from the frozen commit with `SHARED_INTERFACE` provenance.
-- [ ] **`[CHECK-S5-02]` Sensor schema verification:** Compare exact fields, types, constants, required fields, and additional-properties behavior with the frozen source.
-- [ ] **`[CHECK-S5-03]` Action schema adoption:** Adopt or immutably reference `shared_interfaces/json-schema/agent-action.schema.json` from the frozen commit with `SHARED_INTERFACE` provenance.
-- [ ] **`[CHECK-S5-04]` Action schema verification:** Compare exact fields, types, allowed actions, target, required fields, and additional-properties behavior with the frozen source.
-- [ ] **`[CHECK-S5-05]` No schema drift:** Produce an exact comparison or documented compatibility result; do not silently change either contract.
-- [ ] **`[CHECK-S5-06]` Valid risky case:** Define a schema-conforming action with `requires_approval: true` without widening `fan_on`/`fan_off`, `fan_1`, or the schema.
+- [x] **`[CHECK-S5-01]` Sensor schema adoption:** Adopted the exact frozen `shared_interfaces/json-schema/sensor-event.schema.json` as an active `SHARED_INTERFACE` artifact. Evidence: `shared_interfaces/contract-freeze.md`.
+- [x] **`[CHECK-S5-02]` Sensor schema verification:** Verified all five properties, types, constants, required fields, date-time format, numeric rules, and `additionalProperties: false` against the frozen Git blob.
+- [x] **`[CHECK-S5-03]` Action schema adoption:** Adopted the exact frozen `shared_interfaces/json-schema/agent-action.schema.json` as an active `SHARED_INTERFACE` artifact. Evidence: `shared_interfaces/contract-freeze.md`.
+- [x] **`[CHECK-S5-04]` Action schema verification:** Verified all four properties, types, allowed actions, target, non-empty reason, Boolean approval field, required fields, and `additionalProperties: false` against the frozen Git blob.
+- [x] **`[CHECK-S5-05]` No schema drift:** Source and destination SHA-256 hashes match for both schemas; no content or line-ending change occurred.
+- [x] **`[CHECK-S5-06]` Valid risky case:** `EVAL-HITL-01A/B` freeze a post-policy schema-valid `fan_on`, `fan_1`, non-empty-reason candidate with `requires_approval: true`; the supplied pre-policy proposal is transformed internally without widening the shared schema.
+- [x] **`[CHECK-S5-07]` Threshold and semantic preservation:** The oracle preserves `value >= 30.0 C -> fan_on`, otherwise `fan_off`, target `fan_1`, and the inherited endpoint mapping; these are documented as semantics outside the schemas.
+- [x] **`[CHECK-S5-08]` Evaluation-case freeze:** The machine-readable manifest freezes high, low, exact-threshold, malformed, invalid-action, HITL, and bounded-state cases with expected outcomes and ownership.
+- [x] **`[CHECK-S5-09]` Malformed ownership/injection point:** `EVAL-MALFORMED-01` enters at Obid-owned `EVAL_DIRECT_PRE_DECISION_INGRESS`, routing to `OBID_EVAL_PRE_AGENT_INGRESS` for `CONFIG-OBID` and an analogous baseline seam; both bypass Yacoub normalization and require no shared action.
+- [x] **`[CHECK-S5-10]` Required bounded-memory sequence:** `EVAL-MEMORY-01A/B/C` freezes off -> on, duplicate suppression while on, and on -> off with explicit states and no shared `no_action` value.
+- [x] **`[CHECK-S5-11]` Repetition protocol:** Five repetitions are frozen per automated case/applicable configuration; the ordered memory sequence and controlled HITL variants have explicit repetition/reset rules.
+- [x] **`[CHECK-S5-12]` RQ3 comparable latency:** High, low, and exact threshold are the common automated latency subset with the same ingress-to-final-automated-terminal timing boundary; human wait is excluded and HITL timing is separated.
 
-Actual case definitions, datasets, expected outcomes, evidence formats, and repetition rules are Step 5 work and do not exist in Step 2.
+Step 5 definitions are frozen in `evaluation/cases/obid-evaluation-cases.json`, `evaluation/evaluation-protocol.md`, and `evaluation/evidence/step-05-contract-and-evaluation-freeze.md`. They are expected-oracle and planning artifacts, not observed results.
 
 ## Step 6 - Inherited comparison baselines
 
