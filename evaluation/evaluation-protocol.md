@@ -94,6 +94,103 @@ Reset before the next sequence repetition and after the final repetition. `no-op
 
 The physical simulated-fan precondition and outcome are common to both configurations. Bounded-memory before/after observations apply only to `CONFIG-OBID`; memory state is `not_applicable` for the stateless baseline and its absence is not itself a failure. The meaningful common comparison is the observable decision, shared-action emission or suppression, endpoint reach, and physical final state.
 
+## Frozen run-order control
+
+This section freezes execution order only. It does not change any case, stimulus, expected outcome, injection point, applicability, repetition count, reset rule, RQ mapping, comparison subset, schema, or contract.
+
+### Core comparison blocks
+
+Treat the core reliability comparison as five blocks with stable indices:
+
+| Block | Index | Frozen content |
+| --- | --- | --- |
+| `H` | 1 | `EVAL-HIGH-01` |
+| `L` | 2 | `EVAL-LOW-01` |
+| `T` | 3 | `EVAL-THRESHOLD-01` |
+| `M` | 4 | `EVAL-MALFORMED-01` |
+| `S` | 5 | complete ordered sequence `EVAL-MEMORY-01A -> EVAL-MEMORY-01B -> EVAL-MEMORY-01C` |
+
+`S` is one indivisible block. Never interleave another case or configuration between A, B, and C. One complete A -> B -> C sequence executes for one configuration, the required reset occurs, and then the paired configuration executes its complete sequence.
+
+The five outer rounds are frozen exactly as follows. Outer round `r` is repetition `r` for every core block.
+
+```text
+Round 1: H -> L -> T -> M -> S
+Round 2: L -> T -> M -> S -> H
+Round 3: T -> M -> S -> H -> L
+Round 4: M -> S -> H -> L -> T
+Round 5: S -> H -> L -> T -> M
+```
+
+Each block therefore occupies each ordinal position exactly once. This is a deterministic balancing rule: do not randomize the schedule or choose an order after observing results.
+
+### Configuration pairing within core blocks
+
+Execute the two applicable configurations consecutively within each block so they form a temporal pair. For block index `i` in outer round `r`:
+
+- if `i + r` is even, execute `CONFIG-BASELINE -> CONFIG-OBID`;
+- if `i + r` is odd, execute `CONFIG-OBID -> CONFIG-BASELINE`.
+
+This alternates which configuration receives the earlier temporal position. With five repetitions, exact 50/50 first-position balance within each block is impossible; the frozen rule produces a 3/2 or 2/3 balance per block and near-equal first-position counts across the complete core schedule. Do not change the repetition count to force an even split.
+
+For independent `H`, `L`, `T`, and `M` runs, restore the required simulated-fan precondition and reset configuration state/bounded memory where applicable before each configuration run, as already frozen above.
+
+For `S`, apply the pairing rule to complete sequences:
+
+```text
+selected first configuration:
+  reset
+  A -> B -> C
+
+selected second configuration:
+  reset
+  A -> B -> C
+```
+
+Preserve physical/configuration state inside each A -> B -> C sequence; do not reset between A, B, and C. Reset between the paired configurations' complete sequences and before the next outer round. Do not alternate configurations record by record, such as baseline A, Obid A, baseline B, Obid B. The frozen memory oracle remains:
+
+```text
+A: off + 31.4 C -> fan_on -> on
+B: on  + 31.4 C -> no duplicate shared action -> on
+C: on  + 25.0 C -> fan_off -> off
+```
+
+`CONFIG-BASELINE` remains stateless internally; the common observable oracle is unchanged.
+
+### Safety-only order after the core schedule
+
+Run safety-only cases only after all five core comparison rounds are complete so policy/HITL state cannot perturb the primary baseline-versus-Obid runs. The bounded family order is:
+
+1. `EVAL-INVALID-ACTION-01`;
+2. `EVAL-HITL-01A`; and
+3. `EVAL-HITL-01B`.
+
+Run `EVAL-INVALID-ACTION-01` five times under `CONFIG-OBID`. For the HITL family, preserve five repetitions of each variant and pair the variants within each repetition in this frozen alternating order:
+
+```text
+HITL repetition 1: EVAL-HITL-01A -> EVAL-HITL-01B
+HITL repetition 2: EVAL-HITL-01B -> EVAL-HITL-01A
+HITL repetition 3: EVAL-HITL-01A -> EVAL-HITL-01B
+HITL repetition 4: EVAL-HITL-01B -> EVAL-HITL-01A
+HITL repetition 5: EVAL-HITL-01A -> EVAL-HITL-01B
+```
+
+Apply each safety case's frozen precondition and reset requirements before every repetition. Do not add HITL scenarios. These safety-only cases remain outside the core RQ3 reliability comparison and the automated RQ3 latency subset; human waiting remains separately measured under the existing HITL timing rule.
+
+### Actual-order evidence and deviations
+
+Step 10 must retain the actual execution order. At minimum, each order record contains:
+
+- outer round/repetition number;
+- ordinal block position;
+- case or sequence ID;
+- configuration;
+- configuration order within the pair;
+- execution/run identifier; and
+- timestamp where available.
+
+If an operational failure prevents the frozen order, record the deviation and its reason. Do not silently reorder and do not select a replacement order after examining results. Preserve any failed run under the existing failure-retention rule; do not replace it merely to restore a cleaner schedule.
+
 ## Correctness and reason-field rule
 
 An action-producing run is correct only when:
