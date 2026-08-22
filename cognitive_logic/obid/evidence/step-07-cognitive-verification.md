@@ -6,12 +6,12 @@
 
 **Evidence provenance:** `OBID_CREATED`
 
-**Status:** `PARTIALLY VERIFIED — RESET STATUS-CALL PENDING`
+**Status:** `STEP 7 READINESS VERIFIED`
 
-**Completion claim:** Step 7 is not claimed complete while the final new-session
-status-tool observation is blocked by Gemini quota. The credential-attached
-continuation was attempted once at `2026-08-22 14:27:48.903 UTC` and is retained
-as execution 32.
+**Completion claim:** All bounded Step 7 runtime-readiness observations are now
+retained, including the final fresh-session threshold-then-status trace in main
+execution 33. This is the step-runner completion state; repository-level closure
+still follows the required audit and report-scribe gate.
 
 These are one-off cognitive readiness observations, not Step 10 repetitions,
 RQ percentages, latency comparison rows, or production-safety evidence.
@@ -73,10 +73,43 @@ or key is recorded here or in the portable export.
 | `S7-MEM-EVICTION-PROBE` | 28 | pre-agent load exposed B+C and omitted A; quota then blocked model/tools | active-window proof PASS; execution FAIL retained |
 | `S7-MEM-RESET` attempts | 29, 30, 31 | distinct session loaded empty history each time; daily quota blocked before tools | isolation PASS; status-call PENDING |
 | credential-attached `S7-MEM-RESET` continuation | 32 | current attached credential reference was exercised; new synthetic session loaded empty history; first model call returned the same daily free-tier quota rejection; no tool or endpoint ran; fan remained off | isolation PASS; status-call PENDING; execution FAIL retained |
+| human-reported Tier-1-backed `S7-MEM-RESET` continuation | 33 | new synthetic session; empty memory; threshold then status; `no_action`; no endpoint; fan remained off | PASS; final reset evidence complete |
 
-Inline status-tool subexecutions for executions 16, 18, 20, and 23 were 17,
-19, 21, and 24 respectively. Each ended at `Normalize inherited status` with a
-result derived from actual Yacoub `GET /status`.
+Inline status-tool subexecutions for executions 16, 18, 20, 23, and 33 were 17,
+19, 21, 24, and 34 respectively. Each ended at `Normalize inherited status`
+with a result derived from actual Yacoub `GET /status`.
+
+## Final reset/isolation continuation
+
+Following the human's report that Tier 1 billing was enabled, the single
+authorized continuation probe used a new non-private synthetic session and the
+already-defined valid 25.0 C low-temperature event. No billing or credential
+identity was inspected.
+
+| Item | Execution 33 observation |
+|---|---|
+| Start / stop | `2026-08-22 14:51:08.331 UTC` / `2026-08-22 14:51:16.380 UTC` |
+| Synthetic session | `s7-reset-tier1-20260822-512a1878` |
+| Precondition | inherited simulated fan explicitly set to `off`; `/status` confirmed `off` |
+| Memory load | both observable pre-save `loadMemoryVariables.chatHistory` results were empty arrays |
+| Model calls | 2, both successful |
+| Tool counts | `temperature_threshold_tool` x1; `fan_status_tool` x1 |
+| Tool order | `temperature_threshold_tool` -> `fan_status_tool` |
+| Threshold input/result | `{"value":25,"unit":"C"}` -> `{"threshold_c":30,"relation":"below","desired_action":"fan_off","desired_fan_state":"off"}` |
+| Status input/result | `fan_1` -> `{"target":"fan_1","fan_state":"off","simulated":true,"source":"yacoub_status"}` |
+| Main endpoint counts | `POST /fan/on`: 0; `POST /fan/off`: 0 |
+| Final middleware state | `off`, simulated |
+| Termination | success at `Internal no-action terminal`; one agent run; observable agent `iterationCount: 1`; inside `maxIterations: 3` |
+
+The observable raw model output was:
+
+```json
+{"decision": "no_action", "action": null, "state_before": "off", "state_after": "off", "reason_code": "desired_state_already_satisfied"}
+```
+
+The parser returned the same decision envelope with `parse_status: parsed`, and
+the terminal node added `routing_status: internal_no_action` and
+`endpoint_reached: null`. No hidden reasoning was requested or retained.
 
 ## Successful tool and termination traces
 
@@ -88,6 +121,7 @@ result derived from actual Yacoub `GET /status`.
 | 23 | 3 | threshold x1 -> status x1 | clean JSON `emit_action`; `/fan/on` | PASS |
 | 25 | 2 | threshold x1; status x0 | clean JSON `no_action`; no endpoint | PASS |
 | 27 | 2 | threshold x1; status x0 | clean JSON `emit_action`; `/fan/off` | PASS |
+| 33 | 2 | threshold x1 -> status x1 | clean JSON `no_action`; no endpoint | PASS |
 
 Every successful agent execution used no more than two permitted tool calls,
 called neither tool more than once, completed one agent node run, and terminated
@@ -122,19 +156,20 @@ The memory node logged `loadMemoryVariables.chatHistory` for each execution:
 | 28 / eviction probe | `13:09:00Z`, `13:11:00Z` | B+C included; A excluded |
 | 29-31 / distinct reset session | empty | no prior-session context inherited |
 | 32 / new credential-attached reset session | empty | no prior-session context inherited; provider rejected the first model call |
+| 33 / human-reported Tier-1-backed reset session | empty | isolated cold session; threshold and status tools then completed |
 
 This proves a model-visible bound of two completed interactions and active-window
 eviction after C. The underlying save log contained six messages after C, so
 older backing messages were not physically deleted; this is the installed
 BufferWindowMemory behavior documented in the configuration record.
 
-The reset sessions are demonstrably isolated, but the required cold-session
-`fan_status_tool` call remains unobserved. Executions 29-31 and the single
-credential-attached continuation, execution 32, were rejected by Gemini before
-the first tool call. Execution 32 made one model call, zero threshold-tool calls,
-zero status-tool calls, and zero action-endpoint calls; it returned HTTP 500 and
-left the simulated fan `off`. Therefore reset/isolation is not marked fully
-verified.
+The reset sessions are demonstrably isolated. Executions 29-31 and the first
+credential-attached continuation, execution 32, remain retained failures because
+Gemini rejected them before the first tool call. The single permitted
+continuation after the human-reported Tier 1 change, execution 33, then proved
+the missing cold-session behavior: empty memory, threshold x1, status x1, and an
+internal no-op with no action endpoint. Reset/isolation is therefore verified
+without hiding the prior failures.
 
 ## Structured decisions and middleware observations
 
@@ -146,6 +181,9 @@ verified.
 - A execution 23 moved off -> on. B execution 25 returned internal
   `decision: no_action`, `action: null`, and reached no endpoint. C execution 27
   moved on -> off.
+- Reset execution 33 began from an isolated empty session with the simulated fan
+  off, called threshold then status, returned `decision: no_action` with
+  `action: null`, reached no endpoint, and left the fan off.
 - No `no_action` action identifier or new shared field was introduced.
 
 These candidates were routed for cognitive/integration readiness only. They were
@@ -175,6 +213,9 @@ evidence.
    or owner value was displayed, copied into evidence, or committed. The
    provider still reported the daily free-tier request quota as exhausted, so
    no retry was performed.
+6. After the human reported Tier 1 billing enabled, exactly one further probe
+   was run. Execution 33 succeeded without any model, prompt, tool, memory,
+   iteration, schema, or oracle change. No second success attempt was run.
 
 The model identifier, generation settings, prompt semantics, iteration bound,
 memory strategy/window, shared contracts, and inherited threshold were not
@@ -196,18 +237,9 @@ No baseline artifact, Step 5 oracle/protocol, shared schema, `reference/` file,
 or upstream Yacoub file was intentionally modified. No Step 8 validator/policy,
 Step 9 HITL, or Step 10 repeated evaluation was started.
 
-## Exact remaining human action
+## Remaining human action
 
-The reported credential attachment was exercised once, but the provider still
-reported the daily free-tier request quota as exhausted. Before another runtime
-probe, a human must either wait for that quota to reset or privately select a
-credential backed by a project with confirmed available
-`models/gemini-2.5-flash` request quota. Do not send any credential value or
-identity to Codex, and leave the model and generation options unchanged.
-
-After quota is available, run only one new synthetic-session reset probe with
-the fan preconditioned off and a valid 25.0 C event. Completion still requires:
-empty memory load, `temperature_threshold_tool` x1, `fan_status_tool` x1, final
-`no_action`, no fan endpoint, and successful termination within
-`maxIterations: 3`. Append that execution ID/result here before claiming Step 7
-complete.
+None for the bounded Step 7 runtime-readiness observation. Execution 33 supplied
+the missing reset/status trace, and the probe must not be repeated merely to
+obtain another success. The next repository action is the separate read-only
+Step 7 audit, not Step 8 implementation.
