@@ -1,0 +1,360 @@
+{
+  "id": "agent-minimal",
+  "name": "new-yacoub minimal agent workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "DRAFT EXPORT CANDIDATE - Step 7 minimal agent-enhanced workflow. Verify AI node type, model credential, prompt mapping, and output field names inside n8n UI before treating this as final. This is minimum Obid-compatible integration only, not a full cognitive architecture.",
+        "height": 220,
+        "width": 460
+      },
+      "id": "e14b33e5-fcaf-4283-a6d2-41ac5cb4cd4d",
+      "name": "Import verification note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent-minimal",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "56d246d8-6bb0-4cab-958c-589a8cbd71bf",
+      "name": "Receive temperature event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        384
+      ],
+      "webhookId": "agent-minimal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "agent-input",
+              "name": "agent_input",
+              "type": "string",
+              "value": "={{ JSON.stringify($json.body) }}"
+            },
+            {
+              "id": "system-prompt-reference",
+              "name": "system_prompt_reference",
+              "type": "string",
+              "value": "cognitive_logic/prompts/system-prompt-v1.md"
+            },
+            {
+              "id": "memory-choice-reference",
+              "name": "memory_choice",
+              "type": "string",
+              "value": "stateless_no_memory"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b57908a-2b86-4904-ac3f-61bdd43bd419",
+      "name": "Prepare agent input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Replace or verify this draft AI decision node in n8n. It must use exactly one model/provider credential, the prompt in cognitive_logic/prompts/system-prompt-v1.md, no memory, and return only the structured action JSON with action_id, target, reason, requires_approval.",
+        "height": 200,
+        "width": 420
+      },
+      "id": "8159c160-df85-4b4e-9e69-886784e0c6b8",
+      "name": "AI node setup note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# System Prompt v1\n\nYou are the minimum agent decision step for the new-yacoub thesis IoT workflow.\n\nYour only task is to choose one fan action for one valid temperature event.\n\nReturn only one JSON object. Do not return Markdown, commentary, code fences,\nor extra text.\n\nThe JSON object must have exactly these fields:\n\n```json\n{\n  \"action_id\": \"fan_on\",\n  \"target\": \"fan_1\",\n  \"reason\": \"temperature_at_or_above_threshold\",\n  \"requires_approval\": false\n}\n```\n\nAllowed `action_id` values:\n\n- `fan_on`\n- `fan_off`\n\nAllowed `target` value:\n\n- `fan_1`\n\nDecision rule for valid temperature input:\n\n- If `value` is greater than or equal to `30.0` and `unit` is `C`, choose `fan_on`.\n- If `value` is below `30.0` and `unit` is `C`, choose `fan_off`.\n\nUse short machine-readable reason strings:\n\n- `temperature_at_or_above_threshold`\n- `temperature_below_threshold`\n\nDo not invent devices, actions, endpoints, GPIO commands, shell commands, or\nhardware instructions outside the contract.\n\nSafety and human approval enforcement belong to Step 8 and are not implemented\nin this Step 7 workflow yet. This prompt only asks for structured action output\nmatching the shared action contract.\n"
+            }
+          ]
+        }
+      },
+      "id": "171f3c10-c22c-46d6-b926-c956cecdb5e4",
+      "name": "Minimal LLM decision",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.text ?? $json.output ?? $json.response ?? $json.message ?? JSON.stringify($json);\nconst text = typeof raw === 'string' ? raw.trim() : JSON.stringify(raw);\nconst match = text.match(/\\{[\\s\\S]*\\}/);\nconst action = JSON.parse(match ? match[0] : text);\nreturn [{ json: action }];"
+      },
+      "id": "668ab785-0e80-4252-ab21-a6504b82a7aa",
+      "name": "Parse structured action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "agent-action-fan-on",
+              "leftValue": "={{ $json.action_id }}",
+              "rightValue": "fan_on",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "388f84eb-b571-41c8-b9b0-55a84361cf4e",
+      "name": "Action is fan_on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "f353c698-6fcc-4db0-8f08-f71fa92474ef",
+      "name": "POST middleware fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "agent-action-fan-off",
+              "leftValue": "={{ $json.action_id }}",
+              "rightValue": "fan_off",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2fb3fdeb-6281-454e-aa1c-b57bbfc9690f",
+      "name": "Action is fan_off?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "51d5b286-aa95-46f4-9fb2-acccaf920afd",
+      "name": "POST middleware fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "unrouted-status",
+              "name": "status",
+              "type": "string",
+              "value": "unrouted_non_contract_action"
+            },
+            {
+              "id": "unrouted-note",
+              "name": "note",
+              "type": "string",
+              "value": "No middleware action executed. Step 8 will implement formal validation and approval handling."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3d98ac9a-2046-45af-a82e-41c937ba1a27",
+      "name": "Unrouted non-contract action",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.5-flash"
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        592
+      ],
+      "id": "33cc2214-f14d-42af-9aa6-656dd3ca2017",
+      "name": "Google Gemini Chat Model"
+    }
+  ],
+  "connections": {
+    "Receive temperature event": {
+      "main": [
+        [
+          {
+            "node": "Prepare agent input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare agent input": {
+      "main": [
+        [
+          {
+            "node": "Minimal LLM decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Minimal LLM decision": {
+      "main": [
+        [
+          {
+            "node": "Parse structured action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse structured action": {
+      "main": [
+        [
+          {
+            "node": "Action is fan_on?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action is fan_on?": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan on",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Action is fan_off?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action is fan_off?": {
+      "main": [
+        [
+          {
+            "node": "POST middleware fan off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unrouted non-contract action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Minimal LLM decision",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}

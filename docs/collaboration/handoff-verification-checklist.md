@@ -2,7 +2,7 @@
 
 **Created:** Step 2
 
-**Status:** Step 3 runtime compatibility, Step 4 integration boundary, and Step 5 contract/evaluation freeze are completed and evidenced. Step 6 checks remain future and unticked. When this checklist was created during Step 2, no later runtime work had yet been executed.
+**Status:** Step 3 runtime compatibility, Step 4 integration boundary, Step 5 contract/evaluation freeze, and Step 6 inherited-baseline reproduction are completed and evidenced. When this checklist was created during Step 2, no later runtime work had yet been executed.
 
 ## How to use this checklist
 
@@ -58,14 +58,14 @@ Step 5 definitions are frozen in `evaluation/cases/obid-evaluation-cases.json`, 
 
 ## Step 6 - Inherited comparison baselines
 
-- [ ] **`[CHECK-S6-01]` Deterministic reproducibility:** Import/reproduce the inherited deterministic baseline with exact provenance and the locked `value >= 30.0 C` rule.
-- [ ] **`[CHECK-S6-02]` Deterministic high/low/boundary behavior:** Verify all three branches/conditions required by the active Step 6 plan and retain new Obid verification evidence.
-- [ ] **`[CHECK-S6-03]` Minimal-agent reproducibility:** Import/recreate the minimal compatible agent baseline without adding Obid ReAct, memory, validation, policy, or HITL behavior.
-- [ ] **`[CHECK-S6-04]` Connected Google model node:** Recover or create a reproducible baseline export/configuration containing the connected Google model node shown by Yacoub evidence.
-- [ ] **`[CHECK-S6-05]` Exact Gemini configuration:** Record exact model name/version, credential-independent node settings, and generation parameters. Do not store credentials.
-- [ ] **`[CHECK-S6-06]` Stateless baseline:** Verify no memory node/state mechanism is connected and label the choice `YACOUB_INHERITED`.
-- [ ] **`[CHECK-S6-07]` Minimal-agent high/low/boundary behavior:** Reconfirm expected outputs through the shared action/middleware boundary.
-- [ ] **`[CHECK-S6-08]` Compatibility repairs:** Record any necessary active-copy repair, original source, reason, semantic impact, and evidence. Never modify the frozen source.
+- [x] **`[CHECK-S6-01]` Deterministic reproducibility:** Imported and reproduced the inherited seven-node deterministic anchor with exact source provenance and unchanged `value >= 30.0 C` semantics. Evidence: `cognitive_logic/baselines/yacoub/evidence/step-06-baseline-verification.md`.
+- [x] **`[CHECK-S6-02]` Deterministic high/low/boundary behavior:** One readiness observation each verified `31.4 -> fan_on`, `25.0 -> fan_off`, and inclusive `30.0 -> fan_on` through actual Yacoub middleware.
+- [x] **`[CHECK-S6-03]` Minimal-agent reproducibility:** Reconstructed and verified the inherited one-decision, minimal-parser/routing baseline without Obid ReAct, tools, memory, validation, policy, or HITL.
+- [x] **`[CHECK-S6-04]` Connected Google model node:** Privacy-scoped historical runtime recovery established and the active workflow verified one connected `@n8n/n8n-nodes-langchain.lmChatGoogleGemini` node, type version `1`.
+- [x] **`[CHECK-S6-05]` Exact Gemini configuration:** Recovered effective `models/gemini-2.5-flash` from the exact pinned node default; stored and active options are `{}`, while temperature, top-P/top-K, maximum output tokens, and safety settings remain not explicitly configured / runtime default. No credential identity or secret is stored.
+- [x] **`[CHECK-S6-06]` Stateless baseline:** Verified no memory node, `ai_memory` connection, persistent state, buffer, vector store, or substitute state mechanism; the exact inherited no-memory record is retained.
+- [x] **`[CHECK-S6-07]` Minimal-agent high/low/boundary behavior:** One readiness observation each verified `31.4 -> fan_on`, `25.0 -> fan_off`, and `30.0 -> fan_on` through the shared action/middleware boundary; fenced high/threshold model text was retained as an inherited format deviation.
+- [x] **`[CHECK-S6-08]` Compatibility repairs:** The manifest records the missing model-node connection, exact inline prompt, explicit portable model pin, n8n IF normalization, and metadata/credential sanitization with source, reason, and semantic impact; frozen source remained unchanged.
 
 ## Locked semantics used by every future check
 
