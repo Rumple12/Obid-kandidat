@@ -92,3 +92,21 @@ Actual bounded execution identities:
 
 No validator agent, second agent, second model, risk engine, Step 10 repetition,
 or repeated evaluation was implemented.
+
+## Optional validator-agent decision
+
+`OPTIONAL_VALIDATOR_AGENT: SKIP_FOR_CORE`
+
+This is a deliberate scope decision, not an implementation failure. Runtime
+schema validation, deterministic policy, and actual HITL already form the core
+RQ2 reliability path. A validator agent would add a second AI configuration and
+agent/model layer, increasing configuration complexity and latency complexity
+before the frozen Step 10 experiment. It would also increase
+attribution complexity by mixing deterministic safety behavior with another model-based
+decision layer. RQ1, RQ2, and RQ3 do not require this optional extension, so
+Step 10 repeated evaluation has higher methodological priority.
+
+No validator agent was implemented, no second agent or model exists, and
+`CONFIG-OBID` remains the single-agent core configuration. Step 10 remains next.
+Optional multi-agent work may be reconsidered later only as a separate,
+explicitly scoped extension that cannot disturb the frozen experiment.
