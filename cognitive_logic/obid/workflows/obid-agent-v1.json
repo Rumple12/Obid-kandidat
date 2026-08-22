@@ -1,0 +1,348 @@
+{
+  "id": "obid-agent-v1",
+  "name": "CONFIG-OBID - Single Agent v1",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "obid-agent-v1",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "6c708b60-d8d9-4b71-a879-bc527b5a34cd",
+      "name": "Obid agent ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-960, 0],
+      "webhookId": "obid-agent-v1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $json.headers ?? {};\nconst body = $json.body;\nconst errors = [];\nconst isObject = body !== null && typeof body === 'object' && !Array.isArray(body);\nif (!isObject) {\n  errors.push('body_must_be_object');\n}\nconst event = isObject ? body : {};\nif (typeof event.sensor_id !== 'string' || event.sensor_id.trim() === '') errors.push('sensor_id_required');\nif (typeof event.timestamp !== 'string' || event.timestamp.trim() === '') errors.push('timestamp_required');\nif (event.type !== 'temperature') errors.push('type_must_be_temperature');\nif (!Object.prototype.hasOwnProperty.call(event, 'value') || typeof event.value !== 'number' || !Number.isFinite(event.value)) errors.push('value_must_be_finite_number');\nif (event.unit !== 'C') errors.push('unit_must_be_C');\nconst rawSession = headers['x-obid-session-id'] ?? headers['X-Obid-Session-Id'];\nconst sessionId = typeof rawSession === 'string' ? rawSession.trim() : '';\nif (sessionId === '') errors.push('x_obid_session_id_required');\nreturn [{ json: {\n  valid: errors.length === 0,\n  terminal_stage: errors.length === 0 ? null : 'OBID_INPUT_HANDLING',\n  session_id: sessionId || null,\n  event: isObject ? event : null,\n  errors,\n  agent_input: isObject ? JSON.stringify(event) : null\n} }];"
+      },
+      "id": "bd0d87e8-4b85-46a0-aef5-40114dfa383d",
+      "name": "Prepare and check Obid input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-736, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ca9786b-f7d9-4f68-aae4-371323b000ef",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {"type": "boolean", "operation": "true", "singleValue": true}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "982072f2-338d-4c17-a7af-eb56f054cd0a",
+      "name": "Input is valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-512, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  status: 'rejected',\n  terminal_stage: 'OBID_INPUT_HANDLING',\n  session_id: $json.session_id,\n  errors: $json.errors,\n  decision: null,\n  action: null,\n  model_called: false,\n  tools_called: [],\n  endpoint_reached: null\n} }];"
+      },
+      "id": "566124bf-83d8-4505-9ed2-f2a0437c00f1",
+      "name": "Reject malformed input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-256, 208]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "options": {
+          "systemMessage": "# CONFIG-OBID system prompt v1\n\nYou are one controlled IoT decision agent for the Obid thesis. Process exactly\none valid temperature event for the single target `fan_1`.\n\nThe only permitted action identifiers are `fan_on` and `fan_off`. The inherited\ndecision threshold is exact: a value greater than or equal to `30.0` with unit\n`C` requires `fan_on`; a value below `30.0` with unit `C` requires `fan_off`.\n\nUse only the two connected tools and follow this procedure:\n\n1. Call `temperature_threshold_tool` exactly once with the current event's\n   numeric `value` and `unit`.\n2. Determine the current fan state. If bounded chat history contains a latest\n   finalized decision envelope with a usable `state_after` of `on` or `off`,\n   use that latest state. Otherwise call `fan_status_tool` exactly once with\n   `target` set to `fan_1` and derive the current state from its result.\n3. Never call `fan_status_tool` when a usable latest remembered state exists.\n4. Never call either tool more than once for the current event. Do not call any\n   other tool.\n5. Compare the deterministic desired state with the current state. If they are\n   equal, suppress the duplicate action. Otherwise produce one candidate shared\n   action. The workflow, not the agent, performs any later endpoint routing.\n\nReturn exactly one JSON object and nothing else. Do not use Markdown or code\nfences. Do not expose chain-of-thought, hidden reasoning, scratchpad content, or\nprivate data.\n\nFor a required state change, return this internal envelope shape:\n\n{\n  \"decision\": \"emit_action\",\n  \"action\": {\n    \"action_id\": \"fan_on\",\n    \"target\": \"fan_1\",\n    \"reason\": \"temperature_at_or_above_threshold\",\n    \"requires_approval\": false\n  },\n  \"state_before\": \"off\",\n  \"state_after\": \"on\",\n  \"reason_code\": \"state_change_required\"\n}\n\nFor an already-satisfied desired state, return:\n\n{\n  \"decision\": \"no_action\",\n  \"action\": null,\n  \"state_before\": \"on\",\n  \"state_after\": \"on\",\n  \"reason_code\": \"desired_state_already_satisfied\"\n}\n\nWhen `action` is not null, it must contain exactly `action_id`, `target`,\n`reason`, and `requires_approval`. Use `fan_on` with reason\n`temperature_at_or_above_threshold`, or `fan_off` with reason\n`temperature_below_threshold`. The target is always `fan_1`, and\n`requires_approval` is always `false` in Step 7.\n\nNever invent devices, actions, endpoints, approval behavior, risk metadata, or\nnew shared-interface fields. `no_action` is an internal decision only; it is\nnever an action identifier.\n",
+          "maxIterations": 3,
+          "returnIntermediateSteps": false,
+          "enableStreaming": false
+        }
+      },
+      "id": "f4103cc4-57d9-4170-a772-8ab351a96fb6",
+      "name": "Obid AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [-160, -64]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.5-flash"
+      },
+      "id": "b777af92-4b59-4eed-9e93-41c84ae45a38",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [-352, 240]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 2
+      },
+      "id": "77ea91ce-43dc-4e1e-a450-ae25917a8201",
+      "name": "Obid Two-Interaction Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [-160, 256]
+    },
+    {
+      "parameters": {
+        "description": "Mandatory deterministic read-only threshold tool. Call exactly once for every valid event with its numeric value and unit C. It returns the inherited 30.0 C relation, desired fan action, and desired fan state. It never reads or changes fan state and never calls an action endpoint.",
+        "language": "javaScript",
+        "jsCode": "if (typeof query.value !== 'number' || !Number.isFinite(query.value) || query.unit !== 'C') {\n  throw new Error('Expected finite numeric value and unit C');\n}\nconst atOrAbove = query.value >= 30.0;\nreturn JSON.stringify({\n  threshold_c: 30.0,\n  relation: atOrAbove ? 'at_or_above' : 'below',\n  desired_action: atOrAbove ? 'fan_on' : 'fan_off',\n  desired_fan_state: atOrAbove ? 'on' : 'off'\n});",
+        "specifyInputSchema": true,
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"value\": { \"type\": \"number\" },\n    \"unit\": { \"type\": \"string\" }\n  },\n  \"required\": [\"value\", \"unit\"]\n}"
+      },
+      "id": "b0fd13ea-b9b8-4e72-b1d2-05322535ab6c",
+      "name": "temperature_threshold_tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [32, 256]
+    },
+    {
+      "parameters": {
+        "description": "Read the current simulated state for target fan_1 from the inherited Yacoub middleware. Call exactly once only when bounded memory has no latest usable state_after. Supply the literal target fan_1. This tool is read-only and never calls fan action endpoints.",
+        "source": "parameter",
+        "workflowJson": "{\"nodes\":[{\"parameters\":{\"inputSource\":\"passthrough\"},\"id\":\"41b6218f-bf86-4ca8-b6b4-c04953052f49\",\"name\":\"Receive status request\",\"type\":\"n8n-nodes-base.executeWorkflowTrigger\",\"typeVersion\":1.1,\"position\":[-320,0]},{\"parameters\":{\"url\":\"http://host.docker.internal:8000/status\",\"options\":{}},\"id\":\"9f1c6cd8-66e6-454c-bf3d-f8d3a89ad83f\",\"name\":\"GET inherited status\",\"type\":\"n8n-nodes-base.httpRequest\",\"typeVersion\":4.2,\"position\":[-96,0]},{\"parameters\":{\"jsCode\":\"const state = $json.state ?? {};\\nreturn [{ json: {\\n  target: 'fan_1',\\n  fan_state: state.fan ?? null,\\n  simulated: state.hardware === 'simulated',\\n  source: 'yacoub_status'\\n} }];\"},\"id\":\"cb31d2be-d1e4-4dab-b564-2fa7253e4784\",\"name\":\"Normalize inherited status\",\"type\":\"n8n-nodes-base.code\",\"typeVersion\":2,\"position\":[128,0]}],\"connections\":{\"Receive status request\":{\"main\":[[{\"node\":\"GET inherited status\",\"type\":\"main\",\"index\":0}]]},\"GET inherited status\":{\"main\":[[{\"node\":\"Normalize inherited status\",\"type\":\"main\",\"index\":0}]]}},\"settings\":{\"executionOrder\":\"v1\"}}"
+      },
+      "id": "1e0addf7-acbb-426b-a714-246877bebd36",
+      "name": "fan_status_tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [224, 256]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawValue = $json.output ?? $json.text ?? $json.response ?? $json.message ?? '';\nconst raw = typeof rawValue === 'string' ? rawValue.trim() : JSON.stringify(rawValue);\nlet candidate = raw;\nconst fenced = raw.match(/```(?:json)?\\s*([\\s\\S]*?)```/i);\nif (fenced) {\n  candidate = fenced[1].trim();\n} else {\n  const first = raw.indexOf('{');\n  const last = raw.lastIndexOf('}');\n  if (first >= 0 && last > first) candidate = raw.slice(first, last + 1);\n}\nlet envelope;\ntry {\n  envelope = JSON.parse(candidate);\n} catch (error) {\n  return [{ json: {\n    parse_status: 'failed',\n    terminal_stage: 'OBID_OUTPUT_PARSING',\n    raw_model_output: raw,\n    parse_error: error.message,\n    decision: null,\n    action: null,\n    state_before: null,\n    state_after: null,\n    reason_code: null,\n    session_id: $('Prepare and check Obid input').item.json.session_id,\n    input_event: $('Prepare and check Obid input').item.json.event\n  } }];\n}\nreturn [{ json: {\n  parse_status: 'parsed',\n  terminal_stage: null,\n  raw_model_output: raw,\n  decision: envelope.decision ?? null,\n  action: envelope.action ?? null,\n  state_before: envelope.state_before ?? null,\n  state_after: envelope.state_after ?? null,\n  reason_code: envelope.reason_code ?? null,\n  session_id: $('Prepare and check Obid input').item.json.session_id,\n  input_event: $('Prepare and check Obid input').item.json.event\n} }];"
+      },
+      "id": "9f84ff18-094c-4b5b-8791-2aa4b93713a1",
+      "name": "Parse final decision envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [128, -64]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "1558c259-a207-443f-97f5-e6f81192c300",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "no_action",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bf4b9051-ec19-46b8-8274-942fc5d2c099",
+      "name": "Decision is no_action?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [352, -64]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, routing_status: 'internal_no_action', endpoint_reached: null } }];"
+      },
+      "id": "af974d6c-e834-48d3-880d-9478ae9caa7f",
+      "name": "Internal no-action terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [608, -192]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "89d1e45d-326f-4861-897d-50424668ea83",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "emit_action",
+              "operator": {"type": "string", "operation": "equals"}
+            },
+            {
+              "id": "9bd87f7d-0710-449a-b22d-5401d80791c5",
+              "leftValue": "={{ $json.action.action_id }}",
+              "rightValue": "fan_on",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "dc9965f1-ce57-4873-b9ef-8096bef0088e",
+      "name": "Candidate is fan_on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [608, 32]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "f4c0a995-47a6-43af-8311-514787c17c87",
+      "name": "POST inherited fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [864, -16]
+    },
+    {
+      "parameters": {
+        "jsCode": "const decision = $('Parse final decision envelope').item.json;\nreturn [{ json: { ...decision, routing_status: 'candidate_routed', endpoint_reached: '/fan/on', middleware_result: $json } }];"
+      },
+      "id": "ab6d7ecf-bd12-46b6-a13c-3f0d5ac18d28",
+      "name": "Fan on terminal evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1088, -16]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "753e1556-3f90-4cef-8716-3543808b4a43",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "emit_action",
+              "operator": {"type": "string", "operation": "equals"}
+            },
+            {
+              "id": "45cd10c5-7039-4af3-837a-6810809176d6",
+              "leftValue": "={{ $json.action.action_id }}",
+              "rightValue": "fan_off",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0387cbf9-9dbb-4bfc-8a72-68cdf479937d",
+      "name": "Candidate is fan_off?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [864, 160]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "c3c1add2-8f84-4ca2-b6f9-d18acb8ce908",
+      "name": "POST inherited fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1088, 112]
+    },
+    {
+      "parameters": {
+        "jsCode": "const decision = $('Parse final decision envelope').item.json;\nreturn [{ json: { ...decision, routing_status: 'candidate_routed', endpoint_reached: '/fan/off', middleware_result: $json } }];"
+      },
+      "id": "7ad7b197-1062-4fb6-bb0c-29660498ef59",
+      "name": "Fan off terminal evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1312, 112]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, routing_status: 'unrouted_candidate_or_parse_failure', terminal_stage: $json.terminal_stage ?? 'OBID_MINIMAL_ROUTING', endpoint_reached: null } }];"
+      },
+      "id": "40ecbbd7-f128-466f-878d-2aca64f7c1d4",
+      "name": "Unrouted candidate terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1088, 304]
+    }
+  ],
+  "connections": {
+    "Obid agent ingress": {
+      "main": [[{"node": "Prepare and check Obid input", "type": "main", "index": 0}]]
+    },
+    "Prepare and check Obid input": {
+      "main": [[{"node": "Input is valid?", "type": "main", "index": 0}]]
+    },
+    "Input is valid?": {
+      "main": [
+        [{"node": "Obid AI Agent", "type": "main", "index": 0}],
+        [{"node": "Reject malformed input", "type": "main", "index": 0}]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [[{"node": "Obid AI Agent", "type": "ai_languageModel", "index": 0}]]
+    },
+    "Obid Two-Interaction Memory": {
+      "ai_memory": [[{"node": "Obid AI Agent", "type": "ai_memory", "index": 0}]]
+    },
+    "temperature_threshold_tool": {
+      "ai_tool": [[{"node": "Obid AI Agent", "type": "ai_tool", "index": 0}]]
+    },
+    "fan_status_tool": {
+      "ai_tool": [[{"node": "Obid AI Agent", "type": "ai_tool", "index": 0}]]
+    },
+    "Obid AI Agent": {
+      "main": [[{"node": "Parse final decision envelope", "type": "main", "index": 0}]]
+    },
+    "Parse final decision envelope": {
+      "main": [[{"node": "Decision is no_action?", "type": "main", "index": 0}]]
+    },
+    "Decision is no_action?": {
+      "main": [
+        [{"node": "Internal no-action terminal", "type": "main", "index": 0}],
+        [{"node": "Candidate is fan_on?", "type": "main", "index": 0}]
+      ]
+    },
+    "Candidate is fan_on?": {
+      "main": [
+        [{"node": "POST inherited fan on", "type": "main", "index": 0}],
+        [{"node": "Candidate is fan_off?", "type": "main", "index": 0}]
+      ]
+    },
+    "POST inherited fan on": {
+      "main": [[{"node": "Fan on terminal evidence", "type": "main", "index": 0}]]
+    },
+    "Candidate is fan_off?": {
+      "main": [
+        [{"node": "POST inherited fan off", "type": "main", "index": 0}],
+        [{"node": "Unrouted candidate terminal", "type": "main", "index": 0}]
+      ]
+    },
+    "POST inherited fan off": {
+      "main": [[{"node": "Fan off terminal evidence", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}
