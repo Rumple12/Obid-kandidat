@@ -1,0 +1,1074 @@
+{
+  "id": "obid-agent-v3-hitl",
+  "name": "CONFIG-OBID - Single Agent v3 HITL",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "obid-agent-v3-hitl",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "6c708b60-d8d9-4b71-a879-bc527b5a34cd",
+      "name": "Obid agent ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        0
+      ],
+      "webhookId": "obid-agent-v3-hitl"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $json.headers ?? {};\nconst body = $json.body;\nconst errors = [];\nconst isObject = body !== null && typeof body === 'object' && !Array.isArray(body);\nif (!isObject) {\n  errors.push('body_must_be_object');\n}\nconst event = isObject ? body : {};\nif (typeof event.sensor_id !== 'string' || event.sensor_id.trim() === '') errors.push('sensor_id_required');\nif (typeof event.timestamp !== 'string' || event.timestamp.trim() === '') errors.push('timestamp_required');\nif (event.type !== 'temperature') errors.push('type_must_be_temperature');\nif (!Object.prototype.hasOwnProperty.call(event, 'value') || typeof event.value !== 'number' || !Number.isFinite(event.value)) errors.push('value_must_be_finite_number');\nif (event.unit !== 'C') errors.push('unit_must_be_C');\nconst rawSession = headers['x-obid-session-id'] ?? headers['X-Obid-Session-Id'];\nconst sessionId = typeof rawSession === 'string' ? rawSession.trim() : '';\nif (sessionId === '') errors.push('x_obid_session_id_required');\nreturn [{ json: {\n  valid: errors.length === 0,\n  terminal_stage: errors.length === 0 ? null : 'OBID_INPUT_HANDLING',\n  session_id: sessionId || null,\n  event: isObject ? event : null,\n  errors,\n  agent_input: isObject ? JSON.stringify(event) : null\n} }];"
+      },
+      "id": "bd0d87e8-4b85-46a0-aef5-40114dfa383d",
+      "name": "Prepare and check Obid input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -736,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ca9786b-f7d9-4f68-aae4-371323b000ef",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "982072f2-338d-4c17-a7af-eb56f054cd0a",
+      "name": "Input is valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -512,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  status: 'rejected',\n  terminal_stage: 'OBID_INPUT_HANDLING',\n  session_id: $json.session_id,\n  errors: $json.errors,\n  decision: null,\n  action: null,\n  model_called: false,\n  tools_called: [],\n  endpoint_reached: null\n} }];"
+      },
+      "id": "566124bf-83d8-4505-9ed2-f2a0437c00f1",
+      "name": "Reject malformed input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "options": {
+          "systemMessage": "# CONFIG-OBID system prompt v1\n\nYou are one controlled IoT decision agent for the Obid thesis. Process exactly\none valid temperature event for the single target `fan_1`.\n\nThe only permitted action identifiers are `fan_on` and `fan_off`. The inherited\ndecision threshold is exact: a value greater than or equal to `30.0` with unit\n`C` requires `fan_on`; a value below `30.0` with unit `C` requires `fan_off`.\n\nUse only the two connected tools and follow this procedure:\n\n1. Call `temperature_threshold_tool` exactly once with the current event's\n   numeric `value` and `unit`.\n2. Determine the current fan state. If bounded chat history contains a latest\n   finalized decision envelope with a usable `state_after` of `on` or `off`,\n   use that latest state. Otherwise call `fan_status_tool` exactly once with\n   `target` set to `fan_1` and derive the current state from its result.\n3. Never call `fan_status_tool` when a usable latest remembered state exists.\n4. Never call either tool more than once for the current event. Do not call any\n   other tool.\n5. Compare the deterministic desired state with the current state. If they are\n   equal, suppress the duplicate action. Otherwise produce one candidate shared\n   action. The workflow, not the agent, performs any later endpoint routing.\n\nReturn exactly one JSON object and nothing else. Do not use Markdown or code\nfences. Do not expose chain-of-thought, hidden reasoning, scratchpad content, or\nprivate data.\n\nFor a required state change, return this internal envelope shape:\n\n{\n  \"decision\": \"emit_action\",\n  \"action\": {\n    \"action_id\": \"fan_on\",\n    \"target\": \"fan_1\",\n    \"reason\": \"temperature_at_or_above_threshold\",\n    \"requires_approval\": false\n  },\n  \"state_before\": \"off\",\n  \"state_after\": \"on\",\n  \"reason_code\": \"state_change_required\"\n}\n\nFor an already-satisfied desired state, return:\n\n{\n  \"decision\": \"no_action\",\n  \"action\": null,\n  \"state_before\": \"on\",\n  \"state_after\": \"on\",\n  \"reason_code\": \"desired_state_already_satisfied\"\n}\n\nWhen `action` is not null, it must contain exactly `action_id`, `target`,\n`reason`, and `requires_approval`. Use `fan_on` with reason\n`temperature_at_or_above_threshold`, or `fan_off` with reason\n`temperature_below_threshold`. The target is always `fan_1`, and\n`requires_approval` is always `false` in Step 7.\n\nNever invent devices, actions, endpoints, approval behavior, risk metadata, or\nnew shared-interface fields. `no_action` is an internal decision only; it is\nnever an action identifier.\n",
+          "maxIterations": 3,
+          "returnIntermediateSteps": false,
+          "enableStreaming": false
+        }
+      },
+      "id": "f4103cc4-57d9-4170-a772-8ab351a96fb6",
+      "name": "Obid AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.5-flash"
+      },
+      "id": "b777af92-4b59-4eed-9e93-41c84ae45a38",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 2
+      },
+      "id": "77ea91ce-43dc-4e1e-a450-ae25917a8201",
+      "name": "Obid Two-Interaction Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Mandatory deterministic read-only threshold tool. Call exactly once for every valid event with its numeric value and unit C. It returns the inherited 30.0 C relation, desired fan action, and desired fan state. It never reads or changes fan state and never calls an action endpoint.",
+        "language": "javaScript",
+        "jsCode": "if (typeof query.value !== 'number' || !Number.isFinite(query.value) || query.unit !== 'C') {\n  throw new Error('Expected finite numeric value and unit C');\n}\nconst atOrAbove = query.value >= 30.0;\nreturn JSON.stringify({\n  threshold_c: 30.0,\n  relation: atOrAbove ? 'at_or_above' : 'below',\n  desired_action: atOrAbove ? 'fan_on' : 'fan_off',\n  desired_fan_state: atOrAbove ? 'on' : 'off'\n});",
+        "specifyInputSchema": true,
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"value\": { \"type\": \"number\" },\n    \"unit\": { \"type\": \"string\" }\n  },\n  \"required\": [\"value\", \"unit\"]\n}"
+      },
+      "id": "b0fd13ea-b9b8-4e72-b1d2-05322535ab6c",
+      "name": "temperature_threshold_tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Read the current simulated state for target fan_1 from the inherited Yacoub middleware. Call exactly once only when bounded memory has no latest usable state_after. Supply the literal target fan_1. This tool is read-only and never calls fan action endpoints.",
+        "source": "parameter",
+        "workflowJson": "{\"nodes\":[{\"parameters\":{\"inputSource\":\"passthrough\"},\"id\":\"41b6218f-bf86-4ca8-b6b4-c04953052f49\",\"name\":\"Receive status request\",\"type\":\"n8n-nodes-base.executeWorkflowTrigger\",\"typeVersion\":1.1,\"position\":[-320,0]},{\"parameters\":{\"url\":\"http://host.docker.internal:8000/status\",\"options\":{}},\"id\":\"9f1c6cd8-66e6-454c-bf3d-f8d3a89ad83f\",\"name\":\"GET inherited status\",\"type\":\"n8n-nodes-base.httpRequest\",\"typeVersion\":4.2,\"position\":[-96,0]},{\"parameters\":{\"jsCode\":\"const state = $json.state ?? {};\\nreturn [{ json: {\\n  target: 'fan_1',\\n  fan_state: state.fan ?? null,\\n  simulated: state.hardware === 'simulated',\\n  source: 'yacoub_status'\\n} }];\"},\"id\":\"cb31d2be-d1e4-4dab-b564-2fa7253e4784\",\"name\":\"Normalize inherited status\",\"type\":\"n8n-nodes-base.code\",\"typeVersion\":2,\"position\":[128,0]}],\"connections\":{\"Receive status request\":{\"main\":[[{\"node\":\"GET inherited status\",\"type\":\"main\",\"index\":0}]]},\"GET inherited status\":{\"main\":[[{\"node\":\"Normalize inherited status\",\"type\":\"main\",\"index\":0}]]}},\"settings\":{\"executionOrder\":\"v1\"}}"
+      },
+      "id": "1e0addf7-acbb-426b-a714-246877bebd36",
+      "name": "fan_status_tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawValue = $json.output ?? $json.text ?? $json.response ?? $json.message ?? '';\nconst raw = typeof rawValue === 'string' ? rawValue.trim() : JSON.stringify(rawValue);\nlet candidate = raw;\nconst fenced = raw.match(/```(?:json)?\\s*([\\s\\S]*?)```/i);\nif (fenced) {\n  candidate = fenced[1].trim();\n} else {\n  const first = raw.indexOf('{');\n  const last = raw.lastIndexOf('}');\n  if (first >= 0 && last > first) candidate = raw.slice(first, last + 1);\n}\nlet envelope;\ntry {\n  envelope = JSON.parse(candidate);\n} catch (error) {\n  return [{ json: {\n    parse_status: 'failed',\n    terminal_stage: 'OBID_OUTPUT_PARSING',\n    raw_model_output: raw,\n    parse_error: error.message,\n    decision: null,\n    action: null,\n    state_before: null,\n    state_after: null,\n    reason_code: null,\n    session_id: $('Prepare and check Obid input').item.json.session_id,\n    input_event: $('Prepare and check Obid input').item.json.event\n  } }];\n}\nreturn [{ json: {\n  parse_status: 'parsed',\n  terminal_stage: null,\n  raw_model_output: raw,\n  decision: envelope.decision ?? null,\n  action: envelope.action ?? null,\n  state_before: envelope.state_before ?? null,\n  state_after: envelope.state_after ?? null,\n  reason_code: envelope.reason_code ?? null,\n  session_id: $('Prepare and check Obid input').item.json.session_id,\n  input_event: $('Prepare and check Obid input').item.json.event\n} }];"
+      },
+      "id": "9f84ff18-094c-4b5b-8791-2aa4b93713a1",
+      "name": "Parse final decision envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1558c259-a207-443f-97f5-e6f81192c300",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "no_action",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bf4b9051-ec19-46b8-8274-942fc5d2c099",
+      "name": "Decision is no_action?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, routing_status: 'internal_no_action', endpoint_reached: null } }];"
+      },
+      "id": "af974d6c-e834-48d3-880d-9478ae9caa7f",
+      "name": "Internal no-action terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  evidence_id: 'S9-INTEGRATED-CONFIG-OBID',\n  injection_point: 'OBID_POST_AGENT_PRE_VALIDATOR',\n  source: 'CONFIG_OBID_V3',\n  candidate: $json.action,\n  policy_context: null,\n  state_before: $json.state_before ?? null,\n  state_after: $json.state_after ?? null,\n  hitl_flow_started_at: new Date().toISOString(),\n  cognitive_result: $json\n} }];"
+      },
+      "id": "4503ac3d-f8bd-4c9e-a1e2-c7c16f49836a",
+      "name": "Prepare candidate for safety",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "runtime-safety-v2-hitl",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "9ab3ca71-4881-4549-8831-cdf547be99ce",
+      "name": "Execute runtime safety",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9237c08a-abd1-45c6-bc1c-6137508cb30b",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "allow",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2f92a7ca-b170-4732-94fc-7122fd84864a",
+      "name": "Safety policy is ALLOW?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1f259f6c-941f-49a4-a5a9-68e5d404841f",
+              "leftValue": "={{ $json.released_action.action_id }}",
+              "rightValue": "fan_on",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c911d475-cbd9-4a1e-bd28-3f3a224bed5b",
+      "name": "Allowed action is fan_on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "511970f0-9398-43c1-aa37-a460955c3f1b",
+      "name": "POST validated fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1376,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const authorization = $('Authorize endpoint release').first().json;\nconst completedAt = new Date().toISOString();\nconst startMs = Date.parse(authorization.hitl_flow_started_at);\nconst decisionMs = Date.parse(authorization.approval_decided_at);\nconst completeMs = Date.parse(completedAt);\nconst duration = (start, end) => Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;\nreturn [{ json: {\n  ...authorization,\n  hitl_completed_at: authorization.hitl_status === 'approved' ? completedAt : (authorization.hitl_completed_at ?? null),\n  routing_status: authorization.release_path === 'hitl_approved' ? 'approved_action_executed' : 'safety_allowed_action_executed',\n  terminal_stage: 'YACOUB_ACTION_ENDPOINT_POST_FAN_ON',\n  endpoint_reached: '/fan/on',\n  endpoint_call_count: { fan_on: 1, fan_off: 0 },\n  middleware_result: $json,\n  timing: authorization.hitl_status === 'approved' ? {\n    ...authorization.timing,\n    post_decision_automation_ms: duration(decisionMs, completeMs),\n    total_hitl_elapsed_ms: duration(startMs, completeMs)\n  } : authorization.timing\n} }];"
+      },
+      "id": "ed185d2a-36f2-41d8-bdae-31bc408153d3",
+      "name": "Validated fan on terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "83646acb-493e-4acc-a728-df251718b021",
+              "leftValue": "={{ $json.released_action.action_id }}",
+              "rightValue": "fan_off",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7e32812e-29a2-4a66-8f31-ce733d36023d",
+      "name": "Allowed action is fan_off?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1376,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "e2ae55c1-34c4-4947-a260-a8ae8df73514",
+      "name": "POST validated fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1616,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const authorization = $('Authorize endpoint release').first().json;\nconst completedAt = new Date().toISOString();\nconst startMs = Date.parse(authorization.hitl_flow_started_at);\nconst decisionMs = Date.parse(authorization.approval_decided_at);\nconst completeMs = Date.parse(completedAt);\nconst duration = (start, end) => Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;\nreturn [{ json: {\n  ...authorization,\n  hitl_completed_at: authorization.hitl_status === 'approved' ? completedAt : (authorization.hitl_completed_at ?? null),\n  routing_status: authorization.release_path === 'hitl_approved' ? 'approved_action_executed' : 'safety_allowed_action_executed',\n  terminal_stage: 'YACOUB_ACTION_ENDPOINT_POST_FAN_OFF',\n  endpoint_reached: '/fan/off',\n  endpoint_call_count: { fan_on: 0, fan_off: 1 },\n  middleware_result: $json,\n  timing: authorization.hitl_status === 'approved' ? {\n    ...authorization.timing,\n    post_decision_automation_ms: duration(decisionMs, completeMs),\n    total_hitl_elapsed_ms: duration(startMs, completeMs)\n  } : authorization.timing\n} }];"
+      },
+      "id": "4d7288df-7f27-49b7-a0e9-90413ae05054",
+      "name": "Validated fan off terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  routing_status: 'blocked_impossible_allow_route',\n  terminal_stage: $json.terminal_stage ?? 'OBID_RUNTIME_POLICY_DEFENSE',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "4834800d-6107-42ab-8b14-309a44c09a2e",
+      "name": "Impossible allow route terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cda32d19-a379-40fc-92cb-19e619092059",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "approval_required",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ad1d7631-fdcf-4ae5-b0e5-482614a2f9f0",
+      "name": "Safety outcome requires approval?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst held = input.held_action;\nconst heldIsObject = held !== null && typeof held === 'object' && !Array.isArray(held);\nconst heldKeys = heldIsObject ? Object.keys(held).sort() : [];\nconst exactKeys = JSON.stringify(heldKeys) === JSON.stringify(['action_id', 'reason', 'requires_approval', 'target']);\nconst heldContractValid = heldIsObject\n  && exactKeys\n  && ['fan_on', 'fan_off'].includes(held.action_id)\n  && held.target === 'fan_1'\n  && typeof held.reason === 'string'\n  && held.reason.length >= 1\n  && held.requires_approval === true;\nconst checks = {\n  schema_valid: input.schema_valid === true,\n  validation_status_valid: input.validation_status === 'valid',\n  policy_executed: input.policy_executed === true,\n  approval_required: input.policy_decision === 'approval_required',\n  held_action_valid: heldContractValid,\n  released_action_null: input.released_action === null,\n  transformation_integrity: input.transformation_integrity === true\n};\nconst gatePreconditionsValid = Object.values(checks).every(Boolean);\nreturn [{ json: {\n  ...input,\n  hitl_gate_preconditions: checks,\n  hitl_gate_preconditions_valid: gatePreconditionsValid\n} }];"
+      },
+      "id": "6ec623ce-ab84-4aef-aef2-d166837c83a6",
+      "name": "Verify HITL gate preconditions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  routing_status: 'blocked_before_middleware',\n  terminal_stage: $json.terminal_stage ?? 'OBID_RUNTIME_VALIDATOR',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "22587987-0ffd-4b17-a549-9115063a3a12",
+      "name": "Blocked integrated terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4dcc17b7-5555-4ff9-ac0a-ed8e8426ed5b",
+              "leftValue": "={{ $json.hitl_status }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a8b35002-085e-4ae8-973b-ddf21ec7f6a5",
+      "name": "Human decision approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1616,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const direct = $json.schema_valid === true\n  && $json.policy_decision === 'allow'\n  && $json.released_action !== null\n  && $json.hitl_status === undefined;\nconst approved = $json.schema_valid === true\n  && $json.policy_decision === 'approval_required'\n  && $json.hitl_status === 'approved'\n  && $json.human_decision === 'approve'\n  && $json.held_action_unchanged === true\n  && $json.released_action !== null\n  && $json.released_action.requires_approval === true;\nreturn [{ json: {\n  ...$json,\n  endpoint_authorized: direct || approved,\n  release_path: direct ? 'direct' : approved ? 'hitl_approved' : null,\n  routing_status: direct ? 'direct_release_authorized' : approved ? 'approved_release_authorized' : 'release_blocked'\n} }];"
+      },
+      "id": "f80f7d0b-0222-4fed-829d-ed66b46678f5",
+      "name": "Authorize endpoint release",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "09883f9e-902c-4011-805f-16379f2b0814",
+              "leftValue": "={{ $json.endpoint_authorized }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5ca8f5ea-2a6f-4866-80cc-55752f7f7b92",
+      "name": "Endpoint release authorized?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1376,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const completedAt = new Date().toISOString();\nconst startMs = Date.parse($json.hitl_flow_started_at);\nconst decisionMs = Date.parse($json.approval_decided_at);\nconst completeMs = Date.parse(completedAt);\nconst duration = (start, end) => Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;\nreturn [{ json: {\n  ...$json,\n  hitl_completed_at: completedAt,\n  released_action: null,\n  routing_status: $json.hitl_status === 'denied' ? 'denied_no_release' : 'hitl_fail_closed',\n  terminal_stage: $json.hitl_status === 'denied' ? 'OBID_HITL_DENIED' : ($json.terminal_stage ?? 'OBID_HITL_INVALID_DECISION'),\n  endpoint_reached: null,\n  endpoint_call_count: { fan_on: 0, fan_off: 0 },\n  timing: {\n    ...($json.timing ?? {}),\n    post_decision_automation_ms: duration(decisionMs, completeMs),\n    total_hitl_elapsed_ms: duration(startMs, completeMs)\n  }\n} }];"
+      },
+      "id": "b57b707f-7b04-4217-83ed-0de7b0d1478a",
+      "name": "Denied or invalid HITL terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cdb4f3e8-eb25-4393-a205-493ec4c3c840",
+              "leftValue": "={{ $json.hitl_gate_preconditions_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c86d58ab-1e4a-4426-a165-034f4bb423be",
+      "name": "HITL preconditions valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1616,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst held = JSON.parse(JSON.stringify(input.held_action));\nconst escapeHtml = (value) => String(value)\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;')\n  .replaceAll('\\\"', '&quot;')\n  .replaceAll(\"'\", '&#39;');\nconst requestedAt = new Date().toISOString();\nconst flowStarted = typeof input.hitl_flow_started_at === 'string'\n  ? input.hitl_flow_started_at\n  : requestedAt;\nconst requestId = 'hitl-' + String($execution.id);\nconst reviewHtml = [\n  '<p>Review the already validated, policy-held action. Only the decision below is submitted.</p>',\n  '<dl>',\n  '<dt><strong>Request ID</strong></dt><dd>' + escapeHtml(requestId) + '</dd>',\n  '<dt><strong>Action ID</strong></dt><dd>' + escapeHtml(held.action_id) + '</dd>',\n  '<dt><strong>Target</strong></dt><dd>' + escapeHtml(held.target) + '</dd>',\n  '<dt><strong>Reason</strong></dt><dd>' + escapeHtml(held.reason) + '</dd>',\n  '<dt><strong>requires_approval</strong></dt><dd>true</dd>',\n  '<dt><strong>Policy reason</strong></dt><dd>' + escapeHtml(input.policy_reason_code) + '</dd>',\n  '<dt><strong>Policy case</strong></dt><dd>' + escapeHtml(input.policy_context_received?.policy_case_id ?? 'none') + '</dd>',\n  '</dl>'\n].join('');\nreturn [{ json: {\n  ...input,\n  hitl_gate_execution_id: String($execution.id),\n  hitl_request_id: requestId,\n  hitl_status: 'pending',\n  human_decision: null,\n  hitl_flow_started_at: flowStarted,\n  approval_requested_at: requestedAt,\n  approval_decided_at: null,\n  hitl_completed_at: null,\n  held_action: held,\n  held_action_snapshot: JSON.parse(JSON.stringify(held)),\n  held_action_unchanged: null,\n  released_action: null,\n  terminal_stage: 'OBID_HITL_PENDING',\n  endpoint_reached: null,\n  review_html: reviewHtml\n} }];"
+      },
+      "id": "73a97ae1-e44e-4de2-a109-83644b6d397c",
+      "name": "Prepare HITL request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "incomingAuthentication": "none",
+        "formTitle": "Obid HITL action review",
+        "formDescription": "={{ $json.review_html }}",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "human_decision",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "approve"
+                  },
+                  {
+                    "option": "deny"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "onReceived",
+        "limitWaitTime": false,
+        "options": {
+          "appendAttribution": false,
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "text",
+              "formSubmittedText": "Decision recorded. You may close this page."
+            }
+          }
+        }
+      },
+      "id": "8a38d716-4dd9-4f5c-a107-2b0131132bc4",
+      "name": "Wait for human decision",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2096,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const submitted = $json;\nconst pending = $('Prepare HITL request').first().json;\nconst decision = submitted.human_decision;\nconst allowedSubmissionFields = new Set(['human_decision', 'submittedAt', 'formMode']);\nconst unexpectedSubmissionFields = Object.keys(submitted).filter((key) => !allowedSubmissionFields.has(key)).sort();\nconst decidedAt = typeof submitted.submittedAt === 'string' && !Number.isNaN(Date.parse(submitted.submittedAt))\n  ? new Date(submitted.submittedAt).toISOString()\n  : new Date().toISOString();\nconst completedAt = new Date().toISOString();\nconst held = pending.held_action;\nconst snapshot = pending.held_action_snapshot;\nconst fields = ['action_id', 'target', 'reason', 'requires_approval'];\nconst exactObject = (value) => value !== null\n  && typeof value === 'object'\n  && !Array.isArray(value)\n  && JSON.stringify(Object.keys(value).sort()) === JSON.stringify(fields.slice().sort());\nconst heldActionUnchanged = exactObject(held)\n  && exactObject(snapshot)\n  && fields.every((field) => held[field] === snapshot[field]);\nconst decisionValid = decision === 'approve' || decision === 'deny';\nconst approved = decision === 'approve' && decisionValid && heldActionUnchanged && unexpectedSubmissionFields.length === 0;\nconst denied = decision === 'deny' && decisionValid && heldActionUnchanged && unexpectedSubmissionFields.length === 0;\nlet status = approved ? 'approved' : denied ? 'denied' : 'invalid_decision';\nlet terminalStage = approved ? 'OBID_HITL_APPROVED' : denied ? 'OBID_HITL_DENIED' : 'OBID_HITL_INVALID_DECISION';\nconst startMs = Date.parse(pending.hitl_flow_started_at);\nconst requestMs = Date.parse(pending.approval_requested_at);\nconst decisionMs = Date.parse(decidedAt);\nconst completeMs = Date.parse(completedAt);\nconst duration = (start, end) => Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;\nreturn [{ json: {\n  ...pending,\n  review_html: undefined,\n  hitl_status: status,\n  human_decision: decisionValid ? decision : null,\n  human_decision_valid: decisionValid,\n  unexpected_submission_fields: unexpectedSubmissionFields,\n  approval_decided_at: decidedAt,\n  hitl_completed_at: completedAt,\n  held_action_unchanged: heldActionUnchanged,\n  released_action: approved ? held : null,\n  terminal_stage: terminalStage,\n  endpoint_reached: null,\n  form_transport_metadata: {\n    submitted_at_present: typeof submitted.submittedAt === 'string',\n    form_mode: submitted.formMode ?? null\n  },\n  timing: {\n    pre_wait_automation_ms: duration(startMs, requestMs),\n    human_wait_ms: duration(requestMs, decisionMs),\n    post_decision_automation_ms: duration(decisionMs, completeMs),\n    total_hitl_elapsed_ms: duration(startMs, completeMs)\n  }\n} }];"
+      },
+      "id": "8aa14ee7-ff82-4494-91e0-c8f499f6d97f",
+      "name": "Finalize human decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  hitl_gate_execution_id: String($execution.id),\n  hitl_request_id: null,\n  hitl_status: 'blocked_precondition',\n  human_decision: null,\n  approval_requested_at: null,\n  approval_decided_at: null,\n  hitl_completed_at: new Date().toISOString(),\n  held_action_unchanged: false,\n  released_action: null,\n  terminal_stage: 'OBID_HITL_PRECONDITION',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "9929d201-1245-49e4-9659-71cd58d6ec3b",
+      "name": "HITL precondition blocked terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        320
+      ]
+    }
+  ],
+  "connections": {
+    "Obid agent ingress": {
+      "main": [
+        [
+          {
+            "node": "Prepare and check Obid input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare and check Obid input": {
+      "main": [
+        [
+          {
+            "node": "Input is valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input is valid?": {
+      "main": [
+        [
+          {
+            "node": "Obid AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject malformed input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Obid AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obid Two-Interaction Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Obid AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "temperature_threshold_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Obid AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fan_status_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Obid AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obid AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse final decision envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse final decision envelope": {
+      "main": [
+        [
+          {
+            "node": "Decision is no_action?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision is no_action?": {
+      "main": [
+        [
+          {
+            "node": "Internal no-action terminal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare candidate for safety",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare candidate for safety": {
+      "main": [
+        [
+          {
+            "node": "Execute runtime safety",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute runtime safety": {
+      "main": [
+        [
+          {
+            "node": "Safety policy is ALLOW?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safety policy is ALLOW?": {
+      "main": [
+        [
+          {
+            "node": "Authorize endpoint release",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Safety outcome requires approval?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed action is fan_on?": {
+      "main": [
+        [
+          {
+            "node": "POST validated fan on",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Allowed action is fan_off?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST validated fan on": {
+      "main": [
+        [
+          {
+            "node": "Validated fan on terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed action is fan_off?": {
+      "main": [
+        [
+          {
+            "node": "POST validated fan off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Impossible allow route terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST validated fan off": {
+      "main": [
+        [
+          {
+            "node": "Validated fan off terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safety outcome requires approval?": {
+      "main": [
+        [
+          {
+            "node": "Verify HITL gate preconditions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Blocked integrated terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human decision approved?": {
+      "main": [
+        [
+          {
+            "node": "Authorize endpoint release",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Denied or invalid HITL terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorize endpoint release": {
+      "main": [
+        [
+          {
+            "node": "Endpoint release authorized?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Endpoint release authorized?": {
+      "main": [
+        [
+          {
+            "node": "Allowed action is fan_on?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Impossible allow route terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify HITL gate preconditions": {
+      "main": [
+        [
+          {
+            "node": "HITL preconditions valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HITL preconditions valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare HITL request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HITL precondition blocked terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare HITL request": {
+      "main": [
+        [
+          {
+            "node": "Wait for human decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for human decision": {
+      "main": [
+        [
+          {
+            "node": "Finalize human decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize human decision": {
+      "main": [
+        [
+          {
+            "node": "Human decision approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HITL precondition blocked terminal": {
+      "main": [
+        [
+          {
+            "node": "Human decision approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}

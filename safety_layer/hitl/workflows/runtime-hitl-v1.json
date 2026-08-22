@@ -1,0 +1,129 @@
+{
+  "id": "runtime-hitl-v1",
+  "name": "Step 9 - Runtime HITL gate v1",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "75f818f9-fd68-4ea5-b139-9b670d4ab64d",
+      "name": "Receive approval-required outcome",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [-720, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst held = input.held_action;\nconst heldIsObject = held !== null && typeof held === 'object' && !Array.isArray(held);\nconst heldKeys = heldIsObject ? Object.keys(held).sort() : [];\nconst exactKeys = JSON.stringify(heldKeys) === JSON.stringify(['action_id', 'reason', 'requires_approval', 'target']);\nconst heldContractValid = heldIsObject\n  && exactKeys\n  && ['fan_on', 'fan_off'].includes(held.action_id)\n  && held.target === 'fan_1'\n  && typeof held.reason === 'string'\n  && held.reason.length >= 1\n  && held.requires_approval === true;\nconst checks = {\n  schema_valid: input.schema_valid === true,\n  validation_status_valid: input.validation_status === 'valid',\n  policy_executed: input.policy_executed === true,\n  approval_required: input.policy_decision === 'approval_required',\n  held_action_valid: heldContractValid,\n  released_action_null: input.released_action === null,\n  transformation_integrity: input.transformation_integrity === true\n};\nconst gatePreconditionsValid = Object.values(checks).every(Boolean);\nreturn [{ json: {\n  ...input,\n  hitl_gate_preconditions: checks,\n  hitl_gate_preconditions_valid: gatePreconditionsValid\n} }];"
+      },
+      "id": "0ce117e5-eace-46db-bdb1-314727330204",
+      "name": "Verify HITL gate preconditions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-480, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [{
+            "id": "cdb4f3e8-eb25-4393-a205-493ec4c3c840",
+            "leftValue": "={{ $json.hitl_gate_preconditions_valid }}",
+            "rightValue": true,
+            "operator": {"type": "boolean", "operation": "true", "singleValue": true}
+          }],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "72b52ad6-935e-4d7f-9c9d-35c9c8adeba8",
+      "name": "HITL preconditions valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-240, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst held = JSON.parse(JSON.stringify(input.held_action));\nconst escapeHtml = (value) => String(value)\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;')\n  .replaceAll('\\\"', '&quot;')\n  .replaceAll(\"'\", '&#39;');\nconst requestedAt = new Date().toISOString();\nconst flowStarted = typeof input.hitl_flow_started_at === 'string'\n  ? input.hitl_flow_started_at\n  : requestedAt;\nconst requestId = 'hitl-' + String($execution.id);\nconst reviewHtml = [\n  '<p>Review the already validated, policy-held action. Only the decision below is submitted.</p>',\n  '<dl>',\n  '<dt><strong>Request ID</strong></dt><dd>' + escapeHtml(requestId) + '</dd>',\n  '<dt><strong>Action ID</strong></dt><dd>' + escapeHtml(held.action_id) + '</dd>',\n  '<dt><strong>Target</strong></dt><dd>' + escapeHtml(held.target) + '</dd>',\n  '<dt><strong>Reason</strong></dt><dd>' + escapeHtml(held.reason) + '</dd>',\n  '<dt><strong>requires_approval</strong></dt><dd>true</dd>',\n  '<dt><strong>Policy reason</strong></dt><dd>' + escapeHtml(input.policy_reason_code) + '</dd>',\n  '<dt><strong>Policy case</strong></dt><dd>' + escapeHtml(input.policy_context_received?.policy_case_id ?? 'none') + '</dd>',\n  '</dl>'\n].join('');\nreturn [{ json: {\n  ...input,\n  hitl_gate_execution_id: String($execution.id),\n  hitl_request_id: requestId,\n  hitl_status: 'pending',\n  human_decision: null,\n  hitl_flow_started_at: flowStarted,\n  approval_requested_at: requestedAt,\n  approval_decided_at: null,\n  hitl_completed_at: null,\n  held_action: held,\n  held_action_snapshot: JSON.parse(JSON.stringify(held)),\n  held_action_unchanged: null,\n  released_action: null,\n  terminal_stage: 'OBID_HITL_PENDING',\n  endpoint_reached: null,\n  review_html: reviewHtml\n} }];"
+      },
+      "id": "6b5142cb-f8cb-4908-a22c-f027b92f3fbb",
+      "name": "Prepare HITL request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, -112]
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "incomingAuthentication": "none",
+        "formTitle": "Obid HITL action review",
+        "formDescription": "={{ $json.review_html }}",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "human_decision",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {"option": "approve"},
+                  {"option": "deny"}
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "onReceived",
+        "limitWaitTime": false,
+        "options": {
+          "appendAttribution": false,
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "text",
+              "formSubmittedText": "Decision recorded. You may close this page."
+            }
+          }
+        }
+      },
+      "id": "4471f9e9-54fb-44e5-b46b-e1c5a0043882",
+      "name": "Wait for human decision",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [240, -112]
+    },
+    {
+      "parameters": {
+        "jsCode": "const submitted = $json;\nconst pending = $('Prepare HITL request').first().json;\nconst decision = submitted.human_decision;\nconst allowedSubmissionFields = new Set(['human_decision', 'submittedAt', 'formMode']);\nconst unexpectedSubmissionFields = Object.keys(submitted).filter((key) => !allowedSubmissionFields.has(key)).sort();\nconst decidedAt = typeof submitted.submittedAt === 'string' && !Number.isNaN(Date.parse(submitted.submittedAt))\n  ? new Date(submitted.submittedAt).toISOString()\n  : new Date().toISOString();\nconst completedAt = new Date().toISOString();\nconst held = pending.held_action;\nconst snapshot = pending.held_action_snapshot;\nconst fields = ['action_id', 'target', 'reason', 'requires_approval'];\nconst exactObject = (value) => value !== null\n  && typeof value === 'object'\n  && !Array.isArray(value)\n  && JSON.stringify(Object.keys(value).sort()) === JSON.stringify(fields.slice().sort());\nconst heldActionUnchanged = exactObject(held)\n  && exactObject(snapshot)\n  && fields.every((field) => held[field] === snapshot[field]);\nconst decisionValid = decision === 'approve' || decision === 'deny';\nconst approved = decision === 'approve' && decisionValid && heldActionUnchanged && unexpectedSubmissionFields.length === 0;\nconst denied = decision === 'deny' && decisionValid && heldActionUnchanged && unexpectedSubmissionFields.length === 0;\nlet status = approved ? 'approved' : denied ? 'denied' : 'invalid_decision';\nlet terminalStage = approved ? 'OBID_HITL_APPROVED' : denied ? 'OBID_HITL_DENIED' : 'OBID_HITL_INVALID_DECISION';\nconst startMs = Date.parse(pending.hitl_flow_started_at);\nconst requestMs = Date.parse(pending.approval_requested_at);\nconst decisionMs = Date.parse(decidedAt);\nconst completeMs = Date.parse(completedAt);\nconst duration = (start, end) => Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;\nreturn [{ json: {\n  ...pending,\n  review_html: undefined,\n  hitl_status: status,\n  human_decision: decisionValid ? decision : null,\n  human_decision_valid: decisionValid,\n  unexpected_submission_fields: unexpectedSubmissionFields,\n  approval_decided_at: decidedAt,\n  hitl_completed_at: completedAt,\n  held_action_unchanged: heldActionUnchanged,\n  released_action: approved ? held : null,\n  terminal_stage: terminalStage,\n  endpoint_reached: null,\n  form_transport_metadata: {\n    submitted_at_present: typeof submitted.submittedAt === 'string',\n    form_mode: submitted.formMode ?? null\n  },\n  timing: {\n    pre_wait_automation_ms: duration(startMs, requestMs),\n    human_wait_ms: duration(requestMs, decisionMs),\n    post_decision_automation_ms: duration(decisionMs, completeMs),\n    total_hitl_elapsed_ms: duration(startMs, completeMs)\n  }\n} }];"
+      },
+      "id": "8195fc45-839b-4f8c-a125-97f61259d202",
+      "name": "Finalize human decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, -112]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  hitl_gate_execution_id: String($execution.id),\n  hitl_request_id: null,\n  hitl_status: 'blocked_precondition',\n  human_decision: null,\n  approval_requested_at: null,\n  approval_decided_at: null,\n  hitl_completed_at: new Date().toISOString(),\n  held_action_unchanged: false,\n  released_action: null,\n  terminal_stage: 'OBID_HITL_PRECONDITION',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "2885a4ac-8de3-4911-a9a8-ea89bbb785c8",
+      "name": "HITL precondition blocked terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 128]
+    }
+  ],
+  "connections": {
+    "Receive approval-required outcome": {"main": [[{"node": "Verify HITL gate preconditions", "type": "main", "index": 0}]]},
+    "Verify HITL gate preconditions": {"main": [[{"node": "HITL preconditions valid?", "type": "main", "index": 0}]]},
+    "HITL preconditions valid?": {"main": [
+      [{"node": "Prepare HITL request", "type": "main", "index": 0}],
+      [{"node": "HITL precondition blocked terminal", "type": "main", "index": 0}]
+    ]},
+    "Prepare HITL request": {"main": [[{"node": "Wait for human decision", "type": "main", "index": 0}]]},
+    "Wait for human decision": {"main": [[{"node": "Finalize human decision", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "staticData": null,
+  "pinData": {}
+}
