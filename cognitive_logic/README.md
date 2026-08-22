@@ -7,7 +7,7 @@ This active area is reserved for provenance-labelled inherited comparison baseli
 ## Current and planned population
 
 - Step 6: the verified inherited deterministic anchor and minimal-agent `CONFIG-BASELINE` are under `baselines/yacoub/`, with sanitized exports, exact prompt/no-memory records, provenance, and bounded readiness evidence.
-- Step 7: `obid/` now contains CONFIG-OBID's single-agent workflow, system prompt, exactly two tools, controlled ReAct-style behavior, internal structured decision, one bounded-memory configuration, and one-off readiness evidence. The final new-session status-tool observation remains pending because the private Gemini credential reached its quota; see the Step 7 evidence record.
+- Step 7: `obid/` now contains CONFIG-OBID's single-agent workflow, system prompt, exactly two tools, controlled ReAct-style behavior, internal structured decision, one bounded-memory configuration, and one-off readiness evidence. The final new-session status-tool observation remains pending: execution 32 exercised the currently attached private credential but the provider again rejected the first model call for exhausted daily quota; see the Step 7 evidence record.
 
 ## Boundary
 

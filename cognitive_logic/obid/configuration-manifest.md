@@ -6,7 +6,9 @@
 
 **Implementation status:** implemented and partly runtime-verified on
 2026-08-22; one reset-probe tool-call observation remains pending because the
-private Gemini credential reached its free-tier quota
+private Gemini credential reached its free-tier quota. A human reattached a
+private credential and execution 32 exercised the current live reference, but
+the provider returned the same daily-quota rejection before either tool ran.
 
 **Comparison anchor:** `CONFIG-BASELINE` remains unchanged and
 `YACOUB_INHERITED`
@@ -24,7 +26,7 @@ private Gemini credential reached its free-tier quota
 | Portable SHA-256 | `7e26e8c36786d75cf5e3d8a6f3bc496aea389495eac6d2c1df374476b4de4a17` |
 | Webhook | production `POST /webhook/obid-agent-v1` |
 | Portable activation | `active: false` |
-| Live readiness state | active locally; private credential attached by human |
+| Live readiness state | active locally; private credential attached by human; final reset status-tool observation quota-blocked in execution 32 |
 
 ## Agent and model
 

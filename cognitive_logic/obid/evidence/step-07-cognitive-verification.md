@@ -9,7 +9,9 @@
 **Status:** `PARTIALLY VERIFIED — RESET STATUS-CALL PENDING`
 
 **Completion claim:** Step 7 is not claimed complete while the final new-session
-status-tool observation is blocked by Gemini quota.
+status-tool observation is blocked by Gemini quota. The credential-attached
+continuation was attempted once at `2026-08-22 14:27:48.903 UTC` and is retained
+as execution 32.
 
 These are one-off cognitive readiness observations, not Step 10 repetitions,
 RQ percentages, latency comparison rows, or production-safety evidence.
@@ -70,6 +72,7 @@ or key is recorded here or in the portable export.
 | `S7-MEM-C` quota retry | 27 | loaded A+B; threshold only; `fan_off`; state on -> off | PASS |
 | `S7-MEM-EVICTION-PROBE` | 28 | pre-agent load exposed B+C and omitted A; quota then blocked model/tools | active-window proof PASS; execution FAIL retained |
 | `S7-MEM-RESET` attempts | 29, 30, 31 | distinct session loaded empty history each time; daily quota blocked before tools | isolation PASS; status-call PENDING |
+| credential-attached `S7-MEM-RESET` continuation | 32 | current attached credential reference was exercised; new synthetic session loaded empty history; first model call returned the same daily free-tier quota rejection; no tool or endpoint ran; fan remained off | isolation PASS; status-call PENDING; execution FAIL retained |
 
 Inline status-tool subexecutions for executions 16, 18, 20, and 23 were 17,
 19, 21, and 24 respectively. Each ended at `Normalize inherited status` with a
@@ -118,16 +121,20 @@ The memory node logged `loadMemoryVariables.chatHistory` for each execution:
 | 27 / C | `13:08:00Z`, `13:09:00Z` | A+B included before C save |
 | 28 / eviction probe | `13:09:00Z`, `13:11:00Z` | B+C included; A excluded |
 | 29-31 / distinct reset session | empty | no prior-session context inherited |
+| 32 / new credential-attached reset session | empty | no prior-session context inherited; provider rejected the first model call |
 
 This proves a model-visible bound of two completed interactions and active-window
 eviction after C. The underlying save log contained six messages after C, so
 older backing messages were not physically deleted; this is the installed
 BufferWindowMemory behavior documented in the configuration record.
 
-The reset session is demonstrably isolated, but its required cold-session
-`fan_status_tool` call remains unobserved because all three post-sequence attempts
-were rejected by Gemini before the first tool call. Therefore reset/isolation is
-not marked fully verified.
+The reset sessions are demonstrably isolated, but the required cold-session
+`fan_status_tool` call remains unobserved. Executions 29-31 and the single
+credential-attached continuation, execution 32, were rejected by Gemini before
+the first tool call. Execution 32 made one model call, zero threshold-tool calls,
+zero status-tool calls, and zero action-endpoint calls; it returned HTTP 500 and
+left the simulated fan `off`. Therefore reset/isolation is not marked fully
+verified.
 
 ## Structured decisions and middleware observations
 
@@ -158,10 +165,16 @@ evidence.
    through the pinned replacement routing path. It was replaced with the
    installed Workflow Tool v2.2 and one three-node inline read-only status
    subworkflow. No service, adapter, or fan action tool was added.
-4. Executions 22, 26, 28, and 29-31 retain Gemini quota failures. The A and C
+4. Executions 22, 26, 28, and 29-32 retain Gemini quota failures. The A and C
    sequences were resumed only after provider-specified delays, with the failed
-   attempts retained. The eviction load is still valid because memory is loaded
-   before the failed model call.
+   attempts retained. The eviction and reset loads remain valid because memory
+   is loaded before the failed model call.
+5. After the human reported credential attachment complete, execution 32 used
+   the credential reference currently attached to the live workflow. Only
+   presence and reference equality were checked; no ID, name, secret, account,
+   or owner value was displayed, copied into evidence, or committed. The
+   provider still reported the daily free-tier request quota as exhausted, so
+   no retry was performed.
 
 The model identifier, generation settings, prompt semantics, iteration bound,
 memory strategy/window, shared contracts, and inherited threshold were not
@@ -185,13 +198,16 @@ Step 9 HITL, or Step 10 repeated evaluation was started.
 
 ## Exact remaining human action
 
-In authenticated local n8n, open `CONFIG-OBID - Single Agent v1`, open the
-`Google Gemini Chat Model` node, and select/attach a private Google credential
-with available `models/gemini-2.5-flash` quota. Do not send any credential value
-or identity to Codex. Leave model and generation options unchanged.
+The reported credential attachment was exercised once, but the provider still
+reported the daily free-tier request quota as exhausted. Before another runtime
+probe, a human must either wait for that quota to reset or privately select a
+credential backed by a project with confirmed available
+`models/gemini-2.5-flash` request quota. Do not send any credential value or
+identity to Codex, and leave the model and generation options unchanged.
 
-Then run only one new synthetic-session reset probe with the fan preconditioned
-off and a valid 25.0 C event. Completion requires: empty memory load,
-`temperature_threshold_tool` x1, `fan_status_tool` x1, final `no_action`, no fan
-endpoint, and successful termination within `maxIterations: 3`. Append that
-execution ID/result here before claiming Step 7 complete.
+After quota is available, run only one new synthetic-session reset probe with
+the fan preconditioned off and a valid 25.0 C event. Completion still requires:
+empty memory load, `temperature_threshold_tool` x1, `fan_status_tool` x1, final
+`no_action`, no fan endpoint, and successful termination within
+`maxIterations: 3`. Append that execution ID/result here before claiming Step 7
+complete.
