@@ -1,0 +1,292 @@
+{
+  "id": "runtime-safety-v1",
+  "name": "Step 8 - Runtime safety v1",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "f253fd6b-4b87-4cc3-a12c-44ef96742481",
+      "name": "Receive safety candidate",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst own = Object.prototype.hasOwnProperty;\nconst rawCandidate = own.call(input, 'candidate') ? input.candidate : undefined;\nlet parsedCandidate = rawCandidate;\nlet parserStatus = 'parsed';\nconst validationErrors = [];\n\nconst addError = (code, path, message, detail = null) => {\n  const entry = { code, path, message };\n  if (detail !== null) entry.detail = detail;\n  validationErrors.push(entry);\n};\n\nif (typeof rawCandidate === 'string') {\n  try {\n    parsedCandidate = JSON.parse(rawCandidate);\n  } catch (error) {\n    parserStatus = 'failed';\n    parsedCandidate = null;\n    addError('MALFORMED_JSON', '$', 'candidate string is not valid JSON', error.message);\n  }\n}\n\nif (parserStatus === 'parsed') {\n  const isPlainObject = parsedCandidate !== null\n    && typeof parsedCandidate === 'object'\n    && !Array.isArray(parsedCandidate)\n    && Object.prototype.toString.call(parsedCandidate) === '[object Object]';\n\n  if (!isPlainObject) {\n    addError('NOT_OBJECT', '$', 'candidate must be a plain JSON object');\n  } else {\n    const required = ['action_id', 'target', 'reason', 'requires_approval'];\n    const allowed = new Set(required);\n\n    for (const field of required) {\n      if (!own.call(parsedCandidate, field)) {\n        addError('MISSING_REQUIRED_FIELD', '$.' + field, field + ' is required by the frozen action contract');\n      }\n    }\n\n    const unexpected = Object.keys(parsedCandidate).filter((field) => !allowed.has(field)).sort();\n    for (const field of unexpected) {\n      addError('UNEXPECTED_FIELD', '$.' + field, field + ' is not allowed because additionalProperties is false');\n    }\n\n    if (own.call(parsedCandidate, 'action_id')) {\n      if (typeof parsedCandidate.action_id !== 'string' || !['fan_on', 'fan_off'].includes(parsedCandidate.action_id)) {\n        addError('UNKNOWN_ACTION', '$.action_id', 'action_id must be the exact string fan_on or fan_off');\n      }\n    }\n\n    if (own.call(parsedCandidate, 'target')) {\n      if (typeof parsedCandidate.target !== 'string' || parsedCandidate.target !== 'fan_1') {\n        addError('UNKNOWN_TARGET', '$.target', 'target must be the exact string fan_1');\n      }\n    }\n\n    if (own.call(parsedCandidate, 'reason')) {\n      if (typeof parsedCandidate.reason !== 'string' || parsedCandidate.reason.length < 1) {\n        addError('INVALID_REASON', '$.reason', 'reason must be a string with minimum length 1');\n      }\n    }\n\n    if (own.call(parsedCandidate, 'requires_approval')) {\n      if (typeof parsedCandidate.requires_approval !== 'boolean') {\n        addError('INVALID_APPROVAL_FLAG', '$.requires_approval', 'requires_approval must be a Boolean');\n      }\n    }\n  }\n}\n\nconst precedence = [\n  'MALFORMED_JSON',\n  'NOT_OBJECT',\n  'MISSING_REQUIRED_FIELD',\n  'UNEXPECTED_FIELD',\n  'UNKNOWN_ACTION',\n  'UNKNOWN_TARGET',\n  'INVALID_REASON',\n  'INVALID_APPROVAL_FLAG'\n];\nconst schemaValid = validationErrors.length === 0;\nconst primaryCode = schemaValid\n  ? 'VALID_ACTION'\n  : precedence.find((code) => validationErrors.some((entry) => entry.code === code));\nconst rawType = rawCandidate === null ? 'null' : Array.isArray(rawCandidate) ? 'array' : typeof rawCandidate;\n\nreturn [{ json: {\n  ...input,\n  candidate_received: rawCandidate === undefined ? null : rawCandidate,\n  candidate_raw_type: rawType,\n  parser_status: parserStatus,\n  parsed_candidate: parsedCandidate,\n  validation_status: schemaValid ? 'valid' : 'invalid',\n  schema_valid: schemaValid,\n  validation_reason_code: primaryCode,\n  validation_errors: validationErrors,\n  action: schemaValid ? parsedCandidate : null\n} }];"
+      },
+      "id": "3f599d01-35ce-43dd-b0a8-7a44761caa9c",
+      "name": "Parse and validate frozen action schema",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9dfb9b40-d994-4635-a78e-9e6f53dadac9",
+              "leftValue": "={{ $json.schema_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e5f52409-c349-488f-be1a-d83ac43307de",
+      "name": "Schema is valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const action = $json.action;\nconst actionAllowed = action !== null\n  && typeof action === 'object'\n  && ['fan_on', 'fan_off'].includes(action.action_id);\nconst targetAllowed = actionAllowed && action.target === 'fan_1';\nlet policyDecision;\nlet policyReasonCode;\n\nif (!actionAllowed || !targetAllowed) {\n  policyDecision = 'block';\n  policyReasonCode = 'BLOCK_POLICY_ALLOWLIST_MISMATCH';\n} else if (action.requires_approval === true) {\n  policyDecision = 'approval_required';\n  policyReasonCode = 'VALID_ACTION_REQUIRES_APPROVAL';\n} else {\n  policyDecision = 'allow';\n  policyReasonCode = 'ALLOW_VALID_DIRECT_ACTION';\n}\n\nreturn [{ json: {\n  ...$json,\n  policy_executed: true,\n  policy_decision: policyDecision,\n  policy_reason_code: policyReasonCode,\n  released_action: policyDecision === 'allow' ? action : null,\n  held_action: policyDecision === 'approval_required' ? action : null\n} }];"
+      },
+      "id": "865993e3-f102-4dd1-8398-e291f6a69d4b",
+      "name": "Apply deterministic action policy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  policy_executed: false,\n  policy_decision: 'block',\n  policy_reason_code: 'BLOCK_INVALID_ACTION',\n  released_action: null,\n  held_action: null,\n  safety_decision: 'block',\n  terminal_stage: 'OBID_RUNTIME_VALIDATOR',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "781c75d1-a719-4ca7-9679-b8a1d346ae89",
+      "name": "Validation blocked terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "29d331b0-4687-4b40-a19e-59678b71ffb6",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "allow",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "db553a63-d1f9-4f0c-b393-f8a1f8a74ba2",
+      "name": "Policy is ALLOW?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  safety_decision: 'allow',\n  terminal_stage: 'OBID_RUNTIME_POLICY_ALLOW',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "06686038-95b0-4292-a7b9-441e77a6bc2f",
+      "name": "Allowed safety terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eb5ed60c-4919-4ac7-9c3c-057355b829b0",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "approval_required",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "191d9c12-8808-4e8d-bebb-6329df6c8a82",
+      "name": "Policy requires approval?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  safety_decision: 'approval_required',\n  terminal_stage: 'OBID_APPROVAL_REQUIRED_PENDING_STEP9',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "1f2d4ee5-6940-4f03-abf1-3f1f6b6d1e46",
+      "name": "Approval required hold terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  safety_decision: 'block',\n  terminal_stage: 'OBID_RUNTIME_POLICY',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "e4e7871d-90ec-4c6f-98fe-b55a10e0383b",
+      "name": "Policy blocked terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Receive safety candidate": {
+      "main": [
+        [
+          {
+            "node": "Parse and validate frozen action schema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse and validate frozen action schema": {
+      "main": [
+        [
+          {
+            "node": "Schema is valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema is valid?": {
+      "main": [
+        [
+          {
+            "node": "Apply deterministic action policy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validation blocked terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply deterministic action policy": {
+      "main": [
+        [
+          {
+            "node": "Policy is ALLOW?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy is ALLOW?": {
+      "main": [
+        [
+          {
+            "node": "Allowed safety terminal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Policy requires approval?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy requires approval?": {
+      "main": [
+        [
+          {
+            "node": "Approval required hold terminal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Policy blocked terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}

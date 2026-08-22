@@ -1,0 +1,428 @@
+{
+  "id": "step-08-safety-harness",
+  "name": "Step 8 - Safety readiness harness",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "step-08-safety-harness",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "e9c96b20-2dfd-4411-93bc-98513a0c8f5c",
+      "name": "Safety harness ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        0
+      ],
+      "webhookId": "step-08-safety-harness"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body;\nconst isObject = body !== null && typeof body === 'object' && !Array.isArray(body);\nconst input = isObject ? body : {};\nconst own = Object.prototype.hasOwnProperty;\nreturn [{ json: {\n  evidence_id: typeof input.evidence_id === 'string' ? input.evidence_id : 'S8-UNSPECIFIED',\n  injection_point: 'OBID_POST_AGENT_PRE_VALIDATOR',\n  source: 'STEP_08_SAFETY_HARNESS',\n  candidate: own.call(input, 'candidate') ? input.candidate : null,\n  state_before: input.state_before ?? null\n} }];"
+      },
+      "id": "dd401329-7716-45a6-a953-59388f2fc892",
+      "name": "Prepare fault-injection candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "runtime-safety-v1",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "f0ebac51-e36b-4cd4-b7d2-7424c5db645f",
+      "name": "Execute runtime safety",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -416,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "252d8b8b-fd0c-4b73-9d73-2e1f64f55cef",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "allow",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2c78c98c-7f45-4538-bbdc-c10c3504dbcb",
+      "name": "Safety outcome is ALLOW?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -176,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "487b609b-613b-43fe-9889-c9d76db166a9",
+              "leftValue": "={{ $json.released_action.action_id }}",
+              "rightValue": "fan_on",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4e24bbd9-bf70-435f-8c62-b1f91971d9dc",
+      "name": "Allowed action is fan_on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/on",
+        "options": {}
+      },
+      "id": "53e011e1-68ae-49fe-9eb4-4af11b43a2ba",
+      "name": "POST allowed fan on",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const safety = $('Execute runtime safety').item.json;\nreturn [{ json: {\n  ...safety,\n  routing_status: 'safety_allowed_action_executed',\n  endpoint_reached: '/fan/on',\n  middleware_result: $json\n} }];"
+      },
+      "id": "61e5e46f-b2c9-4ac0-983f-61dc49c34de2",
+      "name": "Allowed fan on terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a8c3fb70-ae2f-4465-8a6c-f67c74232d34",
+              "leftValue": "={{ $json.released_action.action_id }}",
+              "rightValue": "fan_off",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ef8e6e7e-6c77-45ed-a428-694f5b467f42",
+      "name": "Allowed action is fan_off?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        304,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/fan/off",
+        "options": {}
+      },
+      "id": "ffbbed8a-c3e6-4421-a785-4a47b84031cc",
+      "name": "POST allowed fan off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        544,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const safety = $('Execute runtime safety').item.json;\nreturn [{ json: {\n  ...safety,\n  routing_status: 'safety_allowed_action_executed',\n  endpoint_reached: '/fan/off',\n  middleware_result: $json\n} }];"
+      },
+      "id": "24447dd3-1969-420b-bd78-2ca37e64fb65",
+      "name": "Allowed fan off terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  routing_status: 'blocked_impossible_allow_route',\n  terminal_stage: $json.terminal_stage ?? 'OBID_RUNTIME_POLICY_DEFENSE',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "5c4cdb8a-24af-432a-a62a-78d001344c83",
+      "name": "Impossible allow route terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "70f16075-af82-4474-b617-327ff0dd97b5",
+              "leftValue": "={{ $json.policy_decision }}",
+              "rightValue": "approval_required",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5c833539-dda8-4552-9019-b1c07b9d45ab",
+      "name": "Safety outcome requires approval?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  routing_status: 'approval_required_hold',\n  terminal_stage: $json.terminal_stage ?? 'OBID_APPROVAL_REQUIRED_PENDING_STEP9',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "28a1acf4-8726-42fb-b8b0-0e087c63bc2b",
+      "name": "Approval required harness terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  ...$json,\n  routing_status: 'blocked_before_middleware',\n  terminal_stage: $json.terminal_stage ?? 'OBID_RUNTIME_VALIDATOR',\n  endpoint_reached: null\n} }];"
+      },
+      "id": "fb71e96d-00fe-44fd-aa23-caa6af8eb479",
+      "name": "Blocked harness terminal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Safety harness ingress": {
+      "main": [
+        [
+          {
+            "node": "Prepare fault-injection candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare fault-injection candidate": {
+      "main": [
+        [
+          {
+            "node": "Execute runtime safety",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute runtime safety": {
+      "main": [
+        [
+          {
+            "node": "Safety outcome is ALLOW?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safety outcome is ALLOW?": {
+      "main": [
+        [
+          {
+            "node": "Allowed action is fan_on?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Safety outcome requires approval?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed action is fan_on?": {
+      "main": [
+        [
+          {
+            "node": "POST allowed fan on",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Allowed action is fan_off?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST allowed fan on": {
+      "main": [
+        [
+          {
+            "node": "Allowed fan on terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed action is fan_off?": {
+      "main": [
+        [
+          {
+            "node": "POST allowed fan off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Impossible allow route terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST allowed fan off": {
+      "main": [
+        [
+          {
+            "node": "Allowed fan off terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safety outcome requires approval?": {
+      "main": [
+        [
+          {
+            "node": "Approval required harness terminal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Blocked harness terminal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}
