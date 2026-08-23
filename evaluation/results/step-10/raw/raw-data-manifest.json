@@ -1,0 +1,63 @@
+{
+  "actual_order_matches_frozen_schedule": true,
+  "actual_order_rows": 85,
+  "attempt_started_exactly_once_per_id": true,
+  "counts": {
+    "core_records": 70,
+    "hitl_records": 10,
+    "invalid_action_records": 5,
+    "latency_eligible_records": 30
+  },
+  "files": {
+    "evaluation/results/step-10/experiment-freeze.json": {
+      "bytes": 7123,
+      "sha256": "0f96744b31c5c6751df3498e9f42761d45decd2303d46aac99d909fcf0013cf7"
+    },
+    "evaluation/results/step-10/experiment-freeze.md": {
+      "bytes": 4794,
+      "sha256": "ab1df6015958a9d9c121ac0bcff374cd3fd3bd18e2588b1877a4d577089ada96"
+    },
+    "evaluation/results/step-10/raw/attempt-events.jsonl": {
+      "bytes": 128842,
+      "sha256": "a5ef39991790f8a29192a71ca7fd9d0fd64b98de7a13e21bb22e2d664f7c90bd"
+    },
+    "evaluation/results/step-10/raw/hitl-pending.jsonl": {
+      "bytes": 15985,
+      "sha256": "71007709c2eb352078bf37723bac3fa7877c23815ffb39e30eb8c513838a0f31"
+    },
+    "evaluation/results/step-10/raw/operational-deviations.jsonl": {
+      "bytes": 1440,
+      "sha256": "7f57913b9e1f16c22d57f00a6f5f3f928115e89faa16e46fe7d463f247dec764"
+    },
+    "evaluation/results/step-10/raw/planned-order.json": {
+      "bytes": 39500,
+      "sha256": "56f3602a1af82ed3a049393a741be48ae6d505693ecc181556bb7fdeffccd5d5"
+    },
+    "evaluation/results/step-10/raw/run-order.csv": {
+      "bytes": 11165,
+      "sha256": "096eef4b1d2ccdeba271206476087a2af4ab57ff373bbd5bbc6fd05f080e1604"
+    },
+    "evaluation/results/step-10/raw/run-records.jsonl": {
+      "bytes": 427652,
+      "sha256": "54bc2c4058e6324b478c1c527f2cf2d3b5ea24e4fc0d41c1419577db466a16e6"
+    }
+  },
+  "hitl_missing_pending_explicit_failure_ids": [],
+  "hitl_missing_pending_failures_explicit": true,
+  "hitl_pending_snapshot_count": 10,
+  "hitl_pending_snapshot_ids_unique": true,
+  "hitl_pending_snapshot_ids_valid": true,
+  "hitl_pending_snapshot_missing_ids": [],
+  "lock_id": "STEP10_RAW_DATA_LOCK_V1",
+  "locked_at": "2026-08-23T16:29:39.486Z",
+  "no_dangling_attempt": true,
+  "no_replaced_repetition": true,
+  "primary_record_appended_exactly_once_per_id": true,
+  "primary_record_count": 85,
+  "primary_run_ids_unique": true,
+  "privacy_scan": "pass",
+  "raw_jsonl_parse_valid": true,
+  "top_level_execution_ids_available": 85,
+  "top_level_execution_ids_missing_run_ids": [],
+  "top_level_execution_ids_unique": true
+}

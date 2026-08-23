@@ -1,0 +1,41 @@
+{
+  "files": {
+    "evaluation/results/step-10/processed/hitl-timing.csv": {
+      "bytes": 1078,
+      "sha256": "f1d46de9fd5d04e4d7f496907ad03ba394a010e02e979a0c15ea0f499bf8c81a"
+    },
+    "evaluation/results/step-10/processed/llm-telemetry.csv": {
+      "bytes": 9455,
+      "sha256": "9be40b8d27fe790544202b775e80794678cc142a50961341c803b27898d03f87"
+    },
+    "evaluation/results/step-10/processed/rq1-summary.csv": {
+      "bytes": 3884,
+      "sha256": "9e5f02bac9a778c4c59c5574c50c27e6e624d03062938ff12e1e70c1ee484cb2"
+    },
+    "evaluation/results/step-10/processed/rq2-summary.csv": {
+      "bytes": 1870,
+      "sha256": "0e59838bc889360608e0d0934d4e5ace5b1b5f418709127d24b69dc465ef0acf"
+    },
+    "evaluation/results/step-10/processed/rq3-latency.csv": {
+      "bytes": 2527,
+      "sha256": "520926e512e2942e8e1578dffdc5d7f064d449d3bb4e65d7b7b52f04dfbe711c"
+    },
+    "evaluation/results/step-10/processed/rq3-reliability.csv": {
+      "bytes": 8043,
+      "sha256": "95b57ba0d2a51656797eabeaf2cd0d8cae080e049a0ff82241d58ed307bc5ac5"
+    },
+    "evaluation/results/step-10/processed/summary.md": {
+      "bytes": 3659,
+      "sha256": "cc2d03e253ff3f0ba99050c269e46867bd1b55197f8306221aac9790fb8e7db1"
+    },
+    "evaluation/results/step-10/processed/traceability.csv": {
+      "bytes": 10623,
+      "sha256": "d5d1fd003048ae9c60c784f387700e919a4b256971d151c603a2c16c99aa4fc4"
+    }
+  },
+  "manifest_id": "STEP10_PROCESSED_RESULTS_V1",
+  "processing_script_sha256": "942d7979e57ca5be9f0ecffec945a9f2667a082b362f6ae80bed7f0f0bfc6c41",
+  "source_lock_time": "2026-08-23T16:29:39.486Z",
+  "source_raw_lock_id": "STEP10_RAW_DATA_LOCK_V1",
+  "source_raw_lock_sha256": "e7d8283a8f7d97c7785c09fdb3fef49ab1c106ce8680d24441b42bc05822572b"
+}

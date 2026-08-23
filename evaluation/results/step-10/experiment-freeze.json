@@ -1,0 +1,191 @@
+{
+  "artifacts": {
+    "action_schema": {
+      "path": "shared_interfaces/json-schema/agent-action.schema.json",
+      "sha256": "55f0cb93e933a0791aab50a2430ed8afa9372b5ca576405e2f4b8d4bb4048d5b"
+    },
+    "baseline_prompt": {
+      "path": "cognitive_logic/baselines/yacoub/system-prompt-v1.md",
+      "sha256": "a5e24dc517d3bb91eb45ebebb6efd79bbc77bcf7197ecd9b3daf76fd1aab92cd"
+    },
+    "baseline_workflow": {
+      "path": "cognitive_logic/baselines/yacoub/minimal-agent-baseline.json",
+      "sha256": "ed8697e07eb83deaecac3879c82b860e2c4b8f597bde1bc355a3c5b863c15585"
+    },
+    "evaluation_manifest": {
+      "path": "evaluation/cases/obid-evaluation-cases.json",
+      "sha256": "612a3c6cb6032ed4aa03eae87fa62e5632d61fcdb2cc0633c151bbf4d67aafb7"
+    },
+    "evaluation_protocol": {
+      "path": "evaluation/evaluation-protocol.md",
+      "sha256": "27ecdd2d0b9bdd7110a2c25baee06803acefd4963a2cce00e931216a15f95117"
+    },
+    "obid_prompt": {
+      "path": "cognitive_logic/obid/prompts/system-prompt-v1.md",
+      "sha256": "f8b4171e5d70df6be5aa136a63336dc8c32edca61036272a047b6fa3746cfec2"
+    },
+    "obid_v3_workflow": {
+      "path": "cognitive_logic/obid/workflows/obid-agent-v3-hitl.json",
+      "sha256": "1a09ee5a3199289c39845f9b97a3a3f516f277924d6a8fcb52da52780b0eaf78"
+    },
+    "sensor_schema": {
+      "path": "shared_interfaces/json-schema/sensor-event.schema.json",
+      "sha256": "416cec7d396912672171e1fbfdce828820017c9218e2c418de3f784e329ee007"
+    },
+    "step8_runtime_safety": {
+      "path": "safety_layer/workflows/runtime-safety-v1.json",
+      "sha256": "d179f0f4b3ef3977ab65456cc172854176e9dc56336a43e87b9bf92fea3ee378"
+    },
+    "step8_safety_harness": {
+      "path": "safety_layer/workflows/step-08-safety-harness.json",
+      "sha256": "4417a3e66a6dc0d09b1e9318bfe7f308c2ec6a52f96ffe00ff04a0a5151a9c0c"
+    },
+    "step9_hitl_harness": {
+      "path": "safety_layer/hitl/workflows/step-09-hitl-harness.json",
+      "sha256": "090715a02ed15ce0a385788fad8f25abceec7cd473422f63c9114909d850eaac"
+    },
+    "step9_report_gate": {
+      "path": "docs/report-notes/step-09-human-in-the-loop-runtime.md",
+      "sha256": "ce5c7ba6c25c679c988116e69ff45ed732967589cbc7a62d9d85698316a118da"
+    },
+    "step9_retained_hitl_gate": {
+      "path": "safety_layer/hitl/workflows/runtime-hitl-v1.json",
+      "sha256": "fd9ce59e033c6074d6688d9eb0037dff7afc3d882a74fea0743901dfa041d902"
+    },
+    "step9_runtime_safety": {
+      "path": "safety_layer/workflows/runtime-safety-v2-hitl.json",
+      "sha256": "8dbf1826f43cdea34d510ff53e90fed52e45c93d5ed29956cf3a6dbfd6de652d"
+    }
+  },
+  "core_configurations": [
+    "CONFIG-BASELINE",
+    "CONFIG-OBID"
+  ],
+  "created_at": "2026-08-23T16:05:05.794Z",
+  "freeze_id": "STEP10_EXPERIMENT_FREEZE_V1",
+  "frozen_yacoub_commit": "278318340bfa4e4650a97a2baba73f63bd868ed9",
+  "git_head": "8073c1c3111b6be968fa38c2007d71dec36e2a4e",
+  "live_webhooks": {
+    "agent-minimal": [
+      {
+        "method": "POST",
+        "node_name": "Receive temperature event",
+        "webhook_path": "agent-minimal",
+        "workflow_id": "agent-minimal"
+      }
+    ],
+    "obid-agent-v3-hitl": [
+      {
+        "method": "POST",
+        "node_name": "Obid agent ingress",
+        "webhook_path": "obid-agent-v3-hitl",
+        "workflow_id": "obid-agent-v3-hitl"
+      }
+    ],
+    "step-09-hitl-harness": [
+      {
+        "method": "POST",
+        "node_name": "HITL harness ingress",
+        "webhook_path": "step-09-hitl-harness",
+        "workflow_id": "step-09-hitl-harness"
+      }
+    ]
+  },
+  "live_workflows": {
+    "agent-minimal": {
+      "active": true,
+      "credential_attachment_count": 1,
+      "node_count": 12,
+      "semantic_sha256": "2d1a7c1e01136b0e816c2d99c03e7d2832edd1a6c1ec959f36a889047137e457",
+      "workflow_id": "agent-minimal",
+      "workflow_name": "new-yacoub minimal agent workflow"
+    },
+    "obid-agent-v3-hitl": {
+      "active": true,
+      "credential_attachment_count": 1,
+      "node_count": 34,
+      "semantic_sha256": "6d4206e8af3b60a4917c454a5d67fc0fb652b9908165362e3c56edb54c801457",
+      "workflow_id": "obid-agent-v3-hitl",
+      "workflow_name": "CONFIG-OBID - Single Agent v3 HITL"
+    },
+    "runtime-safety-v1": {
+      "active": false,
+      "credential_attachment_count": 0,
+      "node_count": 10,
+      "semantic_sha256": "143c21ab9a459ba4d8b5edfbc9d0fb6242b0921d0f47396db7c337975bbf6c91",
+      "workflow_id": "runtime-safety-v1",
+      "workflow_name": "Step 8 - Runtime safety v1"
+    },
+    "runtime-safety-v2-hitl": {
+      "active": false,
+      "credential_attachment_count": 0,
+      "node_count": 13,
+      "semantic_sha256": "3aa0b939545827c7f1a952071c432c5935e40402e98f2fd4081b69d4247c79c0",
+      "workflow_id": "runtime-safety-v2-hitl",
+      "workflow_name": "Step 9 - Runtime safety v2 HITL"
+    },
+    "step-08-safety-harness": {
+      "active": false,
+      "credential_attachment_count": 0,
+      "node_count": 14,
+      "semantic_sha256": "a56569b002d48b0f8ca15d897bd42bcb66158ea5b73150556c10c90e502b7420",
+      "workflow_id": "step-08-safety-harness",
+      "workflow_name": "Step 8 - Safety readiness harness"
+    },
+    "step-09-hitl-harness": {
+      "active": true,
+      "credential_attachment_count": 0,
+      "node_count": 32,
+      "semantic_sha256": "7e65c44735630b9936afe23bfa354bea3e2ee5d39153db923528979bbd10f1e6",
+      "workflow_id": "step-09-hitl-harness",
+      "workflow_name": "Step 9 - HITL readiness harness"
+    }
+  },
+  "manifest_id": "OBID-EVALUATION-CASES-V1",
+  "model_control": {
+    "effective_pinned_node_defaults": {
+      "maxOutputTokens": 1024,
+      "temperature": 0.7,
+      "topK": 40,
+      "topP": 0.9
+    },
+    "fallback_models": [],
+    "identifier": "models/gemini-2.5-flash",
+    "node_version": 1,
+    "obid_agent_max_iterations": 3,
+    "result_driven_retries": false,
+    "stored_generation_options": {}
+  },
+  "no_semantic_mutation_after_first_run": true,
+  "optional_validator_agent": "SKIP_FOR_CORE",
+  "orchestration_artifacts": {
+    "credential_safe_extractor": {
+      "path": "evaluation/results/step-10/extract_n8n_execution.js",
+      "sha256": "80aa43658c8634f6394f02c158c0d7f060854952e47e8e40d45a2ef809d4daea"
+    },
+    "result_processor": {
+      "path": "evaluation/results/step-10/process_results.py",
+      "sha256": "942d7979e57ca5be9f0ecffec945a9f2667a082b362f6ae80bed7f0f0bfc6c41"
+    },
+    "step10_runner": {
+      "path": "evaluation/results/step-10/run_step10.py",
+      "sha256": "17ba174ca172cf8c6c6257eea5888f30b699f3b2eda0ed2588e939aa2617e06d"
+    }
+  },
+  "planned_counts": {
+    "core": 70,
+    "hitl": 10,
+    "invalid_action": 5,
+    "rq3_latency": 30,
+    "total": 85
+  },
+  "protocol_id": "OBID-EVALUATION-PROTOCOL-V1",
+  "repository_status": "known_step10_artifacts_only",
+  "runtime": {
+    "middleware": "actual frozen Yacoub middleware on host 127.0.0.1:8000",
+    "n8n_container": "obid-n8n",
+    "n8n_image_and_digest": "n8nio/n8n:1.123.37|sha256:913c83834b7130d701a121aab50c16dedd1739ab9317caa19d7ba2686d1de885",
+    "n8n_version": "1.123.37",
+    "simulated_fan_state_at_freeze": "off"
+  }
+}
