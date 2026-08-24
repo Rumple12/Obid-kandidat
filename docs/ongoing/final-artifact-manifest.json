@@ -1,0 +1,426 @@
+{
+  "manifest_id": "OBID_FINAL_ARTIFACT_FREEZE_V1",
+  "created_at_utc": "2026-08-24T11:25:20.911Z",
+  "freeze_status": "ACTIVE",
+  "hash_algorithm": "SHA-256",
+  "final_implementation_evidence_content_head": "abd36e3d3e88acb8a516a4a0b36f649e1c1f48eb",
+  "frozen_yacoub_commit": "278318340bfa4e4650a97a2baba73f63bd868ed9",
+  "runtime": {
+    "n8n_version": "1.123.37",
+    "image": "n8nio/n8n:1.123.37",
+    "image_digest": "sha256:913c83834b7130d701a121aab50c16dedd1739ab9317caa19d7ba2686d1de885",
+    "model": "models/gemini-2.5-flash",
+    "stored_generation_options": {},
+    "fallback_model": null,
+    "evaluation_action_boundary": "YACOUB_INHERITED simulated fan"
+  },
+  "configuration_identities": [
+    {
+      "configuration_id": "CONFIG-BASELINE",
+      "provenance": "YACOUB_INHERITED",
+      "workflow_path": "cognitive_logic/baselines/yacoub/minimal-agent-baseline.json",
+      "memory": "stateless/no memory"
+    },
+    {
+      "configuration_id": "CONFIG-OBID",
+      "provenance": "OBID_CREATED",
+      "workflow_path": "cognitive_logic/obid/workflows/obid-agent-v3-hitl.json",
+      "agent_count": 1,
+      "model_node_count": 1,
+      "tool_count": 2,
+      "bounded_memory_configuration_count": 1,
+      "max_iterations": 3,
+      "validator_agent_present": false
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "step3_compose",
+      "path": "infrastructure/docker/docker-compose.yml",
+      "sha256": "a499c2607ada977209f1af014cb4fc3412ccb8aa38b358fb03792104ea839043",
+      "provenance": "OBID_CREATED",
+      "role": "runtime definition"
+    },
+    {
+      "artifact_id": "step3_runtime_manifest",
+      "path": "infrastructure/docker/runtime-manifest.md",
+      "sha256": "a284893fe0d67cf2e93b319efe484c5d72a4699a869084df309df5bcb74e552f",
+      "provenance": "OBID_CREATED",
+      "role": "runtime identity"
+    },
+    {
+      "artifact_id": "step3_runtime_evidence",
+      "path": "infrastructure/docker/evidence/step-03-runtime-verification.md",
+      "sha256": "d0cbe6e3f7ba272c4e87b8bfe892fabed0ee47d3ee836c7c0eeedbe37ccaf1dd",
+      "provenance": "OBID_CREATED",
+      "role": "runtime verification evidence"
+    },
+    {
+      "artifact_id": "step4_boundary_workflow",
+      "path": "integration/yacoub_compat/workflows/step-04-boundary-test.json",
+      "sha256": "f896c2874a136c17263a7df2338827b812bdb791572a5434315ff7774f6dbe47",
+      "provenance": "OBID_CREATED",
+      "role": "integration boundary test"
+    },
+    {
+      "artifact_id": "step4_integration_evidence",
+      "path": "integration/yacoub_compat/evidence/step-04-integration-verification.md",
+      "sha256": "e00d8b849cf32947b3468c3f6d1d3291910d12b7b64ec8de2652e865a2f1a6e3",
+      "provenance": "OBID_CREATED",
+      "role": "Yacoub-compatible seam evidence"
+    },
+    {
+      "artifact_id": "sensor_schema",
+      "path": "shared_interfaces/json-schema/sensor-event.schema.json",
+      "sha256": "416cec7d396912672171e1fbfdce828820017c9218e2c418de3f784e329ee007",
+      "provenance": "SHARED_INTERFACE",
+      "origin": "YACOUB_INHERITED"
+    },
+    {
+      "artifact_id": "action_schema",
+      "path": "shared_interfaces/json-schema/agent-action.schema.json",
+      "sha256": "55f0cb93e933a0791aab50a2430ed8afa9372b5ca576405e2f4b8d4bb4048d5b",
+      "provenance": "SHARED_INTERFACE",
+      "origin": "YACOUB_INHERITED"
+    },
+    {
+      "artifact_id": "contract_freeze",
+      "path": "shared_interfaces/contract-freeze.md",
+      "sha256": "26a60023115e0ad585956219938d14940174c33fd51b744c9702d5d2bd5886ae",
+      "provenance": "OBID_CREATED",
+      "role": "exact-copy/no-drift record"
+    },
+    {
+      "artifact_id": "evaluation_cases",
+      "path": "evaluation/cases/obid-evaluation-cases.json",
+      "sha256": "612a3c6cb6032ed4aa03eae87fa62e5632d61fcdb2cc0633c151bbf4d67aafb7",
+      "provenance": "OBID_CREATED",
+      "role": "Step 5 pre-observation oracle"
+    },
+    {
+      "artifact_id": "evaluation_protocol",
+      "path": "evaluation/evaluation-protocol.md",
+      "sha256": "27ecdd2d0b9bdd7110a2c25baee06803acefd4963a2cce00e931216a15f95117",
+      "provenance": "OBID_CREATED",
+      "role": "Step 5 pre-observation protocol"
+    },
+    {
+      "artifact_id": "step5_freeze_evidence",
+      "path": "evaluation/evidence/step-05-contract-and-evaluation-freeze.md",
+      "sha256": "8b9c1e541b3554f2fea3f75642e65b6f286dbf50523e2448f9638ef687e75770",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "deterministic_baseline",
+      "path": "cognitive_logic/baselines/yacoub/deterministic-baseline.json",
+      "sha256": "b16b445b72e9ad7d575b6127a9f11a0f9c4a9dd408928ffe68a8d3f340b1e855",
+      "provenance": "YACOUB_INHERITED",
+      "role": "deterministic anchor"
+    },
+    {
+      "artifact_id": "config_baseline_workflow",
+      "path": "cognitive_logic/baselines/yacoub/minimal-agent-baseline.json",
+      "sha256": "ed8697e07eb83deaecac3879c82b860e2c4b8f597bde1bc355a3c5b863c15585",
+      "provenance": "YACOUB_INHERITED"
+    },
+    {
+      "artifact_id": "config_baseline_prompt",
+      "path": "cognitive_logic/baselines/yacoub/system-prompt-v1.md",
+      "sha256": "a5e24dc517d3bb91eb45ebebb6efd79bbc77bcf7197ecd9b3daf76fd1aab92cd",
+      "provenance": "YACOUB_INHERITED"
+    },
+    {
+      "artifact_id": "config_baseline_memory_choice",
+      "path": "cognitive_logic/baselines/yacoub/memory-choice-v1.md",
+      "sha256": "9dc513a537350ca61dbf7ae6b815abb6488ec6e659cc7e3c63cd2a3fc5da11a2",
+      "provenance": "YACOUB_INHERITED"
+    },
+    {
+      "artifact_id": "step6_baseline_manifest",
+      "path": "cognitive_logic/baselines/yacoub/baseline-manifest.md",
+      "sha256": "333f961139b8dbdb562e241cefa543e50814fed372c4ecc0984f0fee8c72fc9f",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step6_baseline_evidence",
+      "path": "cognitive_logic/baselines/yacoub/evidence/step-06-baseline-verification.md",
+      "sha256": "6c59c802d6a3fdcd5eb1d2c234806d53abcfbf8efe42eff06767767e8ec1bb2f",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_v1",
+      "path": "cognitive_logic/obid/workflows/obid-agent-v1.json",
+      "sha256": "7e26e8c36786d75cf5e3d8a6f3bc496aea389495eac6d2c1df374476b4de4a17",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_v2_safety",
+      "path": "cognitive_logic/obid/workflows/obid-agent-v2-safety.json",
+      "sha256": "c8f725da7c11013fd96740ebdfcb5f738d5e399e10f69e747aa9e2e1aee3dfdf",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_v3_hitl",
+      "path": "cognitive_logic/obid/workflows/obid-agent-v3-hitl.json",
+      "sha256": "1a09ee5a3199289c39845f9b97a3a3f516f277924d6a8fcb52da52780b0eaf78",
+      "provenance": "OBID_CREATED",
+      "role": "final CONFIG-OBID workflow"
+    },
+    {
+      "artifact_id": "config_obid_prompt",
+      "path": "cognitive_logic/obid/prompts/system-prompt-v1.md",
+      "sha256": "f8b4171e5d70df6be5aa136a63336dc8c32edca61036272a047b6fa3746cfec2",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_tools",
+      "path": "cognitive_logic/obid/tools/tool-definitions-v1.md",
+      "sha256": "0dafaca54125a66f6e840e292be6d5e3c62ee3d29dc6309f04bcaedecf2848c4",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_bounded_memory",
+      "path": "cognitive_logic/obid/memory/window-buffer-v1.md",
+      "sha256": "f5da16bb95539b9d9b8412e39330d8431d943339a9f8df49ac7e0da6f7c7388d",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_react_control",
+      "path": "cognitive_logic/obid/react/react-control-v1.md",
+      "sha256": "8514b8768b03761195014ffaf4f5500b463f9aba805c7884f99d20fb9733f0d8",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "config_obid_decision_envelope",
+      "path": "cognitive_logic/obid/structured-output/decision-envelope-v1.md",
+      "sha256": "e7566f4684114057d8f746bdc60b1c7ca4665781398d85f4b672ba9a38a746f8",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step7_cognitive_evidence",
+      "path": "cognitive_logic/obid/evidence/step-07-cognitive-verification.md",
+      "sha256": "d9c46c28c2ea1ba6f568f83b1ae3eeda740b36010dbc8fce1bb9c363adf74b0f",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_validator_specification",
+      "path": "safety_layer/validator/runtime-action-validator-v1.md",
+      "sha256": "c4b99fd81e4ba1e2d0f0ef439447265f789086c8d82fecb0d7357fcd030e7e0f",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_policy_specification",
+      "path": "safety_layer/policies/runtime-action-policy-v1.md",
+      "sha256": "74697da2f77a5b33044a7c7a38c8c9b802af184d0cc33394f67ae1925703a4d8",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_safety_outcome",
+      "path": "safety_layer/outcomes/safety-outcome-v1.md",
+      "sha256": "258650d785d4eb7e6471620c9c744cfd647bbb5a30d14706c3dcce5fa9e93304",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_runtime_safety_v1",
+      "path": "safety_layer/workflows/runtime-safety-v1.json",
+      "sha256": "d179f0f4b3ef3977ab65456cc172854176e9dc56336a43e87b9bf92fea3ee378",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_safety_harness",
+      "path": "safety_layer/workflows/step-08-safety-harness.json",
+      "sha256": "4417a3e66a6dc0d09b1e9318bfe7f308c2ec6a52f96ffe00ff04a0a5151a9c0c",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step8_evidence",
+      "path": "safety_layer/evidence/step-08-runtime-validation-policy.md",
+      "sha256": "a8d3019eab5da39c17ffeadabaeca0d08cc27e59b0c1109ae0bd40c104c05f0b",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step9_runtime_safety_v2_hitl",
+      "path": "safety_layer/workflows/runtime-safety-v2-hitl.json",
+      "sha256": "8dbf1826f43cdea34d510ff53e90fed52e45c93d5ed29956cf3a6dbfd6de652d",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step9_retained_hitl_gate",
+      "path": "safety_layer/hitl/workflows/runtime-hitl-v1.json",
+      "sha256": "fd9ce59e033c6074d6688d9eb0037dff7afc3d882a74fea0743901dfa041d902",
+      "provenance": "OBID_CREATED",
+      "role": "retained child-Wait propagation-failure artifact"
+    },
+    {
+      "artifact_id": "step9_hitl_harness",
+      "path": "safety_layer/hitl/workflows/step-09-hitl-harness.json",
+      "sha256": "090715a02ed15ce0a385788fad8f25abceec7cd473422f63c9114909d850eaac",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step9_hitl_evidence",
+      "path": "safety_layer/hitl/evidence/step-09-hitl-verification.md",
+      "sha256": "00b79c22fa52bcc066004a3cf632432c8a12c08317572dc1c830fec99fe52fdb",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_experiment_freeze",
+      "path": "evaluation/results/step-10/experiment-freeze.json",
+      "sha256": "0f96744b31c5c6751df3498e9f42761d45decd2303d46aac99d909fcf0013cf7",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_experiment_freeze_human_readable",
+      "path": "evaluation/results/step-10/experiment-freeze.md",
+      "sha256": "ab1df6015958a9d9c121ac0bcff374cd3fd3bd18e2588b1877a4d577089ada96",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_raw_manifest",
+      "path": "evaluation/results/step-10/raw/raw-data-manifest.json",
+      "sha256": "e7d8283a8f7d97c7785c09fdb3fef49ab1c106ce8680d24441b42bc05822572b",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_raw_manifest_human_readable",
+      "path": "evaluation/results/step-10/raw/raw-data-manifest.md",
+      "sha256": "f5aca915682ff12987023cd05aa7d929a7fa946f14b8bff9c159fa6fc31b29a4",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_run_order",
+      "path": "evaluation/results/step-10/raw/run-order.csv",
+      "sha256": "096eef4b1d2ccdeba271206476087a2af4ab57ff373bbd5bbc6fd05f080e1604",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_run_records",
+      "path": "evaluation/results/step-10/raw/run-records.jsonl",
+      "sha256": "54bc2c4058e6324b478c1c527f2cf2d3b5ea24e4fc0d41c1419577db466a16e6",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_attempt_events",
+      "path": "evaluation/results/step-10/raw/attempt-events.jsonl",
+      "sha256": "a5ef39991790f8a29192a71ca7fd9d0fd64b98de7a13e21bb22e2d664f7c90bd",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_hitl_pending",
+      "path": "evaluation/results/step-10/raw/hitl-pending.jsonl",
+      "sha256": "71007709c2eb352078bf37723bac3fa7877c23815ffb39e30eb8c513838a0f31",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_operational_deviations",
+      "path": "evaluation/results/step-10/raw/operational-deviations.jsonl",
+      "sha256": "7f57913b9e1f16c22d57f00a6f5f3f928115e89faa16e46fe7d463f247dec764",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_planned_order",
+      "path": "evaluation/results/step-10/raw/planned-order.json",
+      "sha256": "56f3602a1af82ed3a049393a741be48ae6d505693ecc181556bb7fdeffccd5d5",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_runner",
+      "path": "evaluation/results/step-10/run_step10.py",
+      "sha256": "17ba174ca172cf8c6c6257eea5888f30b699f3b2eda0ed2588e939aa2617e06d",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_extractor",
+      "path": "evaluation/results/step-10/extract_n8n_execution.js",
+      "sha256": "80aa43658c8634f6394f02c158c0d7f060854952e47e8e40d45a2ef809d4daea",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_processor",
+      "path": "evaluation/results/step-10/process_results.py",
+      "sha256": "942d7979e57ca5be9f0ecffec945a9f2667a082b362f6ae80bed7f0f0bfc6c41",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_processed_manifest",
+      "path": "evaluation/results/step-10/processed/processed-data-manifest.json",
+      "sha256": "1ad1c1837e0a09d251307129099e45405f9f03d51ff87cdae7a2be3459766e58",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_rq1_summary",
+      "path": "evaluation/results/step-10/processed/rq1-summary.csv",
+      "sha256": "9e5f02bac9a778c4c59c5574c50c27e6e624d03062938ff12e1e70c1ee484cb2",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_rq2_summary_historical",
+      "path": "evaluation/results/step-10/processed/rq2-summary.csv",
+      "sha256": "0e59838bc889360608e0d0934d4e5ace5b1b5f418709127d24b69dc465ef0acf",
+      "provenance": "OBID_CREATED",
+      "interpretation_note": "Historical processor output; final safety interpretation requires step10_rq2_correction."
+    },
+    {
+      "artifact_id": "step10_rq3_reliability",
+      "path": "evaluation/results/step-10/processed/rq3-reliability.csv",
+      "sha256": "95b57ba0d2a51656797eabeaf2cd0d8cae080e049a0ff82241d58ed307bc5ac5",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_rq3_latency",
+      "path": "evaluation/results/step-10/processed/rq3-latency.csv",
+      "sha256": "520926e512e2942e8e1578dffdc5d7f064d449d3bb4e65d7b7b52f04dfbe711c",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_hitl_timing",
+      "path": "evaluation/results/step-10/processed/hitl-timing.csv",
+      "sha256": "f1d46de9fd5d04e4d7f496907ad03ba394a010e02e979a0c15ea0f499bf8c81a",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_llm_telemetry",
+      "path": "evaluation/results/step-10/processed/llm-telemetry.csv",
+      "sha256": "9be40b8d27fe790544202b775e80794678cc142a50961341c803b27898d03f87",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_traceability",
+      "path": "evaluation/results/step-10/processed/traceability.csv",
+      "sha256": "d5d1fd003048ae9c60c784f387700e919a4b256971d151c603a2c16c99aa4fc4",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_processed_summary_historical",
+      "path": "evaluation/results/step-10/processed/summary.md",
+      "sha256": "cc2d03e253ff3f0ba99050c269e46867bd1b55197f8306221aac9790fb8e7db1",
+      "provenance": "OBID_CREATED",
+      "interpretation_note": "Historical processor output; final RQ2 crossing interpretation requires step10_rq2_correction."
+    },
+    {
+      "artifact_id": "step10_rq2_correction",
+      "path": "evaluation/results/step-10/corrections/rq2-hitl-denial-r03-interpretation.md",
+      "sha256": "f0f66fb5dca12e9bba635500984751da15f9b46a2e063a1204264cf7f16c6ea3",
+      "provenance": "OBID_CREATED",
+      "role": "append-only final RQ2 interpretation"
+    },
+    {
+      "artifact_id": "step10_evidence",
+      "path": "evaluation/evidence/step-10-repeated-evaluation.md",
+      "sha256": "8a52278f80991db1060b4f77ee906c04de4d076ddf1d4a54926240aa2f823aa2",
+      "provenance": "OBID_CREATED"
+    },
+    {
+      "artifact_id": "step10_report_note",
+      "path": "docs/report-notes/step-10-repeated-reliability-evaluation.md",
+      "sha256": "aa1db2a5ad28529d6340becad7911a2adfce2444bd092c0ea326ee4773e11e8d",
+      "provenance": "OBID_CREATED"
+    }
+  ],
+  "integrity_notes": [
+    "All hashes were calculated from current repository bytes at FINAL_IMPLEMENTATION_EVIDENCE_CONTENT_HEAD.",
+    "The Step 11 documentation commit is intentionally not self-referenced.",
+    "The historical Step 10 processed RQ2 crossing flag remains immutable; the append-only correction controls the final safety interpretation.",
+    "No reference/ artifact is copied into this active manifest; collaborator identity is represented by the frozen Yacoub commit."
+  ]
+}

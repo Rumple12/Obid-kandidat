@@ -99,3 +99,10 @@ Decisions are numbered, dated, and active until an explicit later entry supersed
 - **Status:** Accepted
 - **Decision:** No shared contract or endpoint semantic may change without explicit authorization and a new decision entry describing compatibility and evaluation impact.
 - **Reason/impact:** Silent changes would invalidate the collaboration boundary and baseline comparison.
+
+## D-015 - Final implementation and evidence freeze
+
+- **Date:** 2026-08-24
+- **Status:** Accepted; `FINAL_IMPLEMENTATION_EVIDENCE_FREEZE: ACTIVE`
+- **Decision:** The substantive implementation and evidence described by the thesis are frozen at `FINAL_IMPLEMENTATION_EVIDENCE_CONTENT_HEAD` `abd36e3d3e88acb8a516a4a0b36f649e1c1f48eb`. `OPTIONAL_VALIDATOR_AGENT: DEFERRED_AFTER_FINAL_FREEZE`; the earlier `SKIP_FOR_CORE` decision remains the correct Step 9/10 history.
+- **Reason/impact:** No further feature development, implementation-semantic change, model/agent/memory extension, evaluation case or run, hardware test, result axis, or evidence replacement may occur before report completion without explicitly reopening the freeze. Report writing, analysis/figures/tables from frozen evidence, citation/reference work, formatting, and narrow non-semantic factual documentation corrections remain allowed.
