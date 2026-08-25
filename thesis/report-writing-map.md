@@ -1094,7 +1094,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Official n8n/node documentation and Chapter 2 concepts where technical behavior needs external grounding.
 - **Provenance:** Component-level `YACOUB_INHERITED`, `SHARED_INTERFACE`, and `OBID_CREATED`.
 - **Limitations/caveats:** Do not invent an Obid Python middleware section, hide retained failures, or describe readiness observations as Step 10 results.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.1 System Overview
 
@@ -1109,7 +1109,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** Mixed and explicit.
 - **Limitations/caveats:** Avoid repeating all Chapter 4 rationale; state one agent, actual runtime controls, and simulated endpoint.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_FIGURE`.
 
 ### 5.2 Frozen n8n Runtime
 
@@ -1124,7 +1124,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Official n8n and Docker documentation for platform behavior, if cited.
 - **Provenance:** Active runtime configuration/evidence `OBID_CREATED`; reproduced compatibility assumptions originate with Yacoub.
 - **Limitations/caveats:** Private credential attachment remains external; provider backend/defaults are not immutable; no Pi deployment.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 5.3 Yacoub-Compatible Integration Boundary
 
@@ -1139,7 +1139,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** API/middleware concepts already established in Chapter 2.
 - **Provenance:** Middleware, normalization, routes, state, and responses `YACOUB_INHERITED`; semantics `SHARED_INTERFACE`; workflow/test observations `OBID_CREATED`.
 - **Limitations/caveats:** Do not claim an Obid Python middleware implementation; inherited `{}`/empty normalization is not Obid validation; use repository-relative paths only.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_FIGURE`.
 
 ### 5.4 Inherited Minimal Agent Baseline
 
@@ -1154,7 +1154,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Citation for Yacoub's source/report and official Gemini/n8n node details if needed.
 - **Provenance:** Baseline architecture, prompt, parser/routing, no-memory semantics `YACOUB_INHERITED`; reconstruction/sanitization/readiness evidence `OBID_CREATED`.
 - **Limitations/caveats:** RQ3 comparator is this minimal agent, not the deterministic anchor; output fences and missing historical modelName are retained limitations; no Obid validator/policy/HITL.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.5 CONFIG-OBID Decision Agent
 
@@ -1169,7 +1169,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** n8n AI Agent and Gemini node authoritative documentation.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Present lineage by capability, not as a project diary; exactly one agent/model node; no validator agent or fallback model.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.6 System Prompt and Structured Decision Envelope
 
@@ -1184,7 +1184,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Structured-output prompting and agent instruction design.
 - **Provenance:** Prompt and envelope `OBID_CREATED`; nested shared action fields `SHARED_INTERFACE`; threshold meaning inherited.
 - **Limitations/caveats:** Prompt text alone is not reliability/safety evidence; `no_action` remains internal; do not reveal or infer hidden reasoning.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.7 Tool Implementation
 
@@ -1199,7 +1199,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Official n8n Tool Code/Workflow Tool documentation.
 - **Provenance:** Tool definitions/wrappers `OBID_CREATED`; threshold semantics and `/status` source inherited/shared.
 - **Limitations/caveats:** Neither tool executes an action; report singleton-enum/wrapper/legacy HTTP Tool repairs as bounded compatibility history, not result rows.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.8 Controlled ReAct Execution
 
@@ -1214,7 +1214,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** ReAct and n8n Agent execution documentation.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** `intermediateSteps: false`; hidden chain-of-thought/scratchpad was not collected; model-call count is not a reasoning-step measure.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.9 Bounded Memory
 
@@ -1229,7 +1229,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** n8n Simple Memory documentation and bounded-memory literature.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Process-local and not restart-durable; active-window exclusion is not physical deletion; no memory-strategy comparison or causal ablation.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.10 Runtime Action Validation
 
@@ -1244,7 +1244,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** JSON Schema/validation concepts and n8n Code node documentation.
 - **Provenance:** Validator implementation/reason codes `OBID_CREATED`; enforced schema Yacoub-originated `SHARED_INTERFACE`.
 - **Limitations/caveats:** Handwritten deterministic JavaScript specific to the frozen contract, not a general draft-2020-12 library or generic security engine; no coercion/repair.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.11 Deterministic Action Policy
 
@@ -1259,7 +1259,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Deterministic policy/guardrail literature.
 - **Provenance:** `OBID_CREATED`; endpoint/action meanings inherited/shared.
 - **Limitations/caveats:** Narrow allowlist/policy context; no dynamic risk engine, autonomous risk discovery, or generic security enforcement.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.12 Human-in-the-Loop Runtime
 
@@ -1274,7 +1274,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Official n8n Wait/form documentation; HITL sources.
 - **Provenance:** Runtime HITL implementation and bounded repair `OBID_CREATED`; original Yacoub HITL concept `YACOUB_INHERITED` / `REFERENCE_ONLY`.
 - **Limitations/caveats:** Retain original child-Wait propagation failure and fail-closed outcome; no reviewer identity, cryptographic integrity, timeout/replay/idempotency proof, or general human-time estimate.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.13 Evaluation Seams and Harnesses
 
@@ -1289,7 +1289,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Fault-injection/test-seam literature if used.
 - **Provenance:** Harnesses/seams `OBID_CREATED`; contracts/endpoints retain original labels.
 - **Limitations/caveats:** `fan_reverse` was injected post-agent; HITL repetitions entered at exact controlled policy input; do not claim natural invalid generation or autonomous risk discovery.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.14 Repeated Evaluation Tooling
 
@@ -1304,7 +1304,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Reproducible experiment tooling/provenance if discussed generally.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Processor preserves failures and historical RQ2 flag; correction is append-only; no outlier removal, replacement, hidden reasoning, or cost estimation.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 5.15 Final Configuration and Reproducibility
 
@@ -1319,7 +1319,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Official platform/model API documentation if exact reproducibility assumptions are discussed.
 - **Provenance:** Manifest/freeze/reproducibility packaging `OBID_CREATED`; baseline artifacts inherited; contracts shared.
 - **Limitations/caveats:** Stored options `{}`; provider defaults/backend may change; private credential required but not frozen; model settings beyond stored options are not invented; simulated fan only.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 5.16 Summary of Implementation
 
@@ -1334,7 +1334,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** Summarize `OBID_CREATED` implementation without absorbing inherited/shared components.
 - **Limitations/caveats:** Draft after Sections 5.1–5.15; do not preview full results or claim runtime controls beyond their frozen seams.
-- **Status:** `READY_TO_DRAFT`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ## Chapter 6 — Results
 
