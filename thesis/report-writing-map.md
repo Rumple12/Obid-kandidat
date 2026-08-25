@@ -9,7 +9,8 @@ The map follows the headings currently present under `thesis/MiunThesisTemplate-
 Allowed status values are used exactly as follows:
 
 - `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting is outside this bootstrap task.
-- `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. This applies to every Chapter 4, 5, and 6 entry.
+- `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. This applies to every Chapter 4 and 6 entry.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists and remains under the audit/repair/re-audit gate. This applies to every Chapter 5 entry.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -2030,7 +2031,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Chapter 2 | 14 | Chapter overview plus all 13 current subsections | References deferred | `SKELETON_ONLY`, `NEEDS_REFERENCE` |
 | Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Every entry must include `READY_TO_DRAFT` | Complete |
-| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Every entry must include `READY_TO_DRAFT` | Complete |
+| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT` | Complete |
 | Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Every entry must include `READY_TO_DRAFT` | Complete |
 | Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Must remain not drafted | `SKELETON_ONLY` |
@@ -2047,7 +2048,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Every Chapter 4, 5, and 6 overview/subsection includes `READY_TO_DRAFT`.
+- [x] Every Chapter 4 and 6 overview/subsection includes `READY_TO_DRAFT`; every Chapter 5 overview/subsection is drafted and includes `DRAFTED_NEEDS_AUDIT` while completing the audit gate.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2057,4 +2058,4 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 ## Recommended next bounded writing task
 
-Draft Chapter 4 from Sections 4.1–4.12 using the mapped frozen artifacts, then verify every implementation/provenance statement against `docs/ongoing/final-claim-evidence-map.md` before moving to Chapter 5. References and the final architecture figure should remain separately scoped unless explicitly requested.
+Draft Chapter 4 from Sections 4.1–4.12 using the mapped frozen artifacts, then verify every design/provenance statement against `docs/ongoing/final-claim-evidence-map.md`. Chapter 5 is already drafted and remains under its audit/repair/re-audit gate; Chapter 6 remains a separately scoped later task. References and the final architecture figure should remain separately scoped unless explicitly requested.
