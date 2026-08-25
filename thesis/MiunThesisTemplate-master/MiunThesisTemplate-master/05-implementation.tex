@@ -1,104 +1,776 @@
 \section{Implementation}\label{sec:implementation}
-% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
-% prose during this bootstrap.
+
+This chapter describes the frozen implementation used in the study. The
+implementation combines an inherited workflow-to-action boundary with an
+Obid-created decision and reliability layer. It is therefore important to
+distinguish three forms of provenance throughout the chapter:
+\texttt{YACOUB\_INHERITED} for reused collaborator components and semantics,
+\texttt{SHARED\_INTERFACE} for the adopted sensor and action boundaries, and
+\texttt{OBID\_CREATED} for the agentic decision layer, runtime controls, and
+evaluation support.
 
 \subsection{System Overview}\label{subsec:impl-overview}
-% EVIDENCE SOURCES: final-implementation-freeze.md;
-% final-artifact-manifest.json; obid-agent-v3-hitl.json.
-% [FIGURE LATER: implemented end-to-end component path]
+
+The final system has two executable configurations at the same temperature
+and fan boundary. \texttt{CONFIG-BASELINE} is the inherited minimal-agent
+comparator. \texttt{CONFIG-OBID} extends the decision path with one Decision
+Agent, two read-only tools, bounded memory, structured internal decisions,
+post-agent validation, deterministic policy, and an executable
+human-in-the-loop (HITL) gate. Both configurations ultimately select the
+existing Yacoub middleware route for the simulated fan.
+
+Within \texttt{CONFIG-OBID}, a valid event first reaches the Decision Agent.
+The agent uses the threshold tool and, when recent state is unavailable, the
+status tool. It then returns either a candidate action or the internal
+\texttt{no\_action} form. Candidate actions pass through the runtime validator
+and policy before any endpoint can be selected. A directly allowed candidate
+is routed immediately, an invalid candidate is blocked, and an
+approval-required candidate remains held until a human approves or denies it.
+The validated four-field action authorizes and selects the inherited
+\texttt{/fan/on} or \texttt{/fan/off} route; the Python endpoint itself does
+not consume that action object as an HTTP request body.
+
+% [FIGURE LATER: final CONFIG-OBID implementation flow]
+
+\begin{table}[H]
+\centering
+\caption{Implemented components and their provenance}
+\label{tab:impl-components}
+\small
+\begin{tabularx}{\textwidth}{L{0.24\textwidth}Y L{0.20\textwidth}}
+\toprule
+\textbf{Component} & \textbf{Implemented role} & \textbf{Provenance} \\
+\midrule
+Yacoub middleware & Exposes status, sensor-event, and fan-action routes and
+maintains the simulated fan state. & \texttt{YACOUB\_INHERITED} \\
+Sensor and action contracts & Define the compatible five-field event and
+four-field action boundaries. & \texttt{SHARED\_INTERFACE} \\
+\texttt{CONFIG-BASELINE} & Provides the inherited stateless minimal-agent
+comparison configuration. & \texttt{YACOUB\_INHERITED} \\
+\texttt{CONFIG-OBID} cognition & Produces a state-aware candidate or internal
+no-op through one tool-using Decision Agent. & \texttt{OBID\_CREATED} \\
+Validation, policy, and HITL & Control whether a candidate is blocked,
+released directly, or held for human input. & \texttt{OBID\_CREATED} \\
+Evaluation support & Supplies controlled seams, orchestration, privacy-scoped
+extraction, raw locking, processing, and traceability. &
+\texttt{OBID\_CREATED} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+No second agent, validator agent, model router, competing middleware, or
+physical Obid hardware path is part of this implementation. The final action
+boundary is the inherited in-memory simulated fan. Existing Raspberry Pi and
+action-side material remains Yacoub evidence rather than evidence created by
+this project.
 
 \subsection{Frozen n8n Runtime}\label{subsec:impl-runtime}
-% EVIDENCE SOURCES: infrastructure/docker/docker-compose.yml;
-% infrastructure/docker/runtime-manifest.md;
-% infrastructure/docker/evidence/step-03-runtime-verification.md;
-% evaluation/results/step-10/experiment-freeze.json.
-% EXPECTED TABLE: n8n version, image/digest, storage, timezone, model control.
+
+The workflows ran in a single Dockerized n8n service. The Compose
+configuration pins n8n to version \texttt{1.123.37} and the image
+\texttt{n8nio/n8n:1.123.37}. The image digest was recorded so that the tag
+alone is not the only runtime identifier. Port 5678 is published to the host,
+and n8n uses its default local SQLite store in the named volume
+\texttt{obid-n8n-data}, mounted at \texttt{/home/node/.n8n}. Both n8n's generic
+timezone and the container timezone are set to \texttt{Europe/Stockholm}.
+Diagnostics and version notifications are disabled in the Compose
+configuration.
+
+\begin{table}[H]
+\centering
+\caption{Frozen runtime and model-control values}
+\label{tab:impl-runtime}
+\small
+\begin{tabularx}{\textwidth}{L{0.31\textwidth}Y}
+\toprule
+\textbf{Item} & \textbf{Frozen implementation value} \\
+\midrule
+Workflow runtime & n8n \texttt{1.123.37} in container
+\texttt{obid-n8n} \\
+Container image & \texttt{n8nio/n8n:1.123.37}, digest
+\texttt{\seqsplit{sha256:913c83834b7130d701a121aab50c16dedd1739ab9317caa19d7ba2686d1de885}} \\
+Network exposure & Host port 5678 to container port 5678 \\
+Persistence & Local SQLite in named volume \texttt{obid-n8n-data} \\
+Timezone & \texttt{GENERIC\_TIMEZONE=Europe/Stockholm} and
+\texttt{TZ=Europe/Stockholm} \\
+Model node & Google Gemini Chat Model v1 with
+\texttt{models/gemini-2.5-flash} \\
+Stored generation options & Empty object \texttt{\{\}}; no fallback model \\
+Agent bound & \texttt{maxIterations: 3} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The same effective model identifier was reconstructed for the inherited
+baseline from the matching pinned Gemini node default, and the portable
+baseline export records it explicitly. For both configurations, the stored
+generation options are the empty object \texttt{\{\}}. This means that the
+repository fixes the model identifier and the node/runtime version but does
+not claim that the remote provider backend or every provider-side default is
+immutable. The local encryption key and Gemini credential are private runtime
+prerequisites. They are supplied outside version control, and the portable
+workflow exports contain no credential identity or secret.
+
+% [REFERENCE NEEDED: official n8n workflow, persistence, and node-version documentation]
 
 \subsection{Yacoub-Compatible Integration Boundary}\label{subsec:impl-integration}
-% EVIDENCE SOURCES: integration/yacoub_compat/boundary-map.md;
-% test-plan.md; workflows/step-04-boundary-test.json;
-% evidence/step-04-integration-verification.md; Step 4 report note.
-% PROVENANCE: middleware/action API YACOUB_INHERITED; verification OBID_CREATED.
-% WARNING: do not create or claim an Obid Python middleware implementation.
+
+The active middleware is the Python implementation inherited from the frozen
+Yacoub repository at commit
+\texttt{\seqsplit{278318340bfa4e4650a97a2baba73f63bd868ed9}}. Obid did not
+reimplement or copy this service. The middleware runs on the host at port
+8000. Host-side clients address it through \texttt{127.0.0.1:8000}, while
+Dockerized n8n reaches the same process through
+\texttt{host.docker.internal:8000}. The source default binds to
+\texttt{127.0.0.1}; the verified runtime used a host-binding override so that
+the n8n container could reach it without changing route or payload semantics.
+
+Four inherited routes form the compatible interface. \texttt{GET /status}
+reports the in-memory fan and hardware state.
+\texttt{POST /sensor-event} normalizes and forwards sensor input.
+\texttt{POST /fan/on} and \texttt{POST /fan/off} change the simulated fan
+state. The Decision Agent's status tool calls only the first route. After a
+candidate has been authorized, deterministic routing selects one of the two
+fan-action routes. The evaluation configurations can also receive events
+directly at their n8n webhooks; consequently, not every evaluated input passes
+through the inherited \texttt{/sensor-event} normalization path.
+
+The shared sensor contract is a JSON object with exactly
+\texttt{sensor\_id}, \texttt{timestamp}, \texttt{type}, \texttt{value}, and
+\texttt{unit}. The frozen scenario accepts the type \texttt{temperature} and
+unit \texttt{C}. The action contract is a JSON object with exactly
+\texttt{action\_id}, \texttt{target}, \texttt{reason}, and
+\texttt{requires\_approval}; extra properties are not permitted. Its actions
+are \texttt{fan\_on} and \texttt{fan\_off}, and its only target is
+\texttt{fan\_1}. The shared action has no risk field and no
+\texttt{no\_action} value.
+
+The implemented configurations preserve the inherited rule
+\[
+  \text{temperature} \geq 30.0\,^{\circ}\mathrm{C}
+  \Rightarrow \texttt{fan\_on},
+  \qquad
+  \text{temperature} < 30.0\,^{\circ}\mathrm{C}
+  \Rightarrow \texttt{fan\_off}.
+\]
+This threshold and its action meanings are Yacoub-owned semantics. Obid's
+contribution is the agentic decision and runtime reliability behavior around
+that unchanged rule. The inherited middleware's empty-body and empty-object
+normalization is also distinct from Obid validation: it can create a default
+temperature event and therefore cannot be used as evidence that the Obid
+decision layer rejected malformed input.
 
 \subsection{Inherited Minimal Agent Baseline}\label{subsec:impl-baseline}
-% EVIDENCE SOURCES: cognitive_logic/baselines/yacoub/minimal-agent-baseline.json;
-% system-prompt-v1.md; memory-choice-v1.md; baseline-manifest.md;
-% evidence/step-06-baseline-verification.md; Step 6 report note.
-% EXPECTED TABLE: baseline workflow/model/parser/routing/memory limitations.
-% PROVENANCE: YACOUB_INHERITED semantics; Obid reproduction evidence OBID_CREATED.
-% WARNING: deterministic baseline is contextual, not the RQ3 comparator.
+
+\texttt{CONFIG-BASELINE} is the executable inherited minimal-agent comparator
+used for the RQ3 comparison. Its portable workflow is
+\codepath{cognitive\_logic/baselines/yacoub/minimal-agent-baseline.json},
+with workflow ID \texttt{agent-minimal}. It receives an event at its n8n
+webhook, serializes the request body as the model input, and invokes one Basic
+LLM Chain connected to one Google Gemini Chat Model node. The inherited prompt
+asks for one four-field action under the same inclusive threshold rule.
+
+The next Code node performs minimal output handling rather than contract
+validation. It selects an observable text-like model field, extracts a
+JSON-looking object when needed, and calls \texttt{JSON.parse}. Two successive
+branches inspect \texttt{action\_id}: \texttt{fan\_on} selects
+\texttt{POST /fan/on}, \texttt{fan\_off} selects
+\texttt{POST /fan/off}, and any other parsed value reaches an unrouted
+fallback. The workflow has no post-agent JSON Schema validator, deterministic
+Obid policy, retry or repair loop, approval gate, or HITL mechanism.
+
+The baseline is stateless. It has no memory node, memory connection, buffer,
+vector store, or persistent workflow state. Its prompt, one-decision
+architecture, parser, routing, and no-memory choice are
+\texttt{YACOUB\_INHERITED}. Obid-created work for this configuration is
+limited to reconstruction of the missing historical model connection,
+portable sanitization, and verification. The historical workflow stored
+\texttt{options: \{\}} and omitted \texttt{modelName}; the effective
+\texttt{models/gemini-2.5-flash} value was recovered from the matching pinned
+node default and made explicit in the sanitized export. The exact prompt was
+also embedded in the executable System message because a repository-path
+reminder cannot supply prompt text to a running LLM node.
+
+The separate deterministic threshold workflow remains an inherited
+development and compatibility anchor. It is not a third core configuration
+and is not the RQ3 comparator. This distinction prevents deterministic
+execution from being misrepresented as the baseline against which
+\texttt{CONFIG-OBID} was evaluated.
 
 \subsection{CONFIG-OBID Decision Agent}\label{subsec:impl-agent}
-% EVIDENCE SOURCES: obid-agent-v1.json; obid-agent-v2-safety.json;
-% obid-agent-v3-hitl.json; configuration-manifest.md; Step 7--9 notes.
-% EXPECTED TABLE: v1/v2/v3 lineage without chronological diary framing.
-% WARNING: one agent and one Gemini node only.
+
+The authoritative Obid workflow is
+\texttt{CONFIG-OBID - Single Agent v3 HITL}, with workflow ID
+\texttt{obid-agent-v3-hitl}. Its 34 nodes combine the final cognitive path,
+runtime-safety subworkflow, caller-side policy routing, and embedded HITL
+gate. The workflow remains a single-agent configuration: it contains one n8n
+AI Agent v3 node and one Gemini model node. There is no second model,
+validator agent, or multi-agent exchange.
+
+At ingress, a deterministic Code node prepares the event and checks the
+minimum conditions needed by the decision layer. The request body must be an
+object; \texttt{sensor\_id} and \texttt{timestamp} must be non-empty strings;
+\texttt{type} must equal \texttt{temperature}; \texttt{value} must be a
+finite number; \texttt{unit} must equal \texttt{C}; and the synthetic
+\texttt{X-Obid-Session-Id} header must be non-empty. A failed check terminates
+at \texttt{OBID\_INPUT\_HANDLING} before the model, memory, tools, safety
+component, or endpoints can run. This gate is not a complete sensor-schema
+validator: for example, it does not validate the timestamp's date-time format
+or reject additional sensor fields.
+
+For a valid event, the prepared JSON becomes the agent input. The agent is
+connected to the model, the two-interaction memory, and exactly two tools.
+After the final response, a Code node extracts the internal decision envelope.
+An internal no-op terminates locally. A non-null candidate is labelled at the
+\texttt{OBID\_POST\_AGENT\_PRE\_VALIDATOR} boundary and sent synchronously to
+the final runtime-safety component. Only a released action can reach the
+caller-side endpoint branches.
+
+\begin{table}[H]
+\centering
+\caption{Implementation characteristics of the two core configurations}
+\label{tab:impl-configurations}
+\small
+\begin{tabularx}{\textwidth}{L{0.24\textwidth}Y Y}
+\toprule
+\textbf{Characteristic} & \textbf{\texttt{CONFIG-BASELINE}} &
+\textbf{\texttt{CONFIG-OBID}} \\
+\midrule
+Decision component & One Basic LLM Chain & One tool-using AI Agent v3 \\
+Model & One Gemini node; effective
+\texttt{models/gemini-2.5-flash} & One Gemini node;
+\texttt{models/gemini-2.5-flash} \\
+Stored options & \texttt{\{\}} & \texttt{\{\}} \\
+Tools & None & Exactly two read-only tools \\
+Memory & Stateless & Two completed interactions, session-scoped and
+process-local \\
+Output handling & Minimal object extraction and route checks & Internal
+decision envelope followed by contract-specific action validation \\
+Release controls & No Obid validator, policy, or HITL & Deterministic
+validation, policy, and caller-embedded HITL \\
+Provenance & Inherited semantics and configuration & Obid-created extension on
+the shared boundary \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The versioned Obid exports preserve implementation lineage without changing
+the core cognition. Version 1 records the agent, model, tools, memory, input
+gate, and internal envelope. Version 2 attaches runtime validation and policy
+after the candidate seam. Version 3 retains those components and adds actual
+HITL. The final v3 export, rather than the earlier step-specific manifests, is
+the workflow identity used for the frozen system.
+
+% [REFERENCE NEEDED: official n8n AI Agent and Gemini node documentation]
 
 \subsection{System Prompt and Structured Decision Envelope}\label{subsec:impl-prompt}
-% EVIDENCE SOURCES: cognitive_logic/obid/prompts/system-prompt-v1.md;
-% structured-output/decision-envelope-v1.md; final v3 workflow; Step 7 evidence.
-% EXPECTED TABLE: prompt constraint | runtime representation | evidence boundary.
-% WARNING: the prompt alone is not runtime reliability evidence.
+
+The Obid system prompt defines the Decision Agent as one controlled
+temperature-event agent for \texttt{fan\_1}. It repeats the inherited
+threshold, limits the action vocabulary to \texttt{fan\_on} and
+\texttt{fan\_off}, and instructs the agent to use only the two connected
+tools. The threshold tool must be called once for each valid event. The latest
+usable remembered \texttt{state\_after} should be used as current state;
+otherwise the status tool should be called once. When desired and current
+state match, the prompt instructs the agent to suppress the duplicate action.
+
+The prompt also imposes output discipline. It requests one JSON object without
+Markdown, prose, private data, or hidden reasoning. A state change is expressed
+through \texttt{decision: emit\_action}; an already satisfied state is
+expressed through \texttt{decision: no\_action}. These instructions constrain
+model behavior but do not by themselves guarantee runtime correctness. The
+separate validator and policy provide the deterministic post-agent controls.
+
+The internal envelope has five fields: \texttt{decision}, \texttt{action},
+\texttt{state\_before}, \texttt{state\_after}, and
+\texttt{reason\_code}. For \texttt{emit\_action}, the nested action contains
+exactly the shared fields \texttt{action\_id}, \texttt{target},
+\texttt{reason}, and \texttt{requires\_approval}. For
+\texttt{no\_action}, \texttt{action} is null. The no-op is therefore an
+internal representation of absent release, not an additional shared action
+identifier. It bypasses the safety subworkflow and cannot select a middleware
+action endpoint.
+
+The envelope parser is deliberately tolerant at this cognitive boundary. It
+can extract JSON from a fenced response or from the first apparent object and
+then projects the five envelope fields. It does not strictly validate the
+entire internal envelope. Strict runtime validation is applied later to a
+non-null nested action candidate. This separation avoids describing prompt
+formatting or tolerant extraction as equivalent to enforcement of the shared
+action contract.
 
 \subsection{Tool Implementation}\label{subsec:impl-tools}
-% EVIDENCE SOURCES: cognitive_logic/obid/tools/tool-definitions-v1.md;
-% executable tool nodes embedded in obid-agent-v3-hitl.json; Step 7 evidence.
-% EXPECTED TABLE: temperature_threshold_tool and fan_status_tool.
-% WARNING: neither tool executes fan actions.
+
+The final Decision Agent exposes exactly two named tools. Both are read-only,
+and neither tool has a path to a fan-action endpoint. Their outputs support
+the decision; mutation can occur only after the candidate passes the later
+release controls.
+
+\begin{table}[H]
+\centering
+\caption{Decision Agent tool implementations}
+\label{tab:impl-tools}
+\small
+\begin{tabularx}{\textwidth}{L{0.24\textwidth}L{0.22\textwidth}Y L{0.18\textwidth}}
+\toprule
+\textbf{Tool} & \textbf{Input} & \textbf{Output and role} &
+\textbf{Side-effect boundary} \\
+\midrule
+\texttt{temperature\_threshold\_tool} & Finite numeric
+\texttt{value} and exact unit \texttt{C} & Returns the threshold, relation,
+desired action, and desired fan state using the inherited inclusive rule. &
+No state read, middleware call, memory mutation, or action call \\
+\texttt{fan\_status\_tool} & Literal target \texttt{fan\_1} & Runs an inline
+subworkflow that calls \texttt{GET /status} and normalizes target, fan state,
+simulated flag, and source. & No \texttt{/fan/on} or \texttt{/fan/off} route,
+agent recursion, or credential \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\texttt{temperature\_threshold\_tool} is an n8n Tool Code node, type version
+1.3. Its JavaScript rejects a non-finite value or a unit other than
+\texttt{C}, applies the $30.0\,^{\circ}\mathrm{C}$ rule, and returns a JSON
+string containing \texttt{threshold\_c}, \texttt{relation},
+\texttt{desired\_action}, and \texttt{desired\_fan\_state}. The tool does not
+decide whether an endpoint may be released.
+
+\texttt{fan\_status\_tool} is a Workflow Tool node, type version 2.2. Its
+embedded workflow consists of an Execute Workflow Trigger, an ordinary
+\texttt{GET http://host.docker.internal:8000/status} request, and a
+deterministic normalization Code node. The target is fixed to
+\texttt{fan\_1}; model input cannot change the URL or select another device.
+The final Workflow Tool placement also records a bounded compatibility
+choice: stricter singleton tool schemas and the installed legacy HTTP Tool
+were incompatible with the pinned wrapper/routing behavior, so exact unit
+checking remained in code and the status lookup used the supported inline
+workflow form.
+
+% [REFERENCE NEEDED: official n8n Tool Code and Workflow Tool documentation]
 
 \subsection{Controlled ReAct Execution}\label{subsec:impl-react}
-% EVIDENCE SOURCES: react/react-control-v1.md; system prompt; final workflow;
-% Step 7 evidence/report note.
-% EXPECTED TABLE: maxIterations=3, tool-count bounds, observable termination.
-% WARNING: intermediate hidden reasoning was not retained.
+
+The AI Agent implements a controlled ReAct-style, tool-mediated execution
+cycle. A cold-state event can require a threshold lookup, a status lookup, and
+then a final decision. The agent node sets \texttt{maxIterations} to 3, the
+smallest installed bound that permits those two sequential tool rounds
+followed by the final response. When recent memory already contains a usable
+state, the status lookup is omitted and only the threshold tool is needed.
+
+The prompt limits each tool to one call for the current event and prohibits
+other tools. The workflow supplies no retry loop, self-repair path, fallback
+model, recursive agent, or dynamically created tool. A formatting or
+tool-selection failure is retained as an execution outcome rather than being
+silently repaired by another model call.
+
+Only observable execution data is used to describe this loop. Tool-node
+inputs, results, ordering and counts, the final structured response, node
+status, and the configured iteration bound can be inspected.
+\texttt{returnIntermediateSteps} and streaming are disabled. The
+implementation neither requests nor stores hidden chain-of-thought, private
+scratchpad content, or an internal reasoning trace.
+
+% [REFERENCE NEEDED: ReAct and bounded tool-mediated agent execution]
 
 \subsection{Bounded Memory}\label{subsec:impl-memory}
-% EVIDENCE SOURCES: memory/window-buffer-v1.md; final workflow;
-% Step 7 evidence/report note.
-% EXPECTED TABLE: context window length 2, custom session key, isolation, eviction.
-% WARNING: model-visible eviction is not physical deletion; not restart-durable.
+
+State reuse is implemented with one n8n Simple Memory node
+(\texttt{memoryBufferWindow}, type version 1.3). Its
+\texttt{contextWindowLength} is 2, meaning that the model-visible window
+contains the two latest completed input/final-output interaction pairs. Tool
+calls inside an interaction do not consume separate memory slots. This gives
+the agent access to recent \texttt{state\_after} values without introducing a
+second memory strategy or long-term retrieval system.
+
+The memory uses \texttt{sessionIdType: customKey} and the expression
+\texttt{=\{\{ \$json.session\_id \}\}}. The input-preparation node derives
+that value from the synthetic \texttt{X-Obid-Session-Id} header, leaving the
+shared five-field sensor body unchanged. Reusing a session ID makes recent
+state available across related events; a new ID creates logical isolation for
+another sequence.
+
+This memory is process-local. It persists across executions only while the
+same n8n process remains alive, is lost on restart, and is therefore not
+durable storage. The documented node behavior also removes inactive session
+buffers after one hour when cleanup next runs. Older messages can remain in
+the underlying history even when they are outside the active two-interaction
+load. Leaving the model-visible window must not be interpreted as physical
+deletion. The implemented purpose is bounded recent-state reuse and duplicate
+action suppression, not permanent history, a database-backed memory claim, or
+a comparison of memory techniques.
+
+% [REFERENCE NEEDED: n8n Simple Memory and bounded conversational memory]
 
 \subsection{Runtime Action Validation}\label{subsec:impl-validator}
-% EVIDENCE SOURCES: safety_layer/validator/runtime-action-validator-v1.md;
-% runtime-safety-v1.json; runtime-safety-v2-hitl.json; Step 8 evidence.
-% EXPECTED TABLE: constraint | reason code | blocked terminal.
-% WARNING: deterministic contract-specific JavaScript, not a generic library.
+
+A candidate action crosses \texttt{OBID\_POST\_AGENT\_PRE\_VALIDATOR} before
+the reusable safety workflow receives it. The final
+\texttt{runtime-safety-v2-hitl} workflow preserves the validator introduced in
+\texttt{runtime-safety-v1}. It accepts either a candidate object or a raw JSON
+string. A string is parsed once with \texttt{JSON.parse}; there is no trimming,
+retry, model repair, normalization, default insertion, or type coercion. A
+parsed value must be a plain, non-null, non-array object.
+
+\begin{table}[H]
+\centering
+\caption{Contract-specific action validation}
+\label{tab:impl-validation}
+\small
+\begin{tabularx}{\textwidth}{L{0.31\textwidth}L{0.28\textwidth}Y}
+\toprule
+\textbf{Checked condition} & \textbf{Primary reason code} &
+\textbf{Runtime handling} \\
+\midrule
+JSON cannot be parsed & \texttt{MALFORMED\_JSON} & Block at the validator \\
+Root is not a plain object & \texttt{NOT\_OBJECT} & Block at the validator \\
+Any required field is absent & \texttt{MISSING\_REQUIRED\_FIELD} & Retain all
+detected errors and block \\
+Any extra field is present & \texttt{UNEXPECTED\_FIELD} & Enforce
+\texttt{additionalProperties: false} \\
+Action is not \texttt{fan\_on} or \texttt{fan\_off} &
+\texttt{UNKNOWN\_ACTION} & Set validated action to null \\
+Target is not \texttt{fan\_1} & \texttt{UNKNOWN\_TARGET} & Set validated
+action to null \\
+Reason is not a non-empty string & \texttt{INVALID\_REASON} & Block without
+coercion \\
+Approval flag is not Boolean & \texttt{INVALID\_APPROVAL\_FLAG} & Block
+without coercion \\
+Every frozen constraint passes & \texttt{VALID\_ACTION} & Forward the
+unchanged action to policy \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The validator records the received form, parse status, parsed value, complete
+error list, one primary reason code, validation status, and the validated
+action or null. When several constraints fail, the primary code follows a
+fixed precedence while all detected errors remain available. Invalid
+candidates terminate at \texttt{OBID\_RUNTIME\_VALIDATOR} with
+\texttt{policy\_executed: false}. The internal \texttt{no\_action} branch does
+not enter this workflow and is not treated as malformed action JSON.
+
+The implementation is handwritten deterministic JavaScript specific to the
+frozen four-field schema. The pinned n8n Code-node environment did not expose
+a suitable ordinary external JSON Schema validator without changing the
+runtime. The implementation enforces the constraints present in this one
+contract; it is not a general JSON Schema engine, general security filter, or
+production-safety mechanism.
+
+% [REFERENCE NEEDED: JSON Schema and post-generation runtime validation]
 
 \subsection{Deterministic Action Policy}\label{subsec:impl-policy}
-% EVIDENCE SOURCES: safety_layer/policies/runtime-action-policy-v1.md;
-% outcomes/safety-outcome-v1.md; safety workflows; Step 8 evidence.
-% EXPECTED TABLE: ALLOW | BLOCK | APPROVAL_REQUIRED release semantics.
+
+Only a schema-valid action reaches the deterministic policy Code node. The
+node applies an action/target allowlist that is deliberately redundant with
+the schema and then examines \texttt{requires\_approval}. It produces one of
+three internal outcomes. These policy fields are Obid runtime metadata and do
+not extend the shared action.
+
+\begin{table}[H]
+\centering
+\caption{Deterministic policy and release semantics}
+\label{tab:impl-policy}
+\small
+\begin{tabularx}{\textwidth}{L{0.21\textwidth}Y L{0.23\textwidth}L{0.20\textwidth}}
+\toprule
+\textbf{Outcome} & \textbf{Condition} & \textbf{Stored action} &
+\textbf{Endpoint eligibility} \\
+\midrule
+\texttt{BLOCK} & Validation failed before policy, policy context was rejected,
+or the defensive allowlist mismatched. & No released action & None \\
+\texttt{ALLOW} & Valid \texttt{fan\_on}/\texttt{fan\_off} for
+\texttt{fan\_1}, with approval false. & Unchanged
+\texttt{released\_action} & Caller may select the mapped route \\
+\texttt{APPROVAL\_REQUIRED} & Valid allowed action with approval true. &
+Unchanged \texttt{held\_action}; release remains null & HITL only; no action
+route while pending \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Normal Decision Agent output carries \texttt{requires\_approval: false}, and
+the integrated v3 cognition supplies no policy context. To exercise the HITL
+path under controlled conditions, the final safety workflow recognizes one
+exact internal object at \texttt{OBID\_POLICY\_INPUT}. It contains
+\texttt{policy\_case\_id: POLICY-HITL-REQUIRED},
+\texttt{approval\_required: true}, and
+\texttt{shared\_contract\_field: false}. This context is evaluated only after
+the original action has passed validation. It may change only
+\texttt{requires\_approval} from false to true; \texttt{action\_id},
+\texttt{target}, and \texttt{reason} must remain identical. The context
+itself is never inserted into the shared action schema.
+
+An unrecognized context or failed transformation-integrity check blocks
+release. An invalid candidate stops before context handling, policy, and
+HITL, so human approval cannot rescue \texttt{fan\_reverse}, an unknown
+target, or any other contract-invalid value. For direct release, the caller
+requires both \texttt{schema\_valid: true} and policy decision
+\texttt{allow}. It then maps the released \texttt{action\_id} to exactly one
+inherited fan endpoint.
 
 \subsection{Human-in-the-Loop Runtime}\label{subsec:impl-hitl}
-% EVIDENCE SOURCES: final v3 workflow; runtime-safety-v2-hitl.json;
-% hitl/runtime-hitl-v1.md; hitl-outcome-v1.md;
-% hitl/workflows/step-09-hitl-harness.json;
-% hitl/workflows/runtime-hitl-v1.json; Step 9 evidence/report note.
-% EXPECTED TABLE: Wait/form, held-action snapshot, decision, release checks, timing.
-% WARNING: retain original child-Wait propagation failure and bounded repair.
+
+The final HITL gate is embedded in the caller after an
+\texttt{APPROVAL\_REQUIRED} safety result. Entry requires a schema-valid
+action, an executed approval-required policy, a valid four-field held action
+whose approval flag is true, a null released action, and a successful
+policy-transformation integrity check. Failed preconditions terminate without
+creating a form.
+
+The gate uses \texttt{n8n-nodes-base.wait} type version 1.1 in
+\texttt{resume: form} mode, with no configured wait limit. Before waiting, a
+Code node deep-copies the held action and stores a four-field snapshot. It
+also creates a synthetic request ID of the form
+\texttt{hitl-<execution-id>}. The form displays the action, policy reason, and
+policy case as read-only review information. The reviewer submits exactly one
+required field, \texttt{human\_decision}, whose permitted values are
+\texttt{approve} and \texttt{deny}; the action fields are not editable form
+inputs.
+
+While the execution is pending, \texttt{released\_action} remains null and no
+fan endpoint is eligible. After resume, finalization retrieves the persisted
+pre-wait action rather than reconstructing it from form data. It compares
+\texttt{action\_id}, \texttt{target}, \texttt{reason}, and
+\texttt{requires\_approval} with the stored snapshot and rejects unexpected
+submitted fields. Exact approval with an unchanged held action releases that
+same action, still carrying \texttt{requires\_approval: true}. Denial releases
+null. Invalid decisions, integrity failures, and failed preconditions also
+release null. Approval is thus separate runtime authorization rather than a
+rewrite of the shared action.
+
+The workflow records start, request, decision, and completion timestamps.
+From these it derives pre-wait automation, human wait, post-decision
+automation, and total elapsed time as separate fields. The implementation
+does not require or store reviewer identity, a credential, or a transient form
+resume URL in the committed evidence.
+
+The first bounded topology placed the native Wait/form inside the standalone
+\texttt{runtime-hitl-v1} child workflow. The child waited and could form the
+approved output, but n8n \texttt{1.123.37} resumed the synchronous parent with
+the child's pre-wait input rather than its completed post-wait result. The
+parent could not establish release authorization and therefore failed closed.
+The retained child artifact records this compatibility limitation. The final
+repair embeds parameter-equivalent precondition, request, Wait, finalization,
+and integrity nodes directly in \texttt{CONFIG-OBID} v3 and the HITL harness.
+Only placement changed; the contract, policy, decision vocabulary, held-action
+checks, and endpoint-release conditions remained the same.
+
+% [REFERENCE NEEDED: n8n Wait/form behavior and human-in-the-loop control]
 
 \subsection{Evaluation Seams and Harnesses}\label{subsec:impl-seams}
-% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
-% safety_layer/workflows/step-08-safety-harness.json;
-% safety_layer/hitl/workflows/step-09-hitl-harness.json;
-% evaluation/evaluation-protocol.md.
-% EXPECTED TABLE: seam | injected object/context | component under test.
-% WARNING: invalid action was injected post-agent; HITL used controlled policy input.
+
+The implementation includes controlled evaluation seams so that a known
+stimulus can enter at a precise runtime stage. A seam is an evaluation-only
+injection location, not a new production contract or a mechanism for
+autonomous risk discovery. It allows a component to be exercised without
+requiring a stochastic model to generate the particular fault or policy
+condition.
+
+\begin{table}[H]
+\centering
+\caption{Controlled evaluation seams}
+\label{tab:impl-seams}
+\small
+\begin{tabularx}{\textwidth}{L{0.31\textwidth}L{0.25\textwidth}Y}
+\toprule
+\textbf{Seam} & \textbf{Injected information} & \textbf{Implementation
+purpose} \\
+\midrule
+\texttt{CORE\_CONFIG\_WORKFLOW\_INGRESS} & Same valid event for either core
+configuration & Starts comparable decision processing at each frozen workflow
+ingress \\
+\texttt{EVAL\_DIRECT\_PRE\_DECISION\_INGRESS} & Direct decoded event,
+including the malformed case & Bypasses inherited
+\texttt{/sensor-event} normalization and makes input handling attributable to
+the selected decision layer \\
+\texttt{OBID\_POST\_AGENT\_PRE\_VALIDATOR} & Known candidate
+\texttt{fan\_reverse} & Exercises the real runtime validator independently of
+model generation \\
+\texttt{OBID\_POLICY\_INPUT} & Schema-valid proposal plus separate exact
+policy context & Exercises deterministic approval transformation and HITL
+without extending the shared action \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The direct pre-decision seam maps to
+\texttt{BASELINE\_EVAL\_PRE\_DECISION\_INGRESS} for the inherited comparator
+and \texttt{OBID\_EVAL\_PRE\_AGENT\_INGRESS} for the Obid configuration. The
+post-agent seam is implemented in the Step 8 safety harness and calls the
+same validator/policy component used by the integrated workflow. The Step 9
+harness enters at the policy seam and contains the same embedded Wait/form
+parameters as final v3. These sanitized harness exports were activated only
+for bounded verification and evaluation work; they do not redefine the
+sensor or action schemas and do not create alternate safety behavior.
 
 \subsection{Repeated Evaluation Tooling}\label{subsec:impl-eval-tooling}
-% EVIDENCE SOURCES: evaluation/results/step-10/run_step10.py;
-% extract_n8n_execution.js; process_results.py; experiment-freeze.json;
-% raw/raw-data-manifest.json; processed/processed-data-manifest.json.
-% EXPECTED TABLE: tool | input | output | integrity/traceability role.
+
+Three frozen programs implement repeated-evaluation support outside the
+decision semantics. The schedule contains 85 planned primary attempts: 70 in
+the two-configuration core comparison, five at the invalid-action seam, and
+ten at the HITL seam. The count describes the implemented schedule; observed
+outcomes are reported in Chapter~6.
+
+\begin{table}[H]
+\centering
+\caption{Repeated-evaluation tooling responsibilities}
+\label{tab:impl-evaluation-tools}
+\small
+\begin{tabularx}{\textwidth}{L{0.25\textwidth}L{0.25\textwidth}Y}
+\toprule
+\textbf{Artifact} & \textbf{Primary responsibility} &
+\textbf{Integrity and privacy boundary} \\
+\midrule
+\codepath{run\_step10.py} & Builds the frozen order, checks runtime identities,
+restores preconditions, invokes workflows and seams, assigns run IDs, and
+appends attempt evidence. & Operates outside decision semantics; never retries
+or replaces a primary attempt and does not automatically choose HITL decisions
+\\
+\codepath{extract\_n8n\_execution.js} & Reads bounded node, model, tool,
+memory, timing, error, and child-execution observations from n8n. & Opens
+SQLite read-only, returns an allowlisted projection, redacts sensitive fields,
+and omits workflow credential data and form-resume URLs \\
+\codepath{process\_results.py} & Verifies the raw lock and derives correctness,
+modal agreement, descriptive latency, separate HITL timing, telemetry, and
+traceability outputs. & Re-hashes locked inputs, retains failures, removes no
+outliers, estimates no unavailable cost, and does not collect hidden reasoning
+\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The runner stores the planned order before dispatch and assigns a stable
+primary run ID to every schedule entry. Five balanced outer rounds rotate the
+ordinary case blocks and alternate the temporal order of the two
+configurations. Each memory A--B--C sequence remains indivisible, with resets
+between configurations and repetitions rather than inside the sequence.
+Safety-only attempts follow the core schedule. The runner records an attempt
+start before dispatch, controls the simulated-fan precondition, associates
+top-level and child n8n execution IDs, and appends errors, rejects, missing
+values, and deviations instead of replacing them. HITL is coordinated
+manually: the program can observe the pending state and present the transient
+form location, but the human supplies the actual approve or deny decision.
+
+The extractor runs inside the pinned container against the n8n SQLite database
+opened in read-only mode. It does not parse or return the workflow record that
+can contain credential references. Instead, it produces a credential-safe
+projection of allowlisted node outputs, execution status and timing, tool and
+memory observations, safe error fields, and parent/child lineage. Observable
+model call and token fields are retained only when n8n exposes them. Hidden
+chain-of-thought and private scratchpad data are neither requested nor
+extracted.
+
+Raw evidence is append-only during execution. It includes the planned and
+actual order, attempt events, one primary record per attempt, pending HITL
+snapshots, and operational deviations. Once completeness, uniqueness,
+schedule, no-dangling-attempt, and privacy checks pass, a SHA-256 manifest
+creates \texttt{STEP10\_RAW\_DATA\_LOCK\_V1}. The processor refuses to run
+without this lock and re-hashes every critical raw file before producing the
+processed CSV and Markdown summaries. Its traceability table maps each
+summary source back to the primary run ID, top-level n8n execution, and linked
+child executions.
+
+The implemented evidence flow is:
+\begin{quote}
+\centering
+\small
+frozen case and protocol $\rightarrow$ scheduled runtime attempt
+$\rightarrow$ attempt and event evidence $\rightarrow$ primary run record
+$\rightarrow$ raw-data lock $\rightarrow$ deterministic processing
+$\rightarrow$ processed summaries $\rightarrow$ traceability.
+\end{quote}
+If a later interpretation needs correction, a separate append-only correction
+can supersede that interpretation without rewriting the historical raw or
+processed artifacts. The correction mechanism preserves the earlier
+processing state; the specific experimental interpretation belongs to the
+results chapter.
 
 \subsection{Final Configuration and Reproducibility}\label{subsec:impl-reproducibility}
-% EVIDENCE SOURCES: final-artifact-manifest.json;
-% final-implementation-freeze.md; experiment-freeze.json; runtime-manifest.md;
-% shared contract hashes; raw and processed manifests.
-% EXPECTED TABLE: frozen identity | path | hash/value | limitation.
-% WARNING: stored generation options are {}; provider defaults/backend may vary.
+
+The final implementation and evidence state is frozen at substantive Git
+identity
+\texttt{\seqsplit{abd36e3d3e88acb8a516a4a0b36f649e1c1f48eb}}. Step 11
+records this content identity separately from its later documentation
+checkpoint, avoiding a self-referential freeze. The machine-readable
+\texttt{OBID\_FINAL\_ARTIFACT\_FREEZE\_V1} manifest contains 61 unique
+artifact paths and SHA-256 values. It acts as an integrity index for the
+workflow exports, prompts, contracts, implementation descriptions,
+evaluation oracle and protocol, tooling, locked raw evidence, processed
+outputs, and correction record; it does not replace those source artifacts.
+
+\begin{table}[H]
+\centering
+\caption{Compact final configuration identity}
+\label{tab:impl-final-identity}
+\small
+\begin{tabularx}{\textwidth}{L{0.27\textwidth}Y L{0.19\textwidth}}
+\toprule
+\textbf{Identity} & \textbf{Frozen artifact or value} &
+\textbf{Provenance} \\
+\midrule
+\texttt{CONFIG-BASELINE} &
+\codepath{cognitive\_logic/baselines/yacoub/minimal-agent-baseline.json};
+SHA-256 \texttt{\seqsplit{ed8697e07eb83deaecac3879c82b860e2c4b8f597bde1bc355a3c5b863c15585}}
+& \texttt{YACOUB\_INHERITED} semantics \\
+\texttt{CONFIG-OBID} &
+\codepath{cognitive\_logic/obid/workflows/obid-agent-v3-hitl.json};
+SHA-256 \texttt{\seqsplit{1a09ee5a3199289c39845f9b97a3a3f516f277924d6a8fcb52da52780b0eaf78}}
+& \texttt{OBID\_CREATED} \\
+Model control & \texttt{models/gemini-2.5-flash};
+\texttt{options: \{\}}; no fallback; \texttt{maxIterations: 3} &
+Frozen configuration \\
+Runtime & n8n \texttt{1.123.37}; pinned image and digest; local SQLite volume &
+\texttt{OBID\_CREATED} runtime \\
+Contracts & Frozen sensor-event and four-field action JSON schemas &
+\texttt{SHARED\_INTERFACE} \\
+Safety and HITL & \texttt{runtime-safety-v2-hitl} plus caller-embedded native
+Wait/form & \texttt{OBID\_CREATED} \\
+Evaluation definition & \texttt{OBID-EVALUATION-CASES-V1} and
+\texttt{OBID-EVALUATION-PROTOCOL-V1} & \texttt{OBID\_CREATED} \\
+Evidence integrity & Experiment freeze, raw lock, processed manifest,
+traceability, and 61-artifact final index & \texttt{OBID\_CREATED} \\
+Action boundary & Frozen Yacoub middleware and simulated fan &
+\texttt{YACOUB\_INHERITED} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The committed workflows are sanitized, inactive portable exports. Recreating
+the runtime therefore requires importing and activating them, attaching a
+private local model credential, and starting the exact inherited middleware.
+Portable file hashes identify the committed definitions; separate semantic
+hashes were used to compare live imported workflows without exporting
+credentials or owner metadata. Repository-relative paths and frozen Git
+identities are sufficient for the report; local temporary checkout paths and
+personal data are intentionally excluded.
+
+Reproducibility remains bounded by systems outside the repository. The model
+identifier, node version, stored empty options, runtime version, and absence of
+a fallback are frozen, but the remote provider backend and defaults are not
+claimed to be permanently reproducible. The final system also stops at a
+simulated fan rather than new physical Obid hardware. These boundaries do not
+change the recorded implementation identity, but they delimit what a later
+replication can reproduce directly from the artifact package.
+
+% [REFERENCE NEEDED: reproducible workflow exports and model-service versioning]
 
 \subsection{Summary of Implementation}\label{subsec:impl-summary}
-% EVIDENCE SOURCES: final-claim-evidence-map.md; Step 11 report note.
-% REPORT WRITER: Summarize only after Sections 5.1--5.15 are drafted.
+
+The frozen implementation places an Obid-created single-agent decision and
+reliability path on an unchanged Yacoub-compatible action boundary. One
+Decision Agent uses the inherited threshold semantics through a deterministic
+tool, reads simulated fan state through a separate read-only tool when recent
+state is unavailable, and uses a two-interaction process-local memory to
+support state-aware decisions. Its internal envelope distinguishes a shared
+action candidate from an internal \texttt{no\_action}.
+
+Every candidate that proceeds beyond cognition is parsed and checked against
+the exact shared action contract before deterministic policy can execute.
+Policy may release it directly, block it, or hold it for the caller-embedded
+Wait/form gate. Approval releases only the unchanged stored action; denial and
+all invalid states release nothing. Controlled seams and frozen evaluation
+programs provide attributable inputs, attempt preservation, privacy-scoped
+execution extraction, raw-data locking, deterministic processing, and
+run-to-execution traceability. The result is one auditable implementation
+configuration with explicit inherited, shared, and Obid-created boundaries,
+not a new middleware, multi-agent system, or physical-device implementation.
