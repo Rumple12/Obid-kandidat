@@ -1,0 +1,70 @@
+\section{Methodology}\label{sec:method}
+% REPORT WRITER: Skeleton only. Describe what was actually executed; keep
+% planning-only and readiness observations distinct from Step 10 results.
+
+\subsection{Research and Design Approach}\label{subsec:method-approach}
+% EVIDENCE SOURCES: docs/plans/implementation-plan.md;
+% docs/ongoing/codex-workflow.md; docs/report-notes/step-01-*.md through step-11-*.md.
+% [REFERENCE NEEDED: appropriate design/development research method]
+
+\subsection{Collaboration and Provenance Boundary}\label{subsec:method-provenance}
+% EVIDENCE SOURCES: docs/ongoing/collaboration-boundary.md;
+% docs/collaboration/shared-interface-provenance.md; docs/ongoing/yacoub-handoff.md.
+% EXPECTED TABLE: Artifact class | Yacoub/Shared/Obid provenance | Method use.
+
+\subsection{Controlled Temperature-to-Fan Scenario}\label{subsec:method-scenario}
+% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
+% shared_interfaces/contract-freeze.md; evaluation/evaluation-protocol.md.
+% SCOPE WARNING: simulated fan only; no physical Obid hardware experiment.
+
+\subsection{Baseline and Extended Configuration Definitions}\label{subsec:method-configurations}
+% EVIDENCE SOURCES: cognitive_logic/baselines/yacoub/baseline-manifest.md;
+% cognitive_logic/obid/configuration-manifest.md; final-artifact-manifest.json.
+% EXPECTED TABLE: CONFIG-BASELINE versus CONFIG-OBID controls/components.
+% WARNING: RQ3 comparator is the inherited minimal-agent baseline, not the
+% deterministic anchor.
+
+\subsection{Frozen Evaluation Protocol}\label{subsec:method-protocol}
+% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
+% evaluation/results/step-10/experiment-freeze.json.
+
+\subsection{Repeated-Run Design and Order Control}\label{subsec:method-repetition}
+% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
+% evaluation/results/step-10/raw/planned-order.json; raw/run-order.csv.
+% EXPECTED TABLE: five-round block rotation and deterministic pair ordering.
+
+\subsection{Case Matrix}\label{subsec:method-cases}
+% EVIDENCE SOURCE: evaluation/cases/obid-evaluation-cases.json.
+% EXPECTED TABLE: case ID | injection point | configuration | expected terminal.
+
+\subsection{Correctness and Consistency Measurement}\label{subsec:method-rq1}
+% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
+% evaluation/results/step-10/process_results.py.
+% Define correct/attempted and modal observable-outcome agreement; do not use
+% exact reason wording as a correctness metric.
+
+\subsection{Safety and HITL Measurement}\label{subsec:method-rq2}
+% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
+% raw/hitl-pending.jsonl; corrections/rq2-hitl-denial-r03-interpretation.md.
+% Preserve assigned-oracle correctness separately from actual human decision.
+
+\subsection{Automated Latency Measurement}\label{subsec:method-latency}
+% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
+% processed/rq3-latency.csv; raw/run-records.jsonl.
+% EXPECTED TABLE: eligible cases, timing start/end, exclusions, summaries.
+% WARNING: human waiting is excluded; mean is supplementary; no significance.
+
+\subsection{Raw-Data Retention and Failure Handling}\label{subsec:method-raw}
+% EVIDENCE SOURCES: raw/raw-data-manifest.json; raw/run-records.jsonl;
+% raw/attempt-events.jsonl; docs/decisions.md D-012.
+
+\subsection{Processing, Traceability, and Reproducibility}\label{subsec:method-processing}
+% EVIDENCE SOURCES: run_step10.py; extract_n8n_execution.js;
+% process_results.py; processed/processed-data-manifest.json;
+% processed/traceability.csv; final-artifact-manifest.json.
+
+\subsection{Threats and Limitations of the Method}\label{subsec:method-limitations}
+% EVIDENCE SOURCES: final-implementation-freeze.md;
+% final-evidence-inventory.md; Step 10 and Step 11 report notes.
+% Cover one model/domain, n=5/cell, simulated boundary, controlled injection
+% seams, session-specific HITL time, provider defaults, and descriptive analysis.

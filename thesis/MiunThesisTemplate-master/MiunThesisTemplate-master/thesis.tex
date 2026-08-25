@@ -1,0 +1,91 @@
+% Author of the LaTeX class: Lennart Franked.
+% Main author of the official MIUN template contents: Stefan Forsstrom.
+% REPORT WRITER: Obid report bootstrap only. Chapter files contain headings and
+% source-mapping comments, not substantive thesis prose.
+
+\documentclass[english]{miunthesis}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{newfloat}
+\usepackage[]{appendix}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{xurl}
+\usepackage{seqsplit}
+\usepackage{caption}
+
+\captionsetup[figure]{font=small,labelfont={bf,it},textfont=it}
+\hypersetup{hidelinks,hypertexnames=false}
+\newcommand{\codepath}[1]{\texttt{\seqsplit{#1}}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\graphicspath{{Figures/}}
+\addbibresource{literature.bib}
+
+% [CHECK METADATA: final thesis title]
+\title{}
+% [CHECK METADATA: final thesis subtitle]
+% \subtitle{}
+% [CHECK METADATA: full Obid author name]
+\author{}
+
+% Confirmed only at the project-type level by active Obid sources.
+\projecttype{Bachelor Thesis}
+% [CHECK METADATA: exact main field of study wording]
+\fieldofstudy{}
+% [CHECK METADATA: course credits]
+\coursecredits{}
+% [CHECK METADATA: supervisor]
+\supervisor{}
+% [CHECK METADATA: examiner]
+\examiner{}
+% [CHECK METADATA: course code]
+% \coursecode{}
+% [CHECK METADATA: registration number]
+% \registrationnr{}
+% [CHECK METADATA: exact study-programme wording]
+% \studyprogramme{}
+% [CHECK METADATA: final publication semester/year; the class derives these at build time]
+% [CHECK METADATA: publication choice and personal fields in Diva_publish.pdf]
+
+\begin{document}
+  \maketitle
+  \pagenumbering{roman}
+  \includepdf[pages=1]{Diva_publish.pdf}
+  \newpage
+  \printabstract
+
+  \include{00-acknowledgements}
+  \newpage
+
+  \tableofcontents
+  \newpage
+
+  % The approved Yacoub reference omits separate lists of figures, tables, and
+  % algorithms. They can be reconsidered after the Obid figures/tables exist.
+  \include{00-terminology}
+  \newpage
+
+  \pagenumbering{arabic}
+  \include{01-intro}
+  \include{02-theory}
+  \include{03-method}
+  \include{04-prestudy}
+  \include{05-implementation}
+  \include{06-result}
+  \include{07-discussion}
+  \include{08-conclusions}
+
+  \addcontentsline{toc}{section}{\translate{References}}
+  \printbibliography{}
+
+  \newpage\clearpage
+  \pagestyle{fancy}
+  \setcounter{page}{1}
+  \appendix
+  \noappendicestocpagenum
+  \include{Appendices/appA}
+\end{document}

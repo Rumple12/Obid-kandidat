@@ -1,0 +1,90 @@
+\section{Choice of Approach / System Design}\label{sec:system-design}
+% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
+% prose during this bootstrap.
+
+\subsection{Design Goals and Constraints}\label{subsec:design-goals}
+% PURPOSE: Derive the smallest design capable of answering RQ1-RQ3.
+% EVIDENCE SOURCES: docs/ongoing/obid-scope.md; project-overview.md;
+% docs/decisions.md D-001, D-005--D-011, D-015; final-implementation-freeze.md.
+% EXPECTED TABLE: Design goal/constraint | design response | evidence.
+% WARNING: bounded thesis design, not production architecture.
+
+\subsection{Inherited Collaboration Boundary}\label{subsec:design-boundary}
+% PURPOSE: Establish the Yacoub-owned infrastructure and shared compatibility seams.
+% EVIDENCE SOURCES: collaboration-boundary.md; yacoub-handoff.md;
+% docs/collaboration/shared-interface-provenance.md;
+% integration/yacoub_compat/boundary-map.md.
+% PROVENANCE: YACOUB_INHERITED / SHARED_INTERFACE; Obid verification is OBID_CREATED.
+% EXPECTED TABLE: inherited component | shared seam | Obid use.
+% WARNING: do not claim middleware, baselines, schemas, or Pi evidence as Obid-authored.
+
+\subsection{Alternatives and Scope Decisions}\label{subsec:design-alternatives}
+% PURPOSE: Explain deterministic-only versus extended agentic layer; single
+% versus multi-agent; one primary model; one memory configuration; no new
+% hardware/device comparison; validator-agent deferred after final freeze.
+% EVIDENCE SOURCES: obid-scope.md; docs/decisions.md D-006--D-010, D-015;
+% Step 9 and Step 11 report notes.
+% EXPECTED TABLE: alternative | decision | reason | frozen status.
+
+\subsection{Chosen Agentic Architecture}\label{subsec:design-architecture}
+% PURPOSE: Map one Decision Agent, one Gemini node, two tools, bounded memory,
+% structured decision, validator, policy, HITL, and inherited endpoint boundary.
+% EVIDENCE SOURCES: final-implementation-freeze.md;
+% final-artifact-manifest.json; cognitive_logic/obid/configuration-manifest.md;
+% cognitive_logic/obid/workflows/obid-agent-v3-hitl.json.
+% [FIGURE LATER: final frozen Obid architecture]
+% WARNING: not multi-agent and not merely a prompt around an LLM.
+
+\subsection{Tool-Use and Controlled ReAct Design}\label{subsec:design-react}
+% EVIDENCE SOURCES: cognitive_logic/obid/tools/tool-definitions-v1.md;
+% cognitive_logic/obid/react/react-control-v1.md; system-prompt-v1.md;
+% Step 7 evidence/report note.
+% EXPECTED TABLE: tool | read-only input/output | permitted role | prohibition.
+% [REFERENCE NEEDED: ReAct and tool-using agents]
+% WARNING: report observable tool use only; no hidden chain-of-thought claim.
+
+\subsection{Bounded-Memory Design}\label{subsec:design-memory}
+% EVIDENCE SOURCES: cognitive_logic/obid/memory/window-buffer-v1.md;
+% evaluation/cases/obid-evaluation-cases.json; Step 7 report note.
+% EXPECTED TABLE: window, session key, cold/warm behavior, limitations.
+% [REFERENCE NEEDED: bounded/window memory]
+% WARNING: process-local, one strategy, no durability or superiority claim.
+
+\subsection{Structured Output and Shared Contract Boundary}\label{subsec:design-output}
+% EVIDENCE SOURCES: decision-envelope-v1.md; both shared JSON schemas;
+% shared_interfaces/contract-freeze.md; Step 5 and Step 7 report notes.
+% EXPECTED TABLE: internal envelope fields versus unchanged shared action fields.
+% WARNING: internal no_action is absence of shared action, not a new action ID.
+
+\subsection{Runtime Validation and Deterministic Policy}\label{subsec:design-safety}
+% EVIDENCE SOURCES: runtime-action-validator-v1.md;
+% runtime-action-policy-v1.md; safety-outcome-v1.md;
+% runtime-safety-v1.json; runtime-safety-v2-hitl.json; Step 8 report note.
+% EXPECTED TABLE: parse/validation/policy outcomes and release behavior.
+% [REFERENCE NEEDED: runtime validation and deterministic policy]
+% WARNING: contract-specific validator, not a generic security engine.
+
+\subsection{Human-in-the-Loop Design}\label{subsec:design-hitl}
+% EVIDENCE SOURCES: safety_layer/hitl/runtime-hitl-v1.md;
+% hitl-outcome-v1.md; step-09-hitl-harness.json; runtime-hitl-v1.json;
+% runtime-safety-v2-hitl.json; Step 9 report note.
+% EXPECTED TABLE: pending | approve | deny invariants and endpoint behavior.
+% [REFERENCE NEEDED: HITL]
+% WARNING: distinguish final embedded Wait/form from retained child-Wait failure.
+
+\subsection{Evaluation-Oriented Design Decisions}\label{subsec:design-evaluation}
+% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
+% evaluation/evaluation-protocol.md; experiment-freeze.json; raw-data-manifest.json.
+% EXPECTED TABLE: design seam | case family | observable terminal/evidence.
+
+\subsection{Final System Architecture}\label{subsec:design-final}
+% EVIDENCE SOURCES: final-implementation-freeze.md;
+% final-artifact-manifest.json; obid-agent-v3-hitl.json;
+% runtime-safety-v2-hitl.json; integration/yacoub_compat/boundary-map.md.
+% [FIGURE LATER: final agentic architecture with provenance bands]
+% FIGURE WARNING: exclude credentials, owner/project data, transient HITL URLs,
+% screenshots, and any unimplemented validator-agent branch.
+
+\subsection{Summary of Chosen Approach}\label{subsec:design-summary}
+% EVIDENCE SOURCES: final-claim-evidence-map.md; Step 11 report note.
+% REPORT WRITER: Summarize the bounded rationale only after Sections 4.1--4.11.

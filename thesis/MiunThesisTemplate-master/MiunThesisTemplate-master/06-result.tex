@@ -1,0 +1,100 @@
+\section{Results}\label{sec:results}
+% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
+% result prose or charts during this bootstrap.
+
+\subsection{Evaluation Overview}\label{subsec:results-overview}
+% EXACT FROZEN SOURCES: evaluation/evidence/step-10-repeated-evaluation.md;
+% docs/report-notes/step-10-repeated-reliability-evaluation.md;
+% evaluation/results/step-10/experiment-freeze.json;
+% evaluation/results/step-10/processed/summary.md.
+% EXPECTED TABLE: RQ | case families | records | primary metric.
+% CAVEAT: Step 10 results control; readiness evidence is implementation context.
+
+\subsection{Execution Integrity and Dataset}\label{subsec:results-integrity}
+% EXACT RAW SOURCES: raw/planned-order.json; raw/run-order.csv;
+% raw/run-records.jsonl; raw/attempt-events.jsonl;
+% raw/operational-deviations.jsonl; raw/raw-data-manifest.json.
+% PROCESSED SOURCE: processed/traceability.csv.
+% EXPECTED TABLE: 70 core + 5 invalid-action + 10 HITL = 85 primary records;
+% 30 automated-latency eligible; unique/no replacement/order integrity.
+% CAVEAT: three pre-run non-semantic restorations; no result-driven tuning.
+
+\subsection{RQ1 - CONFIG-OBID Accuracy and Consistency}\label{subsec:results-rq1}
+% EXACT SOURCES: evaluation/cases/obid-evaluation-cases.json;
+% raw/run-records.jsonl; processed/rq1-summary.csv; processed/traceability.csv.
+% EXPECTED TABLE: High, Low, Threshold, Malformed, Memory A/B/C; each 5/5;
+% total 35/35; modal agreement 100% in every family.
+% [FIGURE LATER: optional RQ1 case-family correctness chart]
+% CAVEAT: exact frozen cases and n=5/family; no universal reliability claim.
+
+\subsection{RQ2 - Invalid-Action Validation Results}\label{subsec:results-rq2-invalid}
+% EXACT SOURCES: raw/run-records.jsonl; raw/attempt-events.jsonl;
+% processed/rq2-summary.csv; processed/traceability.csv.
+% EXPECTED TABLE: injected fan_reverse 5/5 blocked; UNKNOWN_ACTION;
+% policy/action release not reached; endpoints 0/0; fan off.
+% CAVEAT: post-agent fault injection of one unsupported action; not naturally generated.
+
+\subsection{RQ2 - HITL Pending, Approval, and Denial Results}\label{subsec:results-rq2-hitl}
+% EXACT RAW SOURCES: raw/hitl-pending.jsonl; raw/run-records.jsonl;
+% raw/attempt-events.jsonl.
+% PROCESSED SOURCES: processed/rq2-summary.csv; processed/hitl-timing.csv;
+% processed/traceability.csv.
+% EXPECTED TABLE: ten safe pending observations; assigned approval 5/5;
+% assigned denial 4/5; planned 5/5 versus actual 6 approve/4 deny.
+% CAVEAT: exact controlled policy-input seam; no autonomous risk-discovery claim.
+
+\subsection{RQ2 - Denial-R03 Protocol Deviation and Correction}\label{subsec:results-rq2-r03}
+% FINAL INTERPRETIVE AUTHORITY:
+% evaluation/results/step-10/corrections/rq2-hitl-denial-r03-interpretation.md.
+% RAW SOURCES: run-records.jsonl run S10_EVAL-HITL-01B_CONFIG-OBID_R03;
+% attempt-events.jsonl; hitl-pending.jsonl; planned-order.json; run-order.csv.
+% HISTORICAL PROCESSED SOURCES: rq2-summary.csv and summary.md retain crossing=1.
+% EXPECTED TABLE: planned deny | actual approve | assigned result incorrect |
+% protocol deviation 1 | final invalid/unapproved crossings 0.
+% CAVEAT: do not call R03 a successful denial or quote crossing=1 as final safety.
+
+\subsection{RQ3 - Reliability Comparison}\label{subsec:results-rq3-reliability}
+% EXACT SOURCES: raw/run-records.jsonl; processed/rq3-reliability.csv;
+% processed/traceability.csv; Step 5 oracle/protocol.
+% EXPECTED TABLE: paired CONFIG-BASELINE/CONFIG-OBID results for seven families.
+% [FIGURE LATER: paired RQ3 reliability by case family]
+% CAVEAT: baseline no-memory status is not itself a failure; duplicate action is.
+% WARNING: comparator is inherited minimal-agent CONFIG-BASELINE, not deterministic.
+
+\subsection{RQ3 - Automated Latency Comparison}\label{subsec:results-rq3-latency}
+% EXACT SOURCES: raw/run-records.jsonl; processed/rq3-latency.csv;
+% processed/traceability.csv; processed/processed-data-manifest.json.
+% EXPECTED TABLE: six rows with all five raw values plus median/min/max and
+% supplementary mean for High, Low, Threshold by configuration.
+% [FIGURE LATER: RQ3 automated latency distributions/observations]
+% CAVEAT: human waiting excluded; n=5/cell; mean supplementary; no standard
+% deviation as primary metric; no significance or component-causality claim.
+
+\subsection{HITL Timing Observations}\label{subsec:results-hitl-timing}
+% EXACT SOURCES: raw/run-records.jsonl; processed/hitl-timing.csv.
+% EXPECTED TABLE: ten rows with pre-wait automation, human wait,
+% post-decision automation, and total elapsed time kept separate.
+% [FIGURE LATER: optional segmented HITL timing observations]
+% CAVEAT: session-specific observations, not population estimates; excluded from RQ3.
+
+\subsection{LLM and Token Telemetry Availability}\label{subsec:results-telemetry}
+% EXACT SOURCES: processed/llm-telemetry.csv; raw/run-records.jsonl.
+% EXPECTED TABLE: 85 rows summarized as 65 positive model-call paths, 20
+% zero-call paths; tokens available 64, not applicable 20, unavailable 1;
+% direct cost unavailable for all 85.
+% CAVEAT: do not estimate cost or infer hidden reasoning from model-call counts.
+
+\subsection{Retained Failures and Negative Outcomes}\label{subsec:results-negative}
+% EXPERIMENTAL SOURCES: raw/run-records.jsonl; raw/attempt-events.jsonl;
+% Step 10 evidence/report note; final-implementation-freeze.md.
+% READINESS SOURCES: Step 6--9 evidence/report notes.
+% EXPECTED TABLE: evidence | result/readiness classification | retained outcome.
+% INCLUDE: five baseline malformed failures (two non-success); five baseline
+% memory-B duplicate fan_on outcomes; denial R03; child-Wait fail-closed;
+% fenced baseline outputs; Step 7 tool/provider failures; missing telemetry.
+% CAVEAT: do not merge readiness failures into Step 10 denominators.
+
+\subsection{Summary of Results}\label{subsec:results-summary}
+% EXACT SOURCES: final-implementation-freeze.md;
+% final-claim-evidence-map.md; Step 10 and Step 11 report notes.
+% REPORT WRITER: Summarize observations only; defer causal interpretation to Chapter 7.

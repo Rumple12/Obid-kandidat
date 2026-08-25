@@ -1,0 +1,104 @@
+\section{Implementation}\label{sec:implementation}
+% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
+% prose during this bootstrap.
+
+\subsection{System Overview}\label{subsec:impl-overview}
+% EVIDENCE SOURCES: final-implementation-freeze.md;
+% final-artifact-manifest.json; obid-agent-v3-hitl.json.
+% [FIGURE LATER: implemented end-to-end component path]
+
+\subsection{Frozen n8n Runtime}\label{subsec:impl-runtime}
+% EVIDENCE SOURCES: infrastructure/docker/docker-compose.yml;
+% infrastructure/docker/runtime-manifest.md;
+% infrastructure/docker/evidence/step-03-runtime-verification.md;
+% evaluation/results/step-10/experiment-freeze.json.
+% EXPECTED TABLE: n8n version, image/digest, storage, timezone, model control.
+
+\subsection{Yacoub-Compatible Integration Boundary}\label{subsec:impl-integration}
+% EVIDENCE SOURCES: integration/yacoub_compat/boundary-map.md;
+% test-plan.md; workflows/step-04-boundary-test.json;
+% evidence/step-04-integration-verification.md; Step 4 report note.
+% PROVENANCE: middleware/action API YACOUB_INHERITED; verification OBID_CREATED.
+% WARNING: do not create or claim an Obid Python middleware implementation.
+
+\subsection{Inherited Minimal Agent Baseline}\label{subsec:impl-baseline}
+% EVIDENCE SOURCES: cognitive_logic/baselines/yacoub/minimal-agent-baseline.json;
+% system-prompt-v1.md; memory-choice-v1.md; baseline-manifest.md;
+% evidence/step-06-baseline-verification.md; Step 6 report note.
+% EXPECTED TABLE: baseline workflow/model/parser/routing/memory limitations.
+% PROVENANCE: YACOUB_INHERITED semantics; Obid reproduction evidence OBID_CREATED.
+% WARNING: deterministic baseline is contextual, not the RQ3 comparator.
+
+\subsection{CONFIG-OBID Decision Agent}\label{subsec:impl-agent}
+% EVIDENCE SOURCES: obid-agent-v1.json; obid-agent-v2-safety.json;
+% obid-agent-v3-hitl.json; configuration-manifest.md; Step 7--9 notes.
+% EXPECTED TABLE: v1/v2/v3 lineage without chronological diary framing.
+% WARNING: one agent and one Gemini node only.
+
+\subsection{System Prompt and Structured Decision Envelope}\label{subsec:impl-prompt}
+% EVIDENCE SOURCES: cognitive_logic/obid/prompts/system-prompt-v1.md;
+% structured-output/decision-envelope-v1.md; final v3 workflow; Step 7 evidence.
+% EXPECTED TABLE: prompt constraint | runtime representation | evidence boundary.
+% WARNING: the prompt alone is not runtime reliability evidence.
+
+\subsection{Tool Implementation}\label{subsec:impl-tools}
+% EVIDENCE SOURCES: cognitive_logic/obid/tools/tool-definitions-v1.md;
+% executable tool nodes embedded in obid-agent-v3-hitl.json; Step 7 evidence.
+% EXPECTED TABLE: temperature_threshold_tool and fan_status_tool.
+% WARNING: neither tool executes fan actions.
+
+\subsection{Controlled ReAct Execution}\label{subsec:impl-react}
+% EVIDENCE SOURCES: react/react-control-v1.md; system prompt; final workflow;
+% Step 7 evidence/report note.
+% EXPECTED TABLE: maxIterations=3, tool-count bounds, observable termination.
+% WARNING: intermediate hidden reasoning was not retained.
+
+\subsection{Bounded Memory}\label{subsec:impl-memory}
+% EVIDENCE SOURCES: memory/window-buffer-v1.md; final workflow;
+% Step 7 evidence/report note.
+% EXPECTED TABLE: context window length 2, custom session key, isolation, eviction.
+% WARNING: model-visible eviction is not physical deletion; not restart-durable.
+
+\subsection{Runtime Action Validation}\label{subsec:impl-validator}
+% EVIDENCE SOURCES: safety_layer/validator/runtime-action-validator-v1.md;
+% runtime-safety-v1.json; runtime-safety-v2-hitl.json; Step 8 evidence.
+% EXPECTED TABLE: constraint | reason code | blocked terminal.
+% WARNING: deterministic contract-specific JavaScript, not a generic library.
+
+\subsection{Deterministic Action Policy}\label{subsec:impl-policy}
+% EVIDENCE SOURCES: safety_layer/policies/runtime-action-policy-v1.md;
+% outcomes/safety-outcome-v1.md; safety workflows; Step 8 evidence.
+% EXPECTED TABLE: ALLOW | BLOCK | APPROVAL_REQUIRED release semantics.
+
+\subsection{Human-in-the-Loop Runtime}\label{subsec:impl-hitl}
+% EVIDENCE SOURCES: final v3 workflow; runtime-safety-v2-hitl.json;
+% hitl/runtime-hitl-v1.md; hitl-outcome-v1.md;
+% hitl/workflows/step-09-hitl-harness.json;
+% hitl/workflows/runtime-hitl-v1.json; Step 9 evidence/report note.
+% EXPECTED TABLE: Wait/form, held-action snapshot, decision, release checks, timing.
+% WARNING: retain original child-Wait propagation failure and bounded repair.
+
+\subsection{Evaluation Seams and Harnesses}\label{subsec:impl-seams}
+% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
+% safety_layer/workflows/step-08-safety-harness.json;
+% safety_layer/hitl/workflows/step-09-hitl-harness.json;
+% evaluation/evaluation-protocol.md.
+% EXPECTED TABLE: seam | injected object/context | component under test.
+% WARNING: invalid action was injected post-agent; HITL used controlled policy input.
+
+\subsection{Repeated Evaluation Tooling}\label{subsec:impl-eval-tooling}
+% EVIDENCE SOURCES: evaluation/results/step-10/run_step10.py;
+% extract_n8n_execution.js; process_results.py; experiment-freeze.json;
+% raw/raw-data-manifest.json; processed/processed-data-manifest.json.
+% EXPECTED TABLE: tool | input | output | integrity/traceability role.
+
+\subsection{Final Configuration and Reproducibility}\label{subsec:impl-reproducibility}
+% EVIDENCE SOURCES: final-artifact-manifest.json;
+% final-implementation-freeze.md; experiment-freeze.json; runtime-manifest.md;
+% shared contract hashes; raw and processed manifests.
+% EXPECTED TABLE: frozen identity | path | hash/value | limitation.
+% WARNING: stored generation options are {}; provider defaults/backend may vary.
+
+\subsection{Summary of Implementation}\label{subsec:impl-summary}
+% EVIDENCE SOURCES: final-claim-evidence-map.md; Step 11 report note.
+% REPORT WRITER: Summarize only after Sections 5.1--5.15 are drafted.
