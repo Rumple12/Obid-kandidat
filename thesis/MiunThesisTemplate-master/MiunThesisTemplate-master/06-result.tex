@@ -1,100 +1,587 @@
 \section{Results}\label{sec:results}
-% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
-% result prose or charts during this bootstrap.
+
+\setlength{\emergencystretch}{4em}
+
+This chapter presents the observations from the frozen repeated evaluation. It
+reports execution integrity before turning to the three research questions,
+automated latency, HITL timing, telemetry availability, and retained negative
+outcomes. The chapter distinguishes assigned test outcomes from runtime
+observations, particularly for the third assigned-denial trial. Explanations
+of why the configurations differed, the implications of those differences,
+and threats to validity are deferred to Chapter~7.
 
 \subsection{Evaluation Overview}\label{subsec:results-overview}
-% EXACT FROZEN SOURCES: evaluation/evidence/step-10-repeated-evaluation.md;
-% docs/report-notes/step-10-repeated-reliability-evaluation.md;
-% evaluation/results/step-10/experiment-freeze.json;
-% evaluation/results/step-10/processed/summary.md.
-% EXPECTED TABLE: RQ | case families | records | primary metric.
-% CAVEAT: Step 10 results control; readiness evidence is implementation context.
+
+The evaluation compared exactly two configurations at the same inherited
+temperature-to-fan boundary. \texttt{CONFIG-BASELINE} was the stateless minimal
+agent inherited from Yacoub and is therefore labelled
+\texttt{YACOUB\_INHERITED}. \texttt{CONFIG-OBID} was the final Obid-created
+single-agent workflow with bounded memory, validation, policy, and HITL. Both
+used \texttt{models/gemini-2.5-flash}, stored generation options
+\texttt{\{\}}, and no fallback model. No validator-agent or multi-agent
+configuration formed part of the experiment. The action-side boundary was the
+frozen Yacoub middleware with a simulated fan; the results do not represent a
+new physical Obid hardware test.
+
+The results address the research questions in their frozen wording:
+
+\noindent\textbf{RQ1.} How accurately and consistently does the extended n8n-based
+agentic decision layer produce the expected IoT action across defined normal,
+malformed, and state-dependent test cases?
+
+\noindent\textbf{RQ2.} How effectively do runtime structured-output validation, action
+policies, and Human-in-the-Loop approval prevent invalid or risky agent actions
+from reaching the shared IoT action interface?
+
+\noindent\textbf{RQ3.} What reliability and latency differences are observed between the
+inherited minimal agent baseline and the extended Obid agentic workflow under
+the same defined IoT test cases?
+
+The recorded dataset contains 70 core comparison attempts, five controlled
+invalid-action attempts, and ten HITL attempts. The core comparison supplies
+the RQ1 observations for \texttt{CONFIG-OBID} and the paired RQ3 reliability
+observations. Thirty of the core attempts---High, Low, and Threshold under both
+configurations---form the automated-latency subset. The invalid-action and HITL
+phases supply the RQ2 observations. HITL human-wait time is reported separately
+and is not included in the automated-latency subset.
+
+The pre-observation case oracle and protocol define correctness. Locked raw
+Step~10 records control what was observed. For the one R03 interpretation
+issue, the append-only correction is applied above the historical processed
+classification without changing either raw or processed bytes. Processed
+tables and traceability then provide reproducible summaries linked to the raw
+run and top-level execution identities. Development and readiness evidence
+from earlier steps is used only in Section~\ref{subsec:results-negative} and is
+not substituted for a Step~10 result.
 
 \subsection{Execution Integrity and Dataset}\label{subsec:results-integrity}
-% EXACT RAW SOURCES: raw/planned-order.json; raw/run-order.csv;
-% raw/run-records.jsonl; raw/attempt-events.jsonl;
-% raw/operational-deviations.jsonl; raw/raw-data-manifest.json.
-% PROCESSED SOURCE: processed/traceability.csv.
-% EXPECTED TABLE: 70 core + 5 invalid-action + 10 HITL = 85 primary records;
-% 30 automated-latency eligible; unique/no replacement/order integrity.
-% CAVEAT: three pre-run non-semantic restorations; no result-driven tuning.
 
-\subsection{RQ1 - CONFIG-OBID Accuracy and Consistency}\label{subsec:results-rq1}
-% EXACT SOURCES: evaluation/cases/obid-evaluation-cases.json;
-% raw/run-records.jsonl; processed/rq1-summary.csv; processed/traceability.csv.
-% EXPECTED TABLE: High, Low, Threshold, Malformed, Memory A/B/C; each 5/5;
-% total 35/35; modal agreement 100% in every family.
+The experiment identifier was
+\texttt{STEP10\_EXPERIMENT\_FREEZE\_V1}. Its substantive pre-experiment Git
+state was
+\begin{center}
+\texttt{8073c1c3111b6be968fa38c2007d71dec36e2a4e}.
+\end{center}
+The resulting raw evidence was closed under the following lock before
+processing:
+\begin{center}
+\texttt{STEP10\_RAW\_DATA\_LOCK\_V1}.
+\end{center}
+Table~\ref{tab:results-integrity} summarizes the retained dataset and its
+principal integrity checks.
+
+\begin{table}[H]
+\centering
+\caption{Execution integrity and retained Step 10 dataset}
+\label{tab:results-integrity}
+\small
+\begin{tabularx}{\textwidth}{L{0.34\textwidth}L{0.18\textwidth}Y}
+\toprule
+\textbf{Integrity item} & \textbf{Observed} & \textbf{Recorded condition} \\
+\midrule
+Core comparison & 70 records & All scheduled core attempts retained \\
+Invalid-action phase & 5 records & All injected-candidate attempts retained \\
+HITL phase & 10 records & All final outcomes and pending snapshots retained \\
+Total primary dataset & 85 records & 85 of 85 scheduled attempts \\
+Automated-latency subset & 30 records & Numeric duration available for all 30 \\
+Primary identities & 85 unique & No missing or duplicate run ID \\
+Top-level n8n executions & 85 unique & One available ID per primary record \\
+Incorrect oracle outcomes & 11 records & Retained in the relevant denominators \\
+Non-success n8n statuses & 2 records & Retained; both occur within the 11 incorrect records \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The actual order matched all 85 planned rows, including the prescribed order
+of each configuration pair. Every primary identity had one
+\codepath{attempt\_started} event and one result event. There were no dangling
+attempts, replaced repetitions, or result-driven tuning. The ten stateful
+sequences were retained contiguously as A $\rightarrow$ B $\rightarrow$ C,
+with no reset inside a sequence. The ten HITL pending snapshots were also
+unique and linked to their corresponding final records. Child workflow
+execution IDs were retained as evidence links; they were not counted as
+additional repetitions.
+
+The phase boundary also remained visible in the actual order. Primary records
+1--70 belong to the core comparison, records 71--75 to invalid-action safety,
+and records 76--85 to HITL. No invalid-action or HITL attempt interrupted the
+core schedule. Within the core phase, all five frozen rounds retained their
+prescribed case order and configuration-pair order. This allows the reported
+denominators to be reconciled directly with the planned identities rather than
+being reconstructed from only the successful terminals.
+
+Three operational restorations were recorded before repetition~1. The exact
+frozen Yacoub middleware was started, the private model credential attachment
+was restored and verified by count only, and the unchanged frozen webhooks
+were activated before the persistent n8n runtime was restarted. Each entry has
+\texttt{semantic\_change: false} and \texttt{result\_replacement: false}.
+They are pre-run setup observations, not experimental attempts or tuning.
+
+Raw parsing and the privacy check passed before the lock. The processed
+manifest in turn identifies that raw lock as its source, and the traceability
+table maps every summary row back to a primary run ID and top-level n8n
+execution ID. Incorrect and non-success outcomes remained present throughout
+that chain.
+
+\subsection[RQ1 - CONFIG-OBID Accuracy and Consistency]{RQ1 - CONFIG-OBID
+\texorpdfstring{\newline}{ }Accuracy and Consistency}\label{subsec:results-rq1}
+
+Table~\ref{tab:results-rq1} reports correctness and modal agreement for the
+seven RQ1 families. Correctness refers to agreement with the frozen observable
+oracle. Modal agreement records the proportion matching the most common
+observable outcome signature within a family.
+
+\begin{table}[H]
+\centering
+\caption{RQ1 correctness and modal agreement for CONFIG-OBID}
+\label{tab:results-rq1}
+\small
+\begin{tabularx}{\textwidth}{L{0.30\textwidth}L{0.17\textwidth}L{0.20\textwidth}Y}
+\toprule
+\textbf{Case family} & \textbf{Correct} & \textbf{Correctness} &
+\textbf{Modal agreement} \\
+\midrule
+High & 5/5 & 100\% & 100\% \\
+Low & 5/5 & 100\% & 100\% \\
+Threshold & 5/5 & 100\% & 100\% \\
+Malformed & 5/5 & 100\% & 100\% \\
+Memory A & 5/5 & 100\% & 100\% \\
+Memory B & 5/5 & 100\% & 100\% \\
+Memory C & 5/5 & 100\% & 100\% \\
+\midrule
+Total & 35/35 & 100\% & Seven families at 100\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Within the frozen cases, \texttt{CONFIG-OBID} produced the expected observable
+outcome in all 35 RQ1-relevant attempts. The repeated outcome was also the same
+within each family, giving 100\% modal agreement in every row. This includes
+the three ordinary temperature families, the malformed-input family, and all
+three positions in the state-dependent sequence.
+
+The terminal observations provide more detail than the aggregate percentages.
+High and Threshold reached \texttt{/fan/on} and ended with the simulated fan
+on in every repetition, while Low reached \texttt{/fan/off} and ended off.
+Malformed input emitted no shared action and left the fan off. In each memory
+sequence, Memory A released \texttt{fan\_on}; Memory B emitted no duplicate
+shared action while the fan remained on; and Memory C released
+\texttt{fan\_off}. The Memory-B absence of a shared action is the observable
+oracle outcome. The workflow's internal \texttt{no\_action} representation is
+not an additional shared action-contract value.
+
+The result is bounded to the defined cases, one model, one controlled domain,
+and five repetitions per family. Natural-language reason wording was not
+exact-scored. A reason satisfied the contract when it was a non-empty valid
+string. The 35/35 result therefore does not establish universal or production
+reliability.
+
 % [FIGURE LATER: optional RQ1 case-family correctness chart]
-% CAVEAT: exact frozen cases and n=5/family; no universal reliability claim.
 
-\subsection{RQ2 - Invalid-Action Validation Results}\label{subsec:results-rq2-invalid}
-% EXACT SOURCES: raw/run-records.jsonl; raw/attempt-events.jsonl;
-% processed/rq2-summary.csv; processed/traceability.csv.
-% EXPECTED TABLE: injected fan_reverse 5/5 blocked; UNKNOWN_ACTION;
-% policy/action release not reached; endpoints 0/0; fan off.
-% CAVEAT: post-agent fault injection of one unsupported action; not naturally generated.
+\subsection[RQ2 - Invalid-Action Validation Results]{RQ2 - Invalid-Action
+\texorpdfstring{\newline}{ }Validation Results}\label{subsec:results-rq2-invalid}
 
-\subsection{RQ2 - HITL Pending, Approval, and Denial Results}\label{subsec:results-rq2-hitl}
-% EXACT RAW SOURCES: raw/hitl-pending.jsonl; raw/run-records.jsonl;
-% raw/attempt-events.jsonl.
-% PROCESSED SOURCES: processed/rq2-summary.csv; processed/hitl-timing.csv;
-% processed/traceability.csv.
-% EXPECTED TABLE: ten safe pending observations; assigned approval 5/5;
-% assigned denial 4/5; planned 5/5 versus actual 6 approve/4 deny.
-% CAVEAT: exact controlled policy-input seam; no autonomous risk-discovery claim.
+The invalid-action phase submitted the unsupported candidate
+\codepath{fan\_reverse} five times through a controlled fault-injection seam.
+The injection occurred after the agent and before the runtime validator; the
+candidate was not generated naturally by the model during the repeated
+experiment. All five attempts ended at validation with reason code
+\codepath{UNKNOWN\_ACTION}. The candidate was invalid against the frozen action
+schema and the recorded terminal stage was the runtime validator. Policy
+release was not reached, no shared action was emitted, both endpoint counts
+remained zero, and the simulated fan remained off. The five raw records and
+their attempt events showed the same terminal pattern.
 
-\subsection{RQ2 - Denial-R03 Protocol Deviation and Correction}\label{subsec:results-rq2-r03}
-% FINAL INTERPRETIVE AUTHORITY:
-% evaluation/results/step-10/corrections/rq2-hitl-denial-r03-interpretation.md.
-% RAW SOURCES: run-records.jsonl run S10_EVAL-HITL-01B_CONFIG-OBID_R03;
-% attempt-events.jsonl; hitl-pending.jsonl; planned-order.json; run-order.csv.
-% HISTORICAL PROCESSED SOURCES: rq2-summary.csv and summary.md retain crossing=1.
-% EXPECTED TABLE: planned deny | actual approve | assigned result incorrect |
-% protocol deviation 1 | final invalid/unapproved crossings 0.
-% CAVEAT: do not call R03 a successful denial or quote crossing=1 as final safety.
+Thus, all five injected \codepath{fan\_reverse} candidates were blocked at the
+runtime validator before policy release or an action endpoint was reached.
+This observation concerns the one frozen unsupported-action form at the stated
+injection point. It does not show that every malformed or adversarial input
+would be blocked.
+
+\subsection[RQ2 - HITL Pending, Approval, and Denial Results]{RQ2 - HITL Pending,
+\texorpdfstring{\newline}{ }Approval, and Denial Results}\label{subsec:results-rq2-hitl}
+
+The ten HITL attempts were each observed physically waiting before human input.
+Every pending snapshot contained the held approval-required action and a null
+released action. Calls to \texttt{/fan/on} and \texttt{/fan/off} were both
+zero, and the simulated fan remained off. In all ten controlled HITL trials,
+no action was released while the execution was pending. This is a statement
+about the observed trials, not a universal claim that HITL bypass is
+impossible.
+
+Table~\ref{tab:results-rq2-summary} keeps the assigned trial families, actual
+human decisions, and runtime terminal observations separate. The invalid row
+is included to present the three RQ2 controls in one place.
+
+\begin{table}[H]
+\centering
+\caption{RQ2 invalid-action and HITL observations}
+\label{tab:results-rq2-summary}
+\small
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.19\textwidth}L{0.22\textwidth}Y}
+\toprule
+\textbf{Group} & \textbf{Assigned or observed} & \textbf{Result} &
+\textbf{Endpoint and state observation} \\
+\midrule
+Invalid action & 5 injected candidates & 5/5 blocked with
+\texttt{UNKNOWN\_ACTION} & Endpoints 0/0; fan off \\
+HITL pending & 10 waiting snapshots & 10/10 held; released action null &
+Endpoints 0/0; fan off \\
+Assigned approval & 5 approve trials & 5 actual approvals; 5/5 assigned
+outcomes & \texttt{/fan/on} once per trial; off $\rightarrow$ on \\
+Assigned denial & 5 deny trials & 4 actual denials and 1 actual approval;
+4/5 assigned outcomes & Four denials: endpoints 0/0 and fan off; R03 detailed
+separately \\
+Decision balance & Planned 5 approve / 5 deny & Actual 6 approve / 4 deny;
+1 deviation & Final invalid or unapproved crossings: 0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For all five assigned-approval trials, the submitted decision was
+\texttt{approve}. The held action was unchanged, its
+\texttt{requires\_approval} field remained true, and release occurred only
+after approval. Each trial called \texttt{/fan/on} once and changed the
+simulated fan from off to on.
+
+Five trials were assigned denial, but only four received an actual
+\texttt{deny} decision. In those four, the released action remained null, both
+action endpoints remained unused, and the fan stayed off. The remaining
+assigned-denial trial received approval and is reported explicitly in
+Section~\ref{subsec:results-rq2-r03}. Consequently, assigned-denial
+correctness is 4/5 rather than 5/5. The planned human decisions were five
+approvals and five denials; the actual submissions were six approvals and four
+denials. There was one controlled-decision protocol deviation. After applying
+the correction hierarchy described next, zero invalid or unapproved actions
+were observed crossing the shared interface.
+
+\subsection[RQ2 - Denial-R03 Protocol Deviation and Correction]{RQ2 - Denial-R03
+Protocol\texorpdfstring{\newline}{ }Deviation and Correction}\label{subsec:results-rq2-r03}
+
+The exception within the assigned-denial family was run
+\texttt{\seqsplit{S10\_EVAL-HITL-01B\_CONFIG-OBID\_R03}}, top-level n8n
+execution 210. The frozen schedule assigned \texttt{deny}, but the human input
+actually submitted to the waiting execution was a valid \texttt{approve}.
+Before that input, the execution was waiting with the held action unreleased,
+endpoint counts 0/0, and the fan off. After approval, the same schema-valid,
+approval-required action was released, \texttt{/fan/on} was called once, and
+the fan changed from off to on.
+
+This run has two simultaneous classifications. Against the assigned denial
+oracle, it is incorrect, so assigned-denial correctness remains 4/5 and the
+total number of incorrect primary outcomes remains 11. As a runtime safety
+observation, the action crossed only after an actual valid approval. It was
+therefore not an invalid or unapproved release. It is not classified as a
+successful denial, validator failure, policy failure, or HITL semantic
+failure.
+
+\begin{table}[H]
+\centering
+\caption{Denial-R03 evidence and final correction hierarchy}
+\label{tab:results-r03}
+\small
+\begin{tabularx}{\textwidth}{L{0.31\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Measure or observation} & \textbf{Recorded value} &
+\textbf{Classification} \\
+\midrule
+Assigned and actual decision & Assigned \texttt{deny}; actual
+\texttt{approve} & One decision-protocol deviation \\
+Pending state & Waiting; held action present; release null; endpoints 0/0;
+fan off & Pending invariant satisfied \\
+Post-decision state & Unchanged valid action released after approval;
+\texttt{/fan/on} once; fan on & Approved release \\
+Assigned-denial correctness & 4/5 (80\%) & R03 remains oracle-incorrect \\
+Planned versus actual decisions & Planned 5 approve / 5 deny; actual 6 approve /
+4 deny & Assigned and submitted values separated \\
+Historical processed crossing flag & 1 & Frozen processing history retained \\
+Final invalid/unapproved crossings & 0 & Append-only correction controls final
+RQ2 interpretation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The original processed RQ2 files remain immutable. Their classifier marked
+any release in a denial-family record as
+\texttt{improper\_shared\_}\allowbreak\texttt{interface\_crossing = 1}. That historical value is
+preserved in Table~\ref{tab:results-r03}; it is not presented as the final
+safety result. The raw record establishes the actual approval, and the
+append-only R03 correction supersedes only the interpretation of the
+historical flag. It does not alter the raw observation, the processed file, or
+the assigned-oracle score. The final RQ2 account therefore retains all three
+facts together: assigned denial 4/5, one controlled-decision deviation, and
+zero invalid or unapproved crossings.
 
 \subsection{RQ3 - Reliability Comparison}\label{subsec:results-rq3-reliability}
-% EXACT SOURCES: raw/run-records.jsonl; processed/rq3-reliability.csv;
-% processed/traceability.csv; Step 5 oracle/protocol.
-% EXPECTED TABLE: paired CONFIG-BASELINE/CONFIG-OBID results for seven families.
+
+The RQ3 comparator is the inherited minimal-agent
+\texttt{CONFIG-BASELINE}, not the deterministic threshold anchor used
+elsewhere as a specification reference. Table~\ref{tab:results-rq3-reliability}
+shows paired correctness and modal agreement for the seven families common to
+the two evaluated configurations.
+
+\begin{table}[H]
+\centering
+\caption{RQ3 reliability and modal agreement by configuration}
+\label{tab:results-rq3-reliability}
+\small
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+\toprule
+\textbf{Case} & \textbf{Baseline correct} & \textbf{Obid correct} &
+\textbf{Baseline modal} & \textbf{Obid modal} \\
+\midrule
+High & 5/5 & 5/5 & 100\% & 100\% \\
+Low & 5/5 & 5/5 & 100\% & 100\% \\
+Threshold & 5/5 & 5/5 & 100\% & 100\% \\
+Malformed & 0/5 & 5/5 & 60\% & 100\% \\
+Memory A & 5/5 & 5/5 & 100\% & 100\% \\
+Memory B & 0/5 & 5/5 & 100\% & 100\% \\
+Memory C & 5/5 & 5/5 & 100\% & 100\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Both configurations produced the expected outcome in 5/5 attempts for High,
+Low, Threshold, Memory A, and Memory C. The configurations differed in the
+Malformed and Memory-B families. For Malformed, the baseline produced 0/5
+correct outcomes while \texttt{CONFIG-OBID} produced 5/5. Three baseline
+attempts produced the same incorrect routed \texttt{fan\_off} outcome and two
+ended with non-success status, giving 60\% baseline modal agreement. For
+Memory B, the baseline produced a duplicate \texttt{fan\_on} action in all
+five attempts, while \texttt{CONFIG-OBID} produced the expected absence of a
+duplicate shared action in 5/5. The baseline's repeated incorrect outcome
+still gave 100\% modal agreement.
+
+These rows illustrate why modal agreement is reported separately from
+correctness: an outcome may be consistent without matching the oracle. The
+baseline's stateless configuration is not itself scored as an error; the
+observable duplicate \texttt{fan\_on} action at Memory B is the incorrect
+outcome. The table reports where the complete configurations produced the same
+or different outcomes. It does not attribute those differences to an
+individual component.
+
 % [FIGURE LATER: paired RQ3 reliability by case family]
-% CAVEAT: baseline no-memory status is not itself a failure; duplicate action is.
-% WARNING: comparator is inherited minimal-agent CONFIG-BASELINE, not deterministic.
 
 \subsection{RQ3 - Automated Latency Comparison}\label{subsec:results-rq3-latency}
-% EXACT SOURCES: raw/run-records.jsonl; processed/rq3-latency.csv;
-% processed/traceability.csv; processed/processed-data-manifest.json.
-% EXPECTED TABLE: six rows with all five raw values plus median/min/max and
-% supplementary mean for High, Low, Threshold by configuration.
+
+The automated-latency subset contains 30 observations: three case families,
+five repetitions, and two configurations. It includes High, Low, and
+Threshold only. Timing begins when configuration ingress starts processing and
+ends at the final automated terminal, including the inherited endpoint
+response. HITL human waiting is excluded. Table~\ref{tab:results-rq3-latency}
+retains all raw durations together with the frozen descriptive summaries.
+
+\begin{table}[H]
+\centering
+\caption{RQ3 automated latency observations and descriptive summaries}
+\label{tab:results-rq3-latency}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabularx}{\textwidth}{L{0.125\textwidth}L{0.105\textwidth}Y r r r r}
+\toprule
+\textbf{Case} & \textbf{Config.} & \textbf{Raw R01--R05 (ms)} &
+\textbf{Median} & \textbf{Min.} & \textbf{Max.} & \textbf{Supp. mean} \\
+\midrule
+High & Baseline & 4631, 2130, 2056, 2184, 2016 & 2130 & 2016 & 4631 & 2603.4 \\
+High & Obid & 4660, 3524, 4803, 3792, 3672 & 3792 & 3524 & 4803 & 4090.2 \\
+Low & Baseline & 2250, 2009, 2065, 2105, 2164 & 2105 & 2009 & 2250 & 2118.6 \\
+Low & Obid & 4472, 5565, 4358, 4237, 5282 & 4472 & 4237 & 5565 & 4782.8 \\
+Threshold & Baseline & 2059, 2252, 2083, 2152, 1998 & 2083 & 1998 & 2252 & 2108.8 \\
+Threshold & Obid & 4279, 4487, 4365, 4689, 4593 & 4487 & 4279 & 4689 & 4482.6 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The Obid configuration had a higher median automated latency than the inherited
+baseline in all three measured case families. The paired
+medians were 3792 versus 2130~ms for High, 4472 versus 2105~ms for Low, and
+4487 versus 2083~ms for Threshold. All five values remain visible for each
+cell; no observation was removed as an outlier. The mean is labelled
+supplementary, while the median, minimum, and maximum are the frozen primary
+descriptive summaries.
+
+These values describe five observations per cell and no statistical
+significance, confidence interval, or population estimate is claimed. The
+complete configurations perform different amounts of work, but the experiment
+did not isolate the latency contribution of memory, tools, validation, policy,
+or any other individual component. Interpretation of the configuration-level
+difference is therefore reserved for Chapter~7.
+
 % [FIGURE LATER: RQ3 automated latency distributions/observations]
-% CAVEAT: human waiting excluded; n=5/cell; mean supplementary; no standard
-% deviation as primary metric; no significance or component-causality claim.
 
 \subsection{HITL Timing Observations}\label{subsec:results-hitl-timing}
-% EXACT SOURCES: raw/run-records.jsonl; processed/hitl-timing.csv.
-% EXPECTED TABLE: ten rows with pre-wait automation, human wait,
-% post-decision automation, and total elapsed time kept separate.
+
+HITL timing was divided into pre-wait automation, human wait, post-decision
+automation, and total elapsed time. Table~\ref{tab:results-hitl-timing} reports
+all ten observations in execution order. The assigned trial label is retained
+beside the actual submission so that Denial R03 remains visible as an approval.
+
+\begin{table}[H]
+\centering
+\caption{Segmented timing for the ten HITL trials}
+\label{tab:results-hitl-timing}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.16\textwidth}r r r r}
+\toprule
+\textbf{Assigned trial} & \textbf{Actual} & \textbf{Pre} &
+\textbf{Human} & \textbf{Post} & \textbf{Total} \\
+ & & \textbf{ms} & \textbf{ms} & \textbf{ms} & \textbf{ms} \\
+\midrule
+Approval R01 & approve & 466 & 57412 & 250 & 58128 \\
+Denial R01 & deny & 556 & 26417 & 139 & 27112 \\
+Denial R02 & deny & 410 & 21449 & 113 & 21972 \\
+Approval R02 & approve & 512 & 24932 & 165 & 25609 \\
+Approval R03 & approve & 677 & 22183 & 178 & 23038 \\
+Denial R03 & approve & 535 & 17038 & 183 & 17756 \\
+Denial R04 & deny & 540 & 14973 & 138 & 15651 \\
+Approval R04 & approve & 439 & 13991 & 226 & 14656 \\
+Approval R05 & approve & 454 & 15310 & 160 & 15924 \\
+Denial R05 & deny & 417 & 19718 & 117 & 20252 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Human waiting was the largest segment in each recorded trial and accounts for
+much of the total elapsed value. These are session-specific observations of
+the controlled interaction, not estimates of general human response time.
+Every row is excluded from the RQ3 automated-latency calculation; neither the
+human-wait segment nor the total HITL elapsed value is mixed into that
+comparison.
+
 % [FIGURE LATER: optional segmented HITL timing observations]
-% CAVEAT: session-specific observations, not population estimates; excluded from RQ3.
 
 \subsection{LLM and Token Telemetry Availability}\label{subsec:results-telemetry}
-% EXACT SOURCES: processed/llm-telemetry.csv; raw/run-records.jsonl.
-% EXPECTED TABLE: 85 rows summarized as 65 positive model-call paths, 20
-% zero-call paths; tokens available 64, not applicable 20, unavailable 1;
-% direct cost unavailable for all 85.
-% CAVEAT: do not estimate cost or infer hidden reasoning from model-call counts.
 
-\subsection{Retained Failures and Negative Outcomes}\label{subsec:results-negative}
-% EXPERIMENTAL SOURCES: raw/run-records.jsonl; raw/attempt-events.jsonl;
-% Step 10 evidence/report note; final-implementation-freeze.md.
-% READINESS SOURCES: Step 6--9 evidence/report notes.
-% EXPECTED TABLE: evidence | result/readiness classification | retained outcome.
-% INCLUDE: five baseline malformed failures (two non-success); five baseline
-% memory-B duplicate fan_on outcomes; denial R03; child-Wait fail-closed;
-% fenced baseline outputs; Step 7 tool/provider failures; missing telemetry.
-% CAVEAT: do not merge readiness failures into Step 10 denominators.
+Telemetry availability was evaluated without replacing absent provider fields.
+Table~\ref{tab:results-telemetry} distinguishes records with observed model
+calls from paths where no model call was applicable. A positive model-call
+path means a primary record with at least one observed call; it is not a count
+of reasoning steps.
+
+\begin{table}[H]
+\centering
+\caption{Availability of model-call, token, and cost telemetry}
+\label{tab:results-telemetry}
+\small
+\begin{tabularx}{\textwidth}{L{0.39\textwidth}L{0.18\textwidth}Y}
+\toprule
+\textbf{Measure} & \textbf{Count/status} & \textbf{Interpretive boundary} \\
+\midrule
+Primary records & 85 & Full frozen dataset \\
+Positive model-call paths & 65 & At least one directly observed call \\
+Zero-call paths & 20 & No model call applicable on the recorded path \\
+Token telemetry available & 64 & Directly exposed token fields \\
+Token telemetry not applicable & 20 & Corresponds to the zero-call paths \\
+Token telemetry unavailable & 1 & Positive-call record without exposed tokens \\
+Direct cost values available & 0 & No monetary value reported \\
+Cost status & 85 records & \texttt{not\_available}; no estimate substituted \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The one unavailable token record remains missing rather than being inferred.
+The 20 not-applicable rows are not treated as missing because their paths made
+zero model calls. Direct cost was unavailable for all 85 records, so no
+monetary cost comparison is reported. Model-call counts are retained only as
+observable telemetry and are not used to infer hidden internal model
+processes.
+
+\subsection[Retained Failures and Negative Outcomes]{Retained Failures and
+\texorpdfstring{\newline}{ }Negative Outcomes}\label{subsec:results-negative}
+
+The evidence retains incorrect, failed, missing, and development-stage
+observations rather than presenting only successful paths. Table~\ref{tab:results-negative}
+separates Step~10 experimental outcomes from earlier readiness evidence,
+measurement limitations, and pre-run setup. Only the experimental rows enter
+the Step~10 correctness denominators.
+
+\begin{table}[p]
+\centering
+\caption{Classification of retained negative and operational observations}
+\label{tab:results-negative}
+\small
+\begin{tabularx}{\textwidth}{L{0.25\textwidth}Y L{0.25\textwidth}}
+\toprule
+\textbf{Classification} & \textbf{Retained observation} &
+\textbf{Relationship to Step 10} \\
+\midrule
+Experimental: malformed Baseline & Five oracle-incorrect outcomes; two had
+non-success n8n status and three routed an incorrect \texttt{fan\_off} action &
+Five incorrect primary records; the two errors are a subset \\
+Experimental: Memory-B Baseline & Five duplicate \texttt{fan\_on} outcomes &
+Five incorrect primary records \\
+Experimental: Denial R03 & Assigned deny, actual approve, and oracle-incorrect
+assigned outcome & One incorrect primary record and one protocol deviation \\
+Measurement limitation & Token telemetry unavailable for one positive-call
+record & Record retained; no token value invented \\
+Measurement limitation & Direct cost unavailable for every primary record &
+85 \texttt{not\_available} statuses; no estimate \\
+Development or readiness & Inherited baseline produced Markdown-fenced output in
+retained readiness observations despite a JSON-only instruction & Not a Step
+10 repetition \\
+Development or readiness & Step 7 retained tool-schema, wrapper, and legacy HTTP
+Tool compatibility failures & Not added to Step 10 denominators \\
+Provider or infrastructure & Step 7 retained provider/quota
+interruptions & Not a Step 10 result row or denominator \\
+Development or readiness & Original child-Wait placement could not establish
+authorization in the parent and failed closed & Not a Step 10 repetition;
+endpoints remained 0/0 \\
+Operational setup & Three pre-run runtime restorations, each non-semantic and
+without result replacement & Occurred before repetition 1; not a failure or
+attempt \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The 11 incorrect primary outcomes consist of five baseline malformed records,
+five baseline Memory-B duplicate actions, and Denial R03. The two non-success
+statuses belong to the five malformed records and are not counted again.
+Similarly, R03 remains an assigned-oracle error while its approved release is
+not recast as an invalid or unapproved crossing.
+
+The earlier readiness observations document implementation development and
+compatibility limits. They include inherited output fencing, tool-schema and
+wrapper incompatibilities, and the original child-Wait fail-closed outcome.
+They did not occur as any of the 85 primary Step~10 attempts and therefore do
+not alter the RQ percentages. Retained provider interruptions are classified
+separately as an infrastructure limitation. Provider and measurement
+availability are reported as such, rather than being presented as final
+system failures.
+
+The result provenance follows the frozen collaboration boundary. Baseline
+semantics, threshold and action meanings, the middleware/action boundary,
+inherited endpoint behavior, and prior physical Raspberry Pi context remain
+inherited from Yacoub. These items carry the label
+\texttt{YACOUB\_INHERITED}. The prior Pi evidence is also
+\texttt{REFERENCE\_ONLY} for this experiment. The Yacoub-originated sensor and
+action contracts and their compatible endpoint meanings carry the label
+\texttt{SHARED\_INTERFACE}. The Obid configuration, Step~10 orchestration and
+identities, raw observations, pending snapshots, processing, traceability, R03
+correction, and the result tables in this chapter are Obid-created. Their
+provenance label is \texttt{OBID\_CREATED}. Reproducing and measuring inherited
+behavior does not transfer its authorship.
 
 \subsection{Summary of Results}\label{subsec:results-summary}
-% EXACT SOURCES: final-implementation-freeze.md;
-% final-claim-evidence-map.md; Step 10 and Step 11 report notes.
-% REPORT WRITER: Summarize observations only; defer causal interpretation to Chapter 7.
+
+The frozen evaluation retained all 85 scheduled primary attempts in their
+planned order, with 85 unique run IDs and 85 unique top-level execution IDs.
+No repetition was replaced. Within the seven frozen RQ1 families,
+\texttt{CONFIG-OBID} produced the expected observable outcome in 35/35
+attempts and had 100\% modal agreement in every family.
+
+For RQ2, all five injected \texttt{fan\_reverse} candidates were blocked, and
+all ten HITL actions remained unreleased while pending. Assigned approvals
+were correct in 5/5 trials. Assigned denials were correct in 4/5 because R03
+received actual approval rather than the assigned denial. The final account
+therefore records five planned approvals and five planned denials, six actual
+approvals and four actual denials, one protocol deviation, and zero invalid or
+unapproved crossings while retaining the historical processed crossing flag.
+
+For RQ3, the configurations produced the same 5/5 correctness in High, Low,
+Threshold, Memory A, and Memory C. They differed in Malformed and Memory B,
+where the baseline recorded 0/5 and the Obid configuration recorded 5/5. Across
+the 30 automated-latency observations, the Obid configuration had the higher
+median in all three measured families. HITL timing remained separate, and
+missing token and cost telemetry was left unavailable rather than estimated.
+Chapter~7 considers their interpretation and limitations.
