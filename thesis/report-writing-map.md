@@ -898,7 +898,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Agentic workflows, ReAct/tool use, bounded memory, structured output, runtime validation, deterministic policy, and HITL.
 - **Provenance:** Mixed and explicit: infrastructure/baselines `YACOUB_INHERITED`; contracts `SHARED_INTERFACE`; decision/reliability design `OBID_CREATED`.
 - **Limitations/caveats:** Bounded research design, not production architecture; no multi-agent, validator agent, new hardware, model comparison, or memory comparison.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.1 Design Goals and Constraints
 
@@ -913,7 +913,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Requirements/design rationale literature only if needed.
 - **Provenance:** Design decisions `OBID_CREATED`; compatibility constraints inherit Yacoub semantics and shared contracts.
 - **Limitations/caveats:** One scenario/model/agent/memory configuration, simulated boundary, and descriptive repeated evaluation; do not present as production requirements coverage.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 4.2 Inherited Collaboration Boundary
 
@@ -928,7 +928,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Yacoub thesis/repository citation; general interface-boundary sources in Chapter 2.
 - **Provenance:** Middleware, API, threshold, baselines, Pi evidence `YACOUB_INHERITED`; schemas/endpoints `SHARED_INTERFACE`; Obid boundary verification `OBID_CREATED`.
 - **Limitations/caveats:** Do not claim middleware, baselines, schemas, or Pi/action-side evidence as Obid-authored; shared does not mean co-authored.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.3 Alternatives and Scope Decisions
 
@@ -943,7 +943,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Single-agent versus multi-agent design literature only if making a general tradeoff argument.
 - **Provenance:** Scope and selected design `OBID_CREATED`; deterministic and minimal baselines inherited.
 - **Limitations/caveats:** Do not imply alternatives were experimentally compared. Explicitly record: one primary model, one bounded-memory strategy, no new hardware/device comparison, no validator agent, and preserved middleware/contracts.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 4.4 Chosen Agentic Architecture
 
@@ -958,7 +958,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Agentic workflow architecture and tool-using agents.
 - **Provenance:** Decision Agent, prompt, tools, memory, validation, policy, and HITL `OBID_CREATED`; final endpoint boundary inherited/shared.
 - **Limitations/caveats:** Exactly one agent, one Gemini node, two read-only tools, one memory configuration, `maxIterations: 3`; not multi-agent and not merely prompt-only safety.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.5 Tool-Use and Controlled ReAct Design
 
@@ -973,7 +973,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** ReAct; LLM tool use; bounded agent execution.
 - **Provenance:** Tool definitions, wrapper choices, ReAct control, and prompt `OBID_CREATED`; status data comes from inherited middleware.
 - **Limitations/caveats:** Neither tool executes fan actions; do not report hidden reasoning or a generic tool platform; retained compatibility failures belong to implementation history.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.6 Bounded-Memory Design
 
@@ -988,7 +988,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Bounded/window memory in LLM-agent systems.
 - **Provenance:** Memory implementation and state-dependent oracle `OBID_CREATED`.
 - **Limitations/caveats:** One process-local strategy; not restart-durable; exclusion from active context is not physical deletion; no superiority or component-ablation claim.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.7 Structured Output and Shared Contract Boundary
 
@@ -1003,7 +1003,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Structured output and interface-contract literature.
 - **Provenance:** Internal envelope/no-op `OBID_CREATED`; action and sensor contracts Yacoub-originated `SHARED_INTERFACE`.
 - **Limitations/caveats:** `no_action` is absence of a shared action, not a new `action_id`; do not claim Obid authored or expanded the schemas.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.8 Runtime Validation and Deterministic Policy
 
@@ -1018,7 +1018,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Runtime validation, deterministic policy, guardrails, and defense-in-depth.
 - **Provenance:** Validator, reason codes, policy, and runtime wiring `OBID_CREATED`; enforced action contract `SHARED_INTERFACE`.
 - **Limitations/caveats:** Handwritten deterministic contract-specific implementation, not a generic schema or security engine; invalid actions cannot be rescued by HITL.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.9 Human-in-the-Loop Design
 
@@ -1033,7 +1033,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** HITL and human oversight.
 - **Provenance:** Executable mechanism, context, form, timing, integrity check, and repair `OBID_CREATED`; original specification `YACOUB_INHERITED` / `REFERENCE_ONLY`.
 - **Limitations/caveats:** Distinguish final embedded Wait/form from retained child-Wait propagation failure; field-level integrity is not cryptographic; controlled policy input is not autonomous risk discovery.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.10 Evaluation-Oriented Design Decisions
 
@@ -1048,7 +1048,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Evaluation observability and fault-injection literature if used.
 - **Provenance:** Evaluation seams and protocol `OBID_CREATED`; shared boundary retained.
 - **Limitations/caveats:** Exact controlled seams bound the claims; invalid action was post-agent injection and HITL was controlled policy input.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`, `NEEDS_FIGURE`.
 
 ### 4.11 Final System Architecture
 
@@ -1063,7 +1063,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None specific beyond concepts already established in Chapter 2.
 - **Provenance:** Mixed, labelled at component level.
 - **Limitations/caveats:** Exclude credentials, owner/project data, transient HITL URLs, screenshots, physical hardware, and any unimplemented validator-agent branch.
-- **Status:** `READY_TO_DRAFT`, `NEEDS_FIGURE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_FIGURE`.
 
 ### 4.12 Summary of Chosen Approach
 
@@ -1078,7 +1078,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** Mixed; summary must preserve all prior labels.
 - **Limitations/caveats:** Draft after Sections 4.1–4.11; summarize rationale rather than results or chronology.
-- **Status:** `READY_TO_DRAFT`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ## Chapter 5 — Implementation
 

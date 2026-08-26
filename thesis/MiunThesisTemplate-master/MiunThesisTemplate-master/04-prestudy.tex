@@ -1,90 +1,483 @@
-\section{Choice of Approach / System Design}\label{sec:system-design}
-% REPORT WRITER: Step 12 target chapter. Source mapping is complete; write no
-% prose during this bootstrap.
+\begingroup
+\setlength{\emergencystretch}{2em}
+
+\section[Choice of Approach / System Design]{Choice of Approach /\\System Design}\label{sec:system-design}
+
+This chapter explains why the final Obid architecture was selected. The design
+had to add an agentic decision and reliability layer while preserving the
+completed Yacoub-compatible workflow-to-action system. It also had to remain
+small enough for the research questions to be answered with attributable and
+repeatable evidence. The result is therefore a bounded engineering design, not
+a general IoT platform or a production-safety architecture. Detailed research
+methods are presented in Chapter~\ref{sec:method}, while the executable
+implementation is described in Chapter~\ref{sec:implementation}.
 
 \subsection{Design Goals and Constraints}\label{subsec:design-goals}
-% PURPOSE: Derive the smallest design capable of answering RQ1-RQ3.
-% EVIDENCE SOURCES: docs/ongoing/obid-scope.md; project-overview.md;
-% docs/decisions.md D-001, D-005--D-011, D-015; final-implementation-freeze.md.
-% EXPECTED TABLE: Design goal/constraint | design response | evidence.
-% WARNING: bounded thesis design, not production architecture.
+
+The design was derived from three research questions rather than from a desire
+to include as many agent features as possible. Their exact wording is retained
+here because each question places a different requirement on the architecture:
+
+\begin{description}
+\item[RQ1] How accurately and consistently does the extended n8n-based agentic
+decision layer produce the expected IoT action across defined normal,
+malformed, and state-dependent test cases?
+\item[RQ2] How effectively do runtime structured-output validation, action
+policies, and Human-in-the-Loop approval prevent invalid or risky agent actions
+from reaching the shared IoT action interface?
+\item[RQ3] What reliability and latency differences are observed between the
+inherited minimal agent baseline and the extended Obid agentic workflow under
+the same defined IoT test cases?
+\end{description}
+
+To make the normal, malformed, and state-dependent RQ1 cases explicit and
+observable, the selected design goes beyond a single model call that maps a
+temperature value to an action. It accepts a controlled event, exposes the
+inherited threshold as a deterministic tool, observes current state, retains a
+small amount of recent state, and returns a machine-readable decision.
+Malformed input also terminates at an Obid-owned boundary so that its
+handling can be attributed to the evaluated decision layer rather than to
+normalization in inherited middleware.
+
+RQ2 changes the role of the model output. An agent response is treated as a
+candidate, not as authorization to actuate the shared interface. Deterministic
+validation and policy must therefore remain downstream of the Decision Agent.
+The architecture also needs a real pending state and an executable human
+approval or denial path; approval described only in documentation would not
+provide the runtime behavior asked about in RQ2.
+
+RQ3 requires two clearly identified configurations at the same collaboration
+boundary. \texttt{CONFIG-BASELINE} is the inherited minimal-agent comparator,
+whereas \texttt{CONFIG-OBID} is the extended configuration. Both retain the
+same primary model identifier, event and action semantics, and inherited action
+boundary. This keeps the comparison focused on the selected workflow designs
+rather than on differences between model families or device platforms. The
+separate inherited deterministic workflow remains a useful engineering anchor,
+but it is not the RQ3 comparator.
+
+Table~\ref{tab:design-goals} summarizes how the principal goals and constraints
+were translated into architectural choices. The remaining-boundary column is
+important: it prevents a local design response from being presented as a claim
+about systems outside the thesis scope.
+
+\begin{table}[H]
+\centering
+\caption{Design goals and constraints mapped to the selected response}
+\label{tab:design-goals}
+\small
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.31\textwidth}L{0.09\textwidth}Y}
+\toprule
+\textbf{Goal or constraint} & \textbf{Selected design response} &
+\textbf{RQ} & \textbf{Remaining boundary} \\
+\midrule
+Expected and state-aware action choice & One Decision Agent with deterministic
+threshold calculation, current-state observation, bounded memory, and a
+structured decision & RQ1 & One temperature-to-fan scenario \\
+Malformed-input attribution & Deterministic Obid input handling at a controlled
+pre-decision ingress & RQ1, RQ3 & Not a general sensor-security gateway \\
+Controlled action release & Contract-specific validation followed by
+deterministic policy and conditional HITL & RQ2 & Narrow frozen action contract
+and policy context \\
+Comparable configurations & One inherited minimal-agent baseline and one
+extended Obid configuration using the same model and interface semantics & RQ3
+& No model-family or device comparison \\
+State dependence without open-ended history & One session-scoped,
+two-interaction memory window & RQ1, RQ3 & Process-local and not durable \\
+Attributable evidence & Controlled seams, observable terminals, stable run
+identity, and endpoint non-execution records & RQ1--RQ3 & Experimental controls,
+not production interfaces \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The scope also imposed negative constraints. The core system contains one
+scenario, one primary model configuration, one main agent workflow, and one
+bounded-memory configuration. Shared contracts could not be changed silently,
+and failures had to remain visible in later evidence. These constraints reduce
+the number of variables that can change at once and keep the contribution
+aligned with the decision and reliability questions.
 
 \subsection{Inherited Collaboration Boundary}\label{subsec:design-boundary}
-% PURPOSE: Establish the Yacoub-owned infrastructure and shared compatibility seams.
-% EVIDENCE SOURCES: collaboration-boundary.md; yacoub-handoff.md;
-% docs/collaboration/shared-interface-provenance.md;
-% integration/yacoub_compat/boundary-map.md.
-% PROVENANCE: YACOUB_INHERITED / SHARED_INTERFACE; Obid verification is OBID_CREATED.
-% EXPECTED TABLE: inherited component | shared seam | Obid use.
-% WARNING: do not claim middleware, baselines, schemas, or Pi evidence as Obid-authored.
+
+The project is one integrated system with two separately attributable thesis
+contributions. The \mbox{\texttt{YACOUB\_INHERITED}} band contains the
+workflow-to-action infrastructure, Python middleware, simulated fan state,
+threshold and action meanings, deterministic anchor, minimal-agent baseline
+semantics, and existing Raspberry Pi evidence. The
+\mbox{\texttt{SHARED\_INTERFACE}} band contains the sensor-event and
+agent-action contracts together with the compatible endpoint meanings.
+This label describes a collaboration boundary; it does not transfer authorship.
+
+Preserving that boundary served four purposes. First, it allowed the Obid layer
+to join the existing system without rebuilding infrastructure unrelated to the
+research questions. Second, it retained compatible event, action, target, and
+endpoint meanings across both evaluated configurations. Third, it made the RQ3
+comparison more controlled because \texttt{CONFIG-BASELINE} and
+\texttt{CONFIG-OBID} act on the same simulated device boundary. Fourth, it
+isolated the Obid contribution: stronger cognition and runtime release control
+could be discussed without absorbing inherited middleware or hardware work into
+the authorship claim.
+
+The shared sensor event remains the inherited five-field object. The shared
+action remains the inherited four-field object whose field names are shown in
+Table~\ref{tab:design-output-boundary}. The permitted action identifiers, target,
+threshold semantics, and endpoint mapping are unchanged. Obid therefore
+extends the system around the contract rather than extending the contract
+itself.
+
+The boundary also clarifies where action authority resides. The Decision Agent
+does not call physical hardware and its read-only tools do not execute fan
+actions. After an action has passed the Obid release controls, deterministic
+routing selects the inherited middleware action endpoint. The observable device
+in this thesis is the inherited simulated fan. Existing Raspberry Pi and
+action-side evidence remains Yacoub-owned context and is not new Obid hardware
+validation. Implementation details for this boundary are given in
+Section~\ref{subsec:impl-integration}.
 
 \subsection{Alternatives and Scope Decisions}\label{subsec:design-alternatives}
-% PURPOSE: Explain deterministic-only versus extended agentic layer; single
-% versus multi-agent; one primary model; one memory configuration; no new
-% hardware/device comparison; validator-agent deferred after final freeze.
-% EVIDENCE SOURCES: obid-scope.md; docs/decisions.md D-006--D-010, D-015;
-% Step 9 and Step 11 report notes.
-% EXPECTED TABLE: alternative | decision | reason | frozen status.
+
+The alternatives in Table~\ref{tab:design-alternatives} were considered as
+scope and architecture choices. Most were not experimental treatments. Their
+absence must therefore be described as selection, exclusion, or deferral rather
+than as evidence that one approach performed better than another.
+
+\begin{table}[p]
+\centering
+\caption{Alternatives and frozen scope decisions}
+\label{tab:design-alternatives}
+\footnotesize
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}L{0.12\textwidth}L{0.31\textwidth}Y}
+\toprule
+\textbf{Alternative} & \textbf{Decision} & \textbf{Scope or RQ reason} &
+\textbf{Evidentiary boundary} \\
+\midrule
+Deterministic-only system & Not selected as the extension & Cannot examine the
+agentic decision behavior posed by RQ1 and RQ3 & Retained only as an inherited
+engineering anchor \\
+Broad multi-agent system & Excluded & RQ1--RQ3 do not require agent
+coordination; it would add stochastic roles and attribution paths & No
+single-versus-multi-agent comparison \\
+Optional validator agent & Deferred & Deterministic validation already retains
+release authority; a second agent would add another model-dependent axis & No
+validator-agent implementation or result \\
+Multiple LLMs & Excluded & One frozen model keeps RQ3 focused on workflow
+architecture rather than model-family differences & No model-superiority claim
+or benchmark \\
+Multiple memory strategies & Excluded & One bounded state mechanism is enough
+for the defined state-dependent requirement & No memory-strategy superiority or
+ablation claim \\
+Shared-contract redesign & Excluded & Compatibility and fair comparison require
+unchanged event/action semantics & Internal metadata cannot become shared
+fields \\
+Middleware rebuild & Excluded & It would duplicate inherited work and obscure
+the actual contribution & Middleware behavior remains inherited \\
+New Raspberry Pi or GPIO work & Excluded & The decision/reliability questions
+end at the compatible action boundary & No physical Obid hardware evidence \\
+Multiple devices & Excluded & A single fan target is sufficient for the bounded
+scenario & No device-generalization claim \\
+Production observability or security stack & Excluded & Deployment, scale, and
+generic security are outside the thesis questions & No production-safety or
+production-readiness claim \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The single-agent choice is intentionally narrow. One Decision Agent is easier
+to bound, observe, and attribute than a collection of agents with overlapping
+responsibilities. It also permits the inherited minimal agent and extended
+Obid workflow to remain recognizable configurations. Most importantly, model
+judgement is not used as the final safety authority: the deterministic
+validator and policy remain downstream. Adding a validator agent would have
+introduced another stochastic component and comparison axis without replacing
+that deterministic authority. This does not establish that
+single-agent architectures are generally superior; it explains why one agent
+was sufficient for the present RQs.
+
+One primary model was selected for a similar control reason. Holding the model
+identifier constant avoids turning RQ3 into a model-selection study. No formal
+model-family benchmark was performed, and the chosen model is not presented as
+the best available model. The design likewise fixes one memory configuration
+so that state dependence can be included without creating a second comparison
+study. After the final implementation and evidence freeze, the optional
+validator-agent extension was deferred rather than added to the evaluated
+system.
 
 \subsection{Chosen Agentic Architecture}\label{subsec:design-architecture}
-% PURPOSE: Map one Decision Agent, one Gemini node, two tools, bounded memory,
-% structured decision, validator, policy, HITL, and inherited endpoint boundary.
-% EVIDENCE SOURCES: final-implementation-freeze.md;
-% final-artifact-manifest.json; cognitive_logic/obid/configuration-manifest.md;
-% cognitive_logic/obid/workflows/obid-agent-v3-hitl.json.
+
+The selected \texttt{CONFIG-OBID} architecture begins with a sensor event or a
+controlled test event at an Obid-owned ingress. Deterministic input handling
+checks the minimum conditions needed by the decision path. A valid event is
+then supplied to one Decision Agent connected to one Gemini model node using
+the frozen primary configuration, exactly two read-only tools, and one bounded-memory
+configuration. The agent produces either a structured action candidate or an
+internal \texttt{no\_action} decision.
+
+An action candidate next crosses from cognition to deterministic release
+control. It is parsed and checked against the frozen shared action contract. A
+contract-invalid candidate is blocked before policy executes. Only a valid
+candidate reaches policy, which can allow direct release, block defensively, or
+require approval. Across these stages, the release-control outcomes are
+\texttt{ALLOW}, \texttt{BLOCK}, and \mbox{\texttt{APPROVAL\_REQUIRED}}. An
+approval-required action is held until the executable HITL gate records an
+approval or denial. Approval releases the action unchanged from that held
+snapshot. Only an authorized release can select an inherited fan endpoint. An
+internal no-op terminates before a shared action is formed.
+
+This ordering separates three concerns: the model proposes, deterministic
+controls authorize, and inherited middleware performs the simulated action.
+The design contains no second or validator agent, no second or fallback model,
+no dynamic tool creation, and no physical Obid hardware path. The concrete workflow nodes and
+wiring are documented in Chapter~\ref{sec:implementation}.
+
 % [FIGURE LATER: final frozen Obid architecture]
-% WARNING: not multi-agent and not merely a prompt around an LLM.
 
 \subsection{Tool-Use and Controlled ReAct Design}\label{subsec:design-react}
-% EVIDENCE SOURCES: cognitive_logic/obid/tools/tool-definitions-v1.md;
-% cognitive_logic/obid/react/react-control-v1.md; system-prompt-v1.md;
-% Step 7 evidence/report note.
-% EXPECTED TABLE: tool | read-only input/output | permitted role | prohibition.
+
+Exactly two tools were selected because the scenario requires two kinds of
+information and neither should grant release authority. The threshold tool,
+\mbox{\texttt{temperature\_threshold\_tool}}, performs the inherited calculation
+deterministically. It reports the relation to the threshold and the
+corresponding desired fan state, but it does not read or change middleware
+state. The status tool, \mbox{\texttt{fan\_status\_tool}}, reads the current
+simulated state through the inherited \texttt{/status} boundary. It cannot
+choose another device or call an action endpoint.
+
+This division separates calculation and observation from actuation. The agent
+may use the threshold result to identify the desired state and the status result
+to identify current state, but endpoint release is decided later. Keeping both
+tools read-only reduces the number of paths through which a model-generated
+tool call could mutate the system and makes the observable interaction easier
+to attribute.
+
+The controlled ReAct-style cycle is correspondingly small:
+
+\begin{center}
+event $\rightarrow$ threshold calculation and, when memory is cold, status observation
+$\rightarrow$ final structured decision.
+\end{center}
+
+The prompt permits one threshold-tool call and, when needed, one status-tool
+call for the current event. The configured iteration bound is
+\texttt{maxIterations: 3}. This permits a cold-state event to use the threshold
+tool, obtain status when recent state is unavailable, and still return a final
+answer. When usable recent state exists, the status lookup can be omitted. The
+design records configured bounds and
+observable tool names, inputs, outputs, order, and counts. It does not use or
+claim access to hidden chain-of-thought or private model reasoning.
+
 % [REFERENCE NEEDED: ReAct and tool-using agents]
-% WARNING: report observable tool use only; no hidden chain-of-thought claim.
 
 \subsection{Bounded-Memory Design}\label{subsec:design-memory}
-% EVIDENCE SOURCES: cognitive_logic/obid/memory/window-buffer-v1.md;
-% evaluation/cases/obid-evaluation-cases.json; Step 7 report note.
-% EXPECTED TABLE: window, session key, cold/warm behavior, limitations.
-% [REFERENCE NEEDED: bounded/window memory]
-% WARNING: process-local, one strategy, no durability or superiority claim.
+
+State dependence in the selected scenario is narrow but real. A cold session
+may need a status lookup before deciding whether a fan action is necessary. A
+recent finalized decision envelope can provide a usable model-visible
+\mbox{\texttt{state\_after}} for the next event, allowing a duplicate action to be
+suppressed. This is remembered decision state rather than independent
+verification of endpoint execution. A later event requesting the opposite
+state must still be able to produce a new candidate. The memory design therefore
+needs recent finalized state, not a long-term record of the project or device.
+
+One two-interaction window was selected for this purpose. Each entry is a
+completed input and final-output pair; tool calls inside that interaction do not
+consume separate memory slots. The window is large enough to carry recent
+\mbox{\texttt{state\_after}} values across the bounded state sequence while limiting
+how much prior conversation is visible to the model. Synthetic session
+identifiers isolate controlled sequences without adding a field to the shared
+sensor contract. A new session creates a separate logical history for another
+sequence.
+
+The memory is process-local. It can persist across executions while the same
+n8n process remains active, but it is lost on restart and is not durable storage.
+Older interactions that leave the active window are excluded from the
+model-visible context; this does not imply their physical deletion from backing
+history. Only this one configuration belongs to the evaluated scope, so the
+design makes no claim that it is superior to another memory strategy.
+
+% [REFERENCE NEEDED: bounded agent memory]
 
 \subsection{Structured Output and Shared Contract Boundary}\label{subsec:design-output}
-% EVIDENCE SOURCES: decision-envelope-v1.md; both shared JSON schemas;
-% shared_interfaces/contract-freeze.md; Step 5 and Step 7 report notes.
-% EXPECTED TABLE: internal envelope fields versus unchanged shared action fields.
-% WARNING: internal no_action is absence of shared action, not a new action ID.
 
-\subsection{Runtime Validation and Deterministic Policy}\label{subsec:design-safety}
-% EVIDENCE SOURCES: runtime-action-validator-v1.md;
-% runtime-action-policy-v1.md; safety-outcome-v1.md;
-% runtime-safety-v1.json; runtime-safety-v2-hitl.json; Step 8 report note.
-% EXPECTED TABLE: parse/validation/policy outcomes and release behavior.
-% [REFERENCE NEEDED: runtime validation and deterministic policy]
-% WARNING: contract-specific validator, not a generic security engine.
+The agent needs to express more than a shared action. In particular, it must
+distinguish a requested state change from an already satisfied state and retain
+state context that can support the next interaction. Placing these concepts in
+the shared action schema would have changed the collaboration boundary.
+Instead, \texttt{CONFIG-OBID} uses an internal decision envelope with five
+fields: \texttt{decision}, \texttt{action}, \mbox{\texttt{state\_before}},
+\mbox{\texttt{state\_after}}, and \mbox{\texttt{reason\_code}}.
+
+For a state change, \texttt{decision} is \mbox{\texttt{emit\_action}} and the nested
+\texttt{action} contains the unchanged four shared fields. For an already
+satisfied state, \texttt{decision} is \mbox{\texttt{no\_action}} and \texttt{action}
+is \texttt{null}. The latter is an internal representation of absent release;
+\mbox{\texttt{no\_action}} is not a new action identifier. Table~\ref{tab:design-output-boundary}
+shows the separation.
+
+\begin{table}[H]
+\centering
+\caption{Internal decision representation and shared action boundary}
+\label{tab:design-output-boundary}
+\footnotesize
+\begin{tabularx}{\textwidth}{L{0.16\textwidth}L{0.25\textwidth}L{0.25\textwidth}Y}
+\toprule
+\textbf{Element} & \textbf{Fields or values} & \textbf{Design purpose} &
+\textbf{Boundary} \\
+\midrule
+Internal decision & \texttt{emit\_action} or \texttt{no\_action} & Distinguish
+state change from duplicate suppression & \texttt{OBID\_CREATED} only \\
+Internal state & \texttt{state\_before}, \texttt{state\_after} & Carry explicit
+state context for the bounded decision & Not a shared action field \\
+Internal reason code & \texttt{reason\_code} & Classify the decision outcome &
+Not endpoint or policy authority \\
+Nested action & \texttt{action\_id}, \texttt{target}, \texttt{reason},
+\texttt{requires\_approval} & Represent one candidate state change & Exact
+four-field \texttt{SHARED\_}\newline\texttt{INTERFACE} shape \\
+Internal no-op & \texttt{decision=}\newline\texttt{no\_action},
+\texttt{action=null} & Suppress a
+duplicate without emitting an action & No shared action is formed \\
+Policy metadata & Hold, release, and policy outcome fields & Control downstream
+authorization & Remains outside the shared schema \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This separation allows Obid to add state-aware reasoning and runtime metadata
+while preserving compatibility. It also gives the validator an unambiguous
+boundary: only a non-null candidate action proceeds to shared-contract
+validation. The exact envelope parsing and routing mechanics are described in
+Section~\ref{subsec:impl-prompt}.
+
+\subsection[Runtime Validation and Deterministic Policy]{Runtime Validation and\\Deterministic Policy}\label{subsec:design-safety}
+
+Prompt constraints are useful for guiding the Decision Agent, but they are not
+a release mechanism. A model can still return malformed JSON, omit a field,
+use an unsupported value, or supply the wrong type. Minimal extraction is also
+insufficient because successful parsing says nothing about conformance to the
+full frozen action contract. RQ2 therefore requires independently observable,
+post-agent controls.
+
+The selected validator follows one contract-specific path. It accepts the
+candidate form, performs one controlled parse when needed, and checks the exact
+required fields, additional-field rule, types, permitted action identifiers,
+target, non-empty reason, and Boolean approval flag. It performs no model
+repair, retry, trimming, default insertion, normalization, or coercion. A
+contract-invalid candidate terminates at validation, with no released action.
+The validator is deliberately specific to the frozen action schema; it is not
+a generic JSON Schema platform or a general security filter.
+
+Only a schema-valid action reaches deterministic policy. Policy applies the
+frozen action/target allowlist and then distinguishes direct release, block, and
+approval-required hold. This produces the stable outcomes \texttt{ALLOW},
+\texttt{BLOCK}, and \mbox{\texttt{APPROVAL\_REQUIRED}} without asking another model to
+judge whether its own output should proceed. Invalid candidates stop before
+policy and before HITL, so a human cannot rescue an action that is outside the
+shared contract. The detailed validation conditions and policy routing appear
+in Sections~\ref{subsec:impl-validator} and~\ref{subsec:impl-policy}.
+
+% [REFERENCE NEEDED: runtime validation and deterministic guardrails]
 
 \subsection{Human-in-the-Loop Design}\label{subsec:design-hitl}
-% EVIDENCE SOURCES: safety_layer/hitl/runtime-hitl-v1.md;
-% hitl-outcome-v1.md; step-09-hitl-harness.json; runtime-hitl-v1.json;
-% runtime-safety-v2-hitl.json; Step 9 report note.
-% EXPECTED TABLE: pending | approve | deny invariants and endpoint behavior.
-% [REFERENCE NEEDED: HITL]
-% WARNING: distinguish final embedded Wait/form from retained child-Wait failure.
+
+The inherited material described approval as a specification, but RQ2 asks
+about runtime prevention and release. The selected design therefore includes an
+executable HITL state rather than a documentation-only approval rule. Entry is
+conditional: the action must already be schema-valid, deterministic policy must
+require approval, the four-field action must be held, and no action may already
+have been released.
+
+While an execution is pending, the held action is displayed as read-only review
+information and no fan endpoint is eligible. The reviewer supplies only an
+\texttt{approve} or \texttt{deny} decision. After resume, the workflow uses the
+persisted pre-wait action and compares all four fields with its stored snapshot.
+Approval releases that same unchanged action, including the true approval flag;
+denial releases nothing. Invalid decisions, unexpected submitted fields, or an
+integrity mismatch also release nothing.
+The integrity property here is field equality, not a general cryptographic
+guarantee.
+
+Normal Decision Agent output uses a false approval flag. The approval-required
+condition is supplied through a controlled internal policy context after
+validation; the context changes only that existing Boolean and preserves the
+other action fields. It is not evidence that the Decision Agent
+autonomously discovers risk, and not every valid action enters HITL. Directly
+allowed actions bypass the human gate, while invalid candidates stop before it.
+The final architecture places the native Wait/form gate in the caller after a
+child-workflow placement did not propagate the required post-wait result. That
+placement decision preserved the same release invariants; the compatibility
+history is kept in Section~\ref{subsec:impl-hitl}.
+
+% [REFERENCE NEEDED: HITL and human oversight]
 
 \subsection{Evaluation-Oriented Design Decisions}\label{subsec:design-evaluation}
-% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
-% evaluation/evaluation-protocol.md; experiment-freeze.json; raw-data-manifest.json.
-% EXPECTED TABLE: design seam | case family | observable terminal/evidence.
+
+The architecture had to make failures and non-release observable before the
+repeated evaluation was run. Otherwise, a missing endpoint call could not be
+distinguished reliably from a transport failure, an input rejection, an
+internal no-op, a validation block, a policy hold, or a human denial. The design
+therefore exposes named terminal stages, candidate and release state, endpoint
+eligibility, action-endpoint execution, simulated fan state, and stable run
+identity. These observations support attribution; they do not change the shared
+contracts.
+
+Four controlled seams separate the main attribution problems. The common core
+configuration ingress provides the same valid event to either configuration.
+The direct pre-decision ingress bypasses inherited middleware normalization so
+malformed handling belongs to the evaluated input/decision layer. The
+post-agent, pre-validator seam supplies a known candidate directly to the real
+validator without claiming that the model naturally generated that fault. The
+policy-input seam supplies a valid proposal and separate internal approval
+context before deterministic policy and HITL. These seams are controlled test
+mechanisms, not production APIs or autonomous risk-discovery components.
+
+The state-dependent design also requires isolated session identifiers so that
+one ordered sequence cannot inherit unrelated history. Endpoint non-execution
+must be recorded alongside each blocked, pending, denied, or no-op terminal.
+Stable identifiers link the selected configuration, stimulus, workflow
+execution, child execution where applicable, raw observation, and processed
+summary. The orchestration, extraction, and processing stages were separated so
+that failures and missing values could be retained rather than silently
+replaced. Chapter~\ref{sec:method} owns the detailed case schedule,
+measurements, timing boundaries, processing rules, and threats to validity.
 
 \subsection{Final System Architecture}\label{subsec:design-final}
-% EVIDENCE SOURCES: final-implementation-freeze.md;
-% final-artifact-manifest.json; obid-agent-v3-hitl.json;
-% runtime-safety-v2-hitl.json; integration/yacoub_compat/boundary-map.md.
+
+Taken together, the selected components form one end-to-end path. A compatible
+event reaches either the inherited \texttt{CONFIG-BASELINE} comparator or the
+extended \texttt{CONFIG-OBID} configuration. In the latter, the Decision Agent
+combines read-only calculation and observation with bounded model-visible
+decision state. Any candidate is then subject to deterministic validation,
+policy, and conditional HITL before authorized release to the inherited
+simulated-fan path.
+
+The provenance bands are as important as the processing stages. The
+\mbox{\texttt{OBID\_CREATED}} band covers the stronger Decision Agent, prompt,
+two tools, bounded memory, internal envelope, input handling, validator, policy,
+executable HITL, and evaluation seams. The
+\mbox{\texttt{SHARED\_INTERFACE}} band covers the compatible sensor/action
+contracts and endpoint meanings. The \mbox{\texttt{YACOUB\_INHERITED}} band
+covers the middleware, action infrastructure, threshold semantics, baselines,
+simulated state, and prior hardware evidence.
+
 % [FIGURE LATER: final agentic architecture with provenance bands]
-% FIGURE WARNING: exclude credentials, owner/project data, transient HITL URLs,
-% screenshots, and any unimplemented validator-agent branch.
+% FIGURE NOTE: Preserve provenance bands; omit credentials, transient form
+% locations, private metadata, unimplemented branches, and physical Obid hardware.
 
 \subsection{Summary of Chosen Approach}\label{subsec:design-summary}
-% EVIDENCE SOURCES: final-claim-evidence-map.md; Step 11 report note.
-% REPORT WRITER: Summarize the bounded rationale only after Sections 4.1--4.11.
+
+The chosen approach is a bounded single-agent extension of an unchanged
+collaboration boundary. It supports RQ1 with explicit tools, deterministic
+input handling, structured output, observable state, and one two-interaction
+memory configuration. It supports RQ2 by treating model output as a candidate
+and placing contract-specific validation, deterministic policy, and actual HITL
+between cognition and release. It supports RQ3 by keeping one inherited
+minimal-agent comparator and one extended Obid configuration at the same model,
+event, action, and simulated-device boundary.
+
+The design deliberately excludes additional agents, models, memory strategies,
+devices, middleware, and new hardware work. These exclusions do not establish
+that the alternatives are inferior; they keep the thesis focused on an
+attributable decision and reliability contribution. The resulting architecture
+therefore connects the research questions to one coherent system while keeping
+its technical and evidentiary claims within the frozen scope.
+
+\endgroup
