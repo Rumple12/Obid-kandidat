@@ -10,7 +10,7 @@ Allowed status values are used exactly as follows:
 
 - `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapter 8 remains at this status.
 - `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Chapter 2 is drafted and awaits independent audit; Chapters 1 and 3–7 have passed their full gates and are content-locked.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Detailed mappings retain this drafting-stage status; Chapters 1–7 have passed their full gates and are content-locked.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -2028,7 +2028,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 |---|---:|---|---|---|
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
 | Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Content-locked after full gate | Complete |
-| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 11 printed pages | Draft and references complete; independent audit pending | `DRAFTED_NEEDS_AUDIT` |
+| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 11 printed pages | Content-locked after full gate | Complete |
 | Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Content-locked after full gate | Complete |
 | Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
 | Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Content-locked after full gate | Complete |
@@ -2048,7 +2048,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapters 1 and 3–7 have completed their audit/repair/re-audit gates and remain content-locked; Chapter 2 overview and Sections 2.1–2.13 are drafted with verified references and await independent audit.
+- [x] Chapters 1–7 have completed their full audit/repair/re-audit gates and are content-locked; Step 13 chapter drafting is complete; Chapter 8 remains `SKELETON_ONLY`.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2056,6 +2056,6 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] Chapter 2 contains 22 verified citations and one related-work table; no figure was created. Later-chapter references and all figures remain separately scoped.
 - [x] No new experiment, image, implementation change, evidence rewrite, or substantive thesis prose is part of this map.
 
-## Recommended next bounded writing task
+## Recommended next bounded editorial task
 
-Run the independent Chapter 2 theory/reference audit. Do not begin Chapter 8 yet. Chapters 1 and 3–7 remain content-locked.
+Step 13 chapter drafting is complete. Before Chapter 8, the approved read-only global redundancy audit may be run across the locked Chapters 1–7. Chapter 8 remains `SKELETON_ONLY` and must not be drafted as part of that audit.
