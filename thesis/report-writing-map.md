@@ -2028,7 +2028,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 |---|---:|---|---|---|
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
 | Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Content-locked after full gate | Complete |
-| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 11 printed pages | Content-locked after full gate | Complete |
+| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 8 printed pages | Content-locked after full gate | Complete |
 | Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Content-locked after full gate | Complete |
 | Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
 | Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Content-locked after full gate | Complete |
