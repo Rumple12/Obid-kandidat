@@ -89,9 +89,12 @@ retained protocol deviation (Table~\ref{tab:results-rq2-summary}).
 R03 was assigned \texttt{deny} but received an actual \texttt{approve}. It
 remains oracle-incorrect, leaving assigned denial at 4/5, the total incorrect
 primary outcomes at 11, and the protocol-deviation count at one. The runtime
-released an unchanged valid action only after that approval, so the event was
-neither invalid nor unapproved and was not a successful denial or a validator,
-policy, or HITL semantic failure. The immutable historical crossing flag of
+held the action while the run was pending: the released action was null, both
+action-endpoint counts remained 0/0, and the simulated fan stayed off. After
+the actual approval, the unchanged valid action was released and
+\texttt{/fan/on} was invoked once, so the event was neither invalid nor
+unapproved and was not a successful denial or a validator, policy, or HITL
+semantic failure. The immutable historical crossing flag of
 \texttt{1} and the final invalid/unapproved-crossing interpretation of zero
 therefore coexist without rewriting raw or processed evidence; the complete
 record is in Section~\ref{subsec:results-rq2-r03}.

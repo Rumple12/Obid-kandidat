@@ -582,10 +582,13 @@ without extending the shared action \\
 \end{table}
 
 The direct seam has separate baseline and Obid ingresses; the Step 8 and Step 9
-harnesses enter at the post-agent and policy seams respectively and exercise
-the same safety and HITL components used by the frozen configurations. Their
-sanitized exports were activated only for bounded verification and evaluation;
-they do not redefine the shared schemas or create alternate safety behavior.
+harnesses enter at the post-agent and policy seams respectively. Step 8 invokes
+\texttt{runtime-safety-v1}, whereas the Step 9 harness and final
+\texttt{CONFIG-OBID} v3 invoke \texttt{runtime-safety-v2-hitl}, which preserves
+the validator and no-context policy semantics relevant here while adding the
+executable HITL path. Their sanitized exports were activated only for bounded
+verification and evaluation; they do not redefine the shared schemas or create
+alternate safety behavior.
 
 \subsection{Repeated Evaluation Tooling}\label{subsec:impl-eval-tooling}
 
