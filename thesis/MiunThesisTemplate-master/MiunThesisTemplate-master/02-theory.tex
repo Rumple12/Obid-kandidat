@@ -4,384 +4,287 @@
 
 \section{Theory and Related Work}\label{sec:theory}
 
-This chapter introduces the concepts needed to understand an agentic decision
-layer within an event-driven IoT workflow. It first covers workflow
-orchestration, interface contracts, and event-to-action systems, and then turns
-to language-model agents, tool use, memory, runtime controls, human oversight,
-and evaluation. The final section compares the thesis with selected related
-work. The methodology, project-specific choices, implementation details, and
-results are presented in Chapters~\ref{sec:method}--\ref{sec:results}.
+This chapter introduces the theory needed to understand an agentic decision
+layer in an event-driven IoT workflow. It covers orchestration, interfaces,
+event-action systems, agents, tool use, memory, runtime controls, human
+oversight, and evaluation before comparing selected related work. Chapters~
+\ref{sec:method}--\ref{sec:results} present the project-specific methods,
+design, implementation, and results.
 
 \subsection{Workflow Automation and Orchestration}\label{subsec:theory-workflow}
 
-A workflow represents work as connected activities with an explicit order or
-control flow. Common patterns include sequence, conditional routing, parallel
-branches, synchronization, repetition, and cancellation. These patterns matter
-because workflow languages differ in which forms of coordination they can
-express, even when their diagrams look similar
-\cite{vanderaalst2003workflowpatterns}. A workflow is therefore more than a
-visual list of tasks: it defines when an activity may run, what data it receives,
-and which path follows its completion.
+A workflow represents work as connected activities with explicit control flow.
+Common patterns include sequence, conditional routing, parallel branches,
+synchronization, repetition, and cancellation. Workflow languages differ in
+which patterns they can express, even when their diagrams look similar
+\cite{vanderaalst2003workflowpatterns}. A workflow therefore defines when an
+activity may run, the data it receives, and the path that follows.
 
-Orchestration extends this idea to the coordination of several components or
-services. A coordinating process can receive an event, transform its data,
-invoke a decision service, and pass an accepted outcome to another service.
-Service-oriented computing separates these capabilities behind interfaces so
-that composition and coordination can occur without placing every responsibility
-inside one component \cite{papazoglou2003serviceoriented}. Sequential execution
-is appropriate when every stage depends on the previous one, whereas
-event-driven execution begins in response to a trigger and may route differently
-according to data or state.
+Orchestration coordinates several components or services. A process may receive
+an event, transform its data, invoke a decision service, and pass an accepted
+outcome to an action service. Service-oriented computing places these
+capabilities behind interfaces, avoiding the need to combine every
+responsibility in one component \cite{papazoglou2003serviceoriented}. Execution
+may be sequential when stages depend on one another or event-driven when a
+trigger starts data- or state-dependent routing.
 
-Explicit stages make an event-to-action pipeline observable. Intermediate
-outputs, branch choices, failures, and completion states can be retained rather
-than hidden in one program. The same structure can also be executed repeatedly
-under controlled inputs. This does not make a workflow correct by itself, but it
-provides useful boundaries for testing and for locating where a proposed action
-was transformed, rejected, held, or released. In this thesis, workflow
-orchestration supplies the execution environment; the particular architecture
-and node arrangement are described later rather than treated as general theory.
+Explicit stages provide observable execution boundaries. They show where a
+proposed action was transformed, rejected, held, or released and allow the same
+flow to run under controlled inputs. Here, orchestration provides the execution
+environment; the particular architecture remains a project-specific choice.
 
 \subsection[n8n and Low-Code Workflow Automation]{n8n and Low-Code Workflow\\Automation}\label{subsec:theory-n8n}
 
-Low-code platforms raise the level of abstraction at which applications and
-integrations are assembled. Instead of implementing every connection in a
-general-purpose language, a developer combines graphical elements, configuration,
-and smaller pieces of code. The category is heterogeneous: platforms differ in
-their target users, supported abstractions, extensibility, and deployment model,
-so low-code is not one uniform engineering method \cite{bock2021lowcode}.
+Low-code platforms let developers assemble applications and integrations from
+graphical elements, configuration, and small pieces of code. Platforms vary in
+their users, abstractions, extensibility, and deployment models, so low-code is
+not a single engineering method \cite{bock2021lowcode}.
 
-n8n is a workflow-automation platform that defines a workflow as connected
-nodes used to automate a process. A workflow may be run manually during
-development, while a published workflow can respond to triggers such as an
-incoming webhook. Its documentation also provides separate guidance for
-self-hosted deployment \cite{n8nCreateRunWorkflows,n8nHosting}. These features
-support visual assembly and manual inspection of prototype workflows.
+n8n represents workflows as connected nodes. During development, a workflow can
+run manually; once published, it can respond to triggers such as an incoming
+webhook. n8n also supports self-hosted deployment
+\cite{n8nCreateRunWorkflows,n8nHosting}. These features make it suitable for
+visually assembling and inspecting an event-driven workflow.
 
-Visual composition still requires engineering controls.
-Node settings, expressions, embedded code, external credentials, and platform
-versions remain part of the executable configuration. A diagram can clarify
-control flow, but it does not establish reliability, security, or suitability
-for production. Consequently, n8n is treated here as an orchestration environment,
-not as evidence that the decisions passing through it are correct or safe.
+The executable configuration still includes node settings, expressions, code,
+credentials, and platform versions. Visual control flow alone does not establish
+the reliability of the decisions passing through it.
 
 \subsection{IoT Event-Action Systems}\label{subsec:theory-iot}
 
-An Internet of Things (IoT) system connects observations from sensors with
-software services and, in many cases, physical or simulated actuators. A sensor
-event normally contains a measured value together with contextual information
-such as time, identity, location, or unit. Context-aware systems use such
-information to characterize the situation before selecting a response
-\cite{perera2014context}. The meaningful unit of control is therefore often not
-the measurement alone, but the relation between an event, the current state, a
-decision rule, and an allowed action.
+An Internet of Things (IoT) system connects sensor observations to software
+services and physical or simulated actuators. A sensor event usually combines a
+measured value with context such as time, identity, location, or unit.
+Context-aware systems use this information to characterize a situation before
+selecting a response \cite{perera2014context}. Control therefore concerns the
+relation between an event, current state, a decision, and an allowed action, not
+only the measurement.
 
-Trigger-action programming expresses a compact version of this relation: when a
-defined event occurs, perform a specified action. Its use in large collections
-of end-user automations demonstrates how events from online services and devices
-can be linked to actions across heterogeneous channels
-\cite{ur2016triggeraction}. More controlled systems can insert an explicit
-condition or decision stage between trigger and action. That stage may consult
-state, decline to act, or require an additional authorization before the
-actuator boundary is crossed.
+Trigger-action programming expresses a simple form of this relation: when an
+event occurs, perform a specified action. Large collections of end-user
+automations show how events from services and devices can initiate actions across
+different channels \cite{ur2016triggeraction}. A controlled system can add a
+decision stage that consults state, declines to act, or requests authorization
+before crossing the actuator boundary.
 
-For evaluation, the action boundary should be observable. It should be possible
-to determine whether a command was emitted, which target it addressed, and what
-state followed. A simulator can make these observations repeatable without the
-variability and practical risks of a physical actuator. Simulation is useful
-for testing control logic and interface behavior, but it narrows the claim: it
-does not reproduce electrical faults, network conditions, device timing, or the
-consequences of an action in the physical world. The temperature-to-fan setting
-used later is thus a bounded event-state-action example, not a model of every
-IoT control domain.
+An observable action boundary records whether a command was emitted, its target,
+and the resulting state. A simulator makes such observations repeatable without
+the variability or practical risk of a physical actuator. It can test control
+logic and interfaces, but not electrical faults, network conditions, device
+timing, or physical consequences. The later temperature-to-fan setting is
+therefore a bounded event-state-action example.
 
 \subsection{Middleware and API Boundaries}\label{subsec:theory-middleware}
 
-Middleware provides services between application components and the lower-level
-communication environment. Its role can include locating services, exchanging
-messages, translating representations, or coordinating requests. The central
-architectural benefit is separation: decision logic need not contain the details
-of device communication, while an action service need not know how a decision
-was produced. Service-oriented designs similarly rely on described interfaces
-through which requesters and providers interact \cite{papazoglou2003serviceoriented}.
+Middleware separates application components from lower-level communication.
+Decision logic need not contain device-communication details, and an action
+service need not know how a decision was produced. Service-oriented designs use
+described interfaces for this interaction \cite{papazoglou2003serviceoriented}.
 
-An application programming interface (API) makes such a boundary concrete by
-documenting available operations, exchanged messages, and response behavior
-\cite{papazoglou2003serviceoriented}. A stable API contract lets independently
-owned components agree on fields, meanings, and error behavior. It also
-localizes responsibility: one component may propose an action, while another
-component owns its execution.
-
-This boundary is also a trust and failure boundary. Successful HTTP delivery
-only shows that a request was exchanged; it does not show that the data was
-valid, authorized, idempotent, or safe for the target. Compatibility therefore
-requires both transport agreement and semantic agreement. In the integrated
-system studied here, the middleware and action API are inherited infrastructure.
-Their presence enables comparison at a shared boundary without transferring
-authorship of those components.
+An application programming interface (API) defines available operations,
+messages, and response behavior \cite{papazoglou2003serviceoriented}. A stable
+contract lets independently owned components agree on fields, meanings, and
+errors while keeping proposal and execution responsibilities separate.
+Compatibility requires both transport and semantic agreement: successful HTTP
+delivery proves only that a request was exchanged. In this study, the middleware
+and action API remain inherited infrastructure used through a shared boundary;
+their integration does not transfer authorship.
 
 \subsection{Structured Data and JSON Contracts}\label{subsec:theory-json}
 
 JavaScript Object Notation (JSON) is a textual, language-independent data
-interchange format. Its main structures are objects, which contain named
-members, and arrays, which contain ordered values \cite{bray2017json}. JSON is
-well suited to service boundaries because producers and consumers can exchange
-structured values without sharing a programming-language object model. Parsing
-a document, however, establishes only that its syntax is valid JSON.
+interchange format built mainly from objects with named members and arrays with
+ordered values \cite{bray2017json}. It lets services exchange structured values
+without sharing a programming-language object model. Parsing establishes only
+that a document uses valid JSON syntax.
 
-A data contract adds expectations about structure and meaning. It can require
-particular properties, constrain their types, restrict values to an enumeration,
-and reject additional properties. JSON Schema defines vocabularies for making
-such assertions about a JSON instance, including \texttt{type}, \texttt{required},
-\texttt{const}, and \texttt{enum} \cite{wright2022jsonschemavalidation}. A
-consumer can then distinguish a syntactically valid object from one that conforms
-to the agreed interface. For example, an object with a string in place of a
-numeric measurement may parse correctly while violating its contract.
+A data contract adds structural and semantic expectations. It can require
+properties, constrain their types, limit values to an enumeration, and reject
+additional properties. JSON Schema defines vocabularies for these assertions,
+including \texttt{type}, \texttt{required}, \texttt{const}, and \texttt{enum}
+\cite{wright2022jsonschemavalidation}. A string used where a numeric measurement
+is required may therefore parse as JSON while violating the contract.
 
-Contract validation is still narrower than semantic authorization. A
-schema-valid action can name an allowed command and target yet be inappropriate
-in the current state. Conversely, a malformed message should be rejected before
-policy rules try to interpret it. Keeping these questions separate produces a
-clear sequence: parse the representation, validate the contract, then decide
-whether the valid candidate may be released.
+Contract validation is narrower than authorization. A schema-valid command and
+target may still be inappropriate in the current state, while a malformed
+message should be rejected before policy interprets it. The resulting sequence
+is: parse the representation, validate the contract, and then decide whether the
+valid candidate may be released.
 
-Contracts also support compatibility over time. A producer and consumer must
-agree on how required fields and allowed values evolve; an undocumented addition
-or reinterpretation can break interoperability even if the JSON remains valid.
-Versioning and explicit rejection behavior help expose such changes. Neither
-JSON nor JSON Schema guarantees system safety, since a schema cannot capture
-every operational hazard, source of false data, or authorization rule.
+Contracts also support compatibility as interfaces evolve. Producers and
+consumers must agree on required fields, allowed values, versioning, and rejection
+behavior; otherwise, valid JSON may still break interoperability. A schema does
+not encode every operational hazard, false input, or authorization rule.
 
 \subsection{LLM Agents and Agentic Workflows}\label{subsec:theory-agents}
 
-A large language model (LLM) maps supplied context to generated output. An
-agentic workflow adds a surrounding control process that uses the model to pursue
-a task through interactions with an environment. Definitions vary across the
-literature, but recurring components include instructions or a role, memory,
-planning or decision logic, available actions, and observations returned after
-those actions \cite{wang2024surveyagents}. This makes an agentic workflow
-different from requesting one isolated text completion.
+A large language model (LLM) generates output from supplied context. An agentic
+workflow adds a control process that uses the model to pursue a task through an
+environment. Common components include instructions, context, memory, decision
+logic, actions or tools, and returned observations \cite{wang2024surveyagents}.
+This differs from requesting one isolated model response.
 
-The model remains one component of the system. The workflow decides what context
-is provided, which tools are exposed, how tool results return, how many cycles
-may occur, and when execution terminates. This arrangement can combine flexible
-language-based decisions with live or deterministic information. It can also
-create new failure modes: the model may choose an unsuitable tool, produce
-arguments outside an interface, repeat an action, or interpret stale context as
-current state.
+The surrounding workflow selects context and tools, returns tool results, limits
+cycles, and determines termination. This can combine language-based decisions
+with live or deterministic information, but the model may still choose an
+unsuitable tool, produce invalid arguments, repeat an action, or rely on stale
+context.
 
-Agent behavior is therefore shaped by both probabilistic generation and
-deterministic surroundings. Instructions can guide the model but do not, by
-themselves, prevent an output from reaching an external system. Bounded tool
-scope, iteration limits, validation, policy checks, and explicit release rules
-place enforceable limits around the model. These mechanisms are especially
-important when a generated proposal may eventually affect an actuator rather
-than remain as text.
+Agent behavior therefore combines probabilistic generation with deterministic
+surroundings. Bounded tools and iterations, validation, policy, and release rules
+can enforce limits that instructions alone cannot. A workflow can thus make
+several tool-assisted decisions while remaining restricted to a narrow action
+vocabulary and human approval.
 
-The word \emph{autonomous} should also be used carefully. A workflow may select
-among tools or continue for several interactions while still operating inside a
-narrow action vocabulary and under human approval. Such bounded agency differs
-from unrestricted access to the host environment. The implementation evaluated
-in this thesis is one constrained single-agent configuration; Chapter~\ref{sec:implementation}
-defines its exact tools, memory, and release path.
+The evaluated system is one constrained single-agent configuration, not
+unrestricted host access. Chapter~\ref{sec:implementation} defines its tools,
+memory, and release path.
 
 \subsection{ReAct and Tool Use}\label{subsec:theory-react}
 
 ReAct combines task-oriented model output with actions that obtain observations
-from an environment. In the original work, interleaving reasoning-oriented text
-and actions allowed a model to update its next step after receiving information
-from an external source \cite{yao2023react}. For an executable workflow, the
-important observable cycle is action selection, tool invocation, returned
-observation, and either another bounded cycle or a terminal response. This
-description does not require access to private internal model reasoning.
+from an environment. Interleaving reasoning-oriented text and actions lets a
+model update its next step after receiving external information
+\cite{yao2023react}. In an executable workflow, the observable cycle is action
+selection, tool invocation, returned observation, and either another bounded
+cycle or a terminal response. This description does not require private model
+reasoning.
 
-A tool turns an external capability into a named operation with a defined input
-and output. Examples include retrieving a threshold, reading current state, or
-querying a data source. Restricting the tool interface reduces the available
-action space and makes calls easier to record. It does not ensure that the model
-will call the right tool, use the result correctly, or avoid unnecessary calls.
-Tool outputs should therefore be treated as observations supplied to the agent,
-not as proof that the subsequent decision is valid. ToolEmu's risk evaluation
-likewise treats tool access as a capability that can produce consequential
-failures and therefore deserves explicit testing \cite{ruan2024toolemu}.
+A tool exposes an external capability as a named operation with defined input
+and output, such as retrieving a threshold or reading current state. A restricted
+interface narrows the action space and makes calls observable, but it cannot
+ensure that the model chooses the right tool or uses its result correctly.
+ToolEmu likewise treats tool access as a capability whose consequential failures
+require explicit testing \cite{ruan2024toolemu}.
 
-Iteration bounds provide another important control. Without a termination rule,
-an agent can repeatedly call tools, consume resources, or fail to produce a
-usable terminal output. A maximum number of cycles limits this exposure but may
-also end a task before it is complete. Tool permissions and iteration limits are
-thus design constraints, not measures of intelligence.
+Iteration bounds prevent indefinite calls and resource use, although a limit can
+also end an incomplete task. Tool permissions and cycle limits therefore define
+the interaction boundary.
 
-In the present context, ReAct-style behavior refers only to a controlled and
-observable interaction pattern. The agent is not granted unrestricted device
-control, and its tool use is distinct from release of an action. This separation
-allows tool-assisted decision-making to be studied while an external path still
-decides whether a candidate can cross the action interface.
+Here, ReAct-style behavior means a controlled action-tool-observation pattern.
+Tool use does not release an action: a separate path decides whether the candidate
+may cross the action interface.
 
 \subsection{Memory in LLM-Agent Workflows}\label{subsec:theory-memory}
 
-Memory in an LLM-agent system can refer to several different mechanisms. Prior
-interactions selected and included in the current prompt can provide short-term
-memory, while external stores may retain information across sessions. Agent
-surveys commonly distinguish bounded context from persistent long-term stores
-and describe windowing as one way to limit short-term history
-\cite{wang2024surveyagents}. Reflexion, for example, uses an episodic memory
-buffer of prior feedback to influence later attempts without updating model
-weights \cite{shinn2023reflexion}. These designs should not be treated as
-interchangeable.
+Memory in an LLM-agent system can mean selected prior interactions in the current
+prompt or information retained externally across sessions. Agent surveys
+distinguish bounded context from persistent stores and describe windowing as one
+way to limit short-term history \cite{wang2024surveyagents}. As a contrasting
+example, Reflexion retains feedback in episodic memory to guide later attempts
+without updating model weights \cite{shinn2023reflexion}.
 
-A bounded window limits context growth and reduces the amount of older material
-carried into a decision. It also discards information once it leaves the active
-window. Session identity can partition which interactions are retrieved together;
-if two unrelated sessions share memory, residual context can contaminate behavior.
-Conversely, a new session cannot rely on a process-local history that was never
-persisted.
+A bounded window controls context growth but discards older information. Session
+identity determines which interactions are grouped; shared sessions can mix
+unrelated context, while a new session cannot recover process-local history that
+was never persisted.
 
-More context is not automatically better. Long inputs can make relevant
-information harder for a model to use, particularly when it appears away from
-the beginning or end of the context \cite{liu2024lostmiddle}. Recent history can
-also become stale when an external device changes independently. For
-state-dependent action, remembered state and a live state observation answer
-different questions: the first records prior interaction, while the second
-provides newer evidence about the environment.
+Longer context is not always more useful, especially when relevant information
+appears away from the beginning or end \cite{liu2024lostmiddle}. Memory can also
+become stale after an external device changes. Remembered state records a prior
+interaction, whereas a live observation provides newer evidence about the
+environment.
 
-The bounded memory considered later is recent, session-scoped, and process-local.
-It is not a durable database and is not presented as a generally superior memory
-strategy. Evaluating its role requires attention to both retained conversational
-context and the external state available through tools.
+The later configuration uses recent, session-scoped, process-local memory rather
+than durable storage. Its interpretation therefore depends on both retained
+conversation and external state obtained through tools.
 
 \subsection[Structured Output and Runtime Validation]{Structured Output and\\Runtime Validation}\label{subsec:theory-validation}
 
-Structured output asks a model to produce data that a program can parse rather
-than unrestricted prose. A predictable envelope can separate an action name,
-target, explanation, and control flags into explicit fields. Prompt instructions
-and examples may improve conformity, but the generated object remains a
-candidate until executable code has checked it.
+Structured output asks a model for data that a program can parse instead of
+unrestricted prose. An envelope can place the action, target, explanation, and
+control flags in explicit fields. Instructions and examples may improve
+conformity, but the object remains a candidate until executable code checks it.
 
-There are two broad places to enforce structure. Generation-time constraints can
-limit decoding to strings accepted by a grammar. Grammar-constrained decoding
-has been used to guarantee formal structure for NLP task outputs without
-fine-tuning \cite{geng2023grammar}. Post-generation validation instead receives
-the produced value, parses it, and tests it against contract assertions such as
-required fields, types, constants, or enumerations
-\cite{wright2022jsonschemavalidation}. The approaches can complement one another,
-but they are not the same mechanism.
+Structure can be enforced at two stages. Generation-time constraints limit
+decoding to strings accepted by a grammar; grammar-constrained decoding can
+guarantee formal structure without fine-tuning \cite{geng2023grammar}.
+Post-generation validation receives the produced value, parses it, and checks
+assertions such as required fields, types, constants, and enumerations
+\cite{wright2022jsonschemavalidation}. The approaches can complement each other
+but remain distinct.
 
 Runtime validation is deterministic when the same candidate and schema always
-produce the same accept or reject result. Rejection should occur before an
-invalid candidate is routed to an action endpoint. Repairing or coercing a value
-is a separate behavior and can hide what the model actually produced. A strict
-validator can reject without coercion, while an auditable workflow can separately
-retain the candidate and an explicit failure reason. This creates a clear
-boundary between probabilistic proposal and executable interface.
+give the same result. An invalid candidate should be rejected before reaching an
+action endpoint. Repair or coercion is separate behavior that can hide the
+original output; strict rejection instead preserves a clear boundary between a
+probabilistic proposal and the executable interface.
 
-Structural validity is necessary only with respect to the defined contract. A
-well-formed command can still be unauthorized, based on false sensor data, or
-unsafe in its physical context. Validation also cannot judge the truth or quality
-of unrestricted natural-language explanations merely because they are non-empty
-strings. Policy, source assurance, and operational safeguards remain separate
-concerns. The validator described in Chapter~\ref{sec:implementation} is therefore
-a contract-specific runtime control, not a general security mechanism.
+Structural validity does not imply authorization. A well-formed command can rely
+on false data, violate policy, or be unsafe in its physical context. Nor can a
+schema judge the truth of a non-empty explanation. Chapter~
+\ref{sec:implementation} therefore treats the validator as a contract-specific
+runtime control, separate from policy and operational safeguards.
 
 \subsection{Deterministic Safety Policies}\label{subsec:theory-policy}
 
-After a candidate has passed structural validation, a policy can decide whether
-it may proceed. A policy expresses explicit rules over a valid action and its
-context. Typical outcomes are allow, block, or approval required. Allowlists can
-restrict the action vocabulary and target set, while contextual rules can require
-additional authority for a particular class of otherwise valid action.
+After structural validation, a policy determines whether a candidate may
+proceed. Explicit rules over a valid action and its context can produce allow,
+block, or approval required. Allowlists restrict
+actions and targets, while contextual rules can require additional authority.
 
 Runtime enforcement separates proposal from authorization. Schneider describes
-execution monitoring as observing a system's steps and terminating execution
-before a specified policy violation occurs \cite{schneider2000enforceable}. The
-general principle applies here without claiming that every security property is
-enforceable: a deterministic gate can prevent a candidate from crossing its own
-narrow boundary when an explicit rule says to block it. The model cannot override
-that outcome by arguing for an exception in natural language.
+execution monitoring as stopping execution before a specified policy violation
+\cite{schneider2000enforceable}. At this narrower boundary, a deterministic gate
+can block an action despite any natural-language argument for an exception.
 
-Policy quality depends on what the rules represent. An allowlist cannot recognize
-a hazard that was never encoded, and a policy supplied with incomplete or false
-context can return an inappropriate result. Rules can also become outdated as
-interfaces or operational responsibilities change. A narrow deterministic policy
-is consequently useful as release control because it is inspectable and
-repeatable, not because it performs autonomous risk discovery or supplies generic
-cybersecurity. Chapter~\ref{sec:system-design} explains why this project placed
-such a gate after validation.
+Such a policy recognizes only encoded rules and supplied context; it cannot
+discover unknown hazards, and its rules can become outdated. Its value lies in
+inspectable, repeatable release control. Chapter~\ref{sec:system-design}
+explains why the project places this gate after validation.
 
 \subsection{Human-in-the-Loop}\label{subsec:theory-hitl}
 
-Human-in-the-Loop (HITL) control inserts a person into a defined decision point.
-For action release, the relevant states are pending, approved, and denied. A
-pending action must remain held; approval authorizes the held candidate to
-continue, while denial ends the path without release. These states distinguish
-actual human authority from a notification that occurs after an automated
-action has already happened.
+Human-in-the-Loop (HITL) control gives a person authority at a defined decision
+point. For action release, a candidate can be pending, approved, or denied.
+Pending keeps it held, approval permits it to continue, and denial ends the path.
+This differs from notifying a person after an automated action.
 
-Human-AI interaction guidance emphasizes making system capabilities and
-consequences understandable, allowing users to dismiss or correct outputs, and
-supporting appropriate control \cite{amershi2019guidelines}. A reviewer can
-bring contextual knowledge that was not available to a fixed policy and
-contribute judgment within explicitly assigned authority and accountability.
-The workflow must still specify who is authorized, what exact candidate is held,
-and whether approval can modify it. Retained records should connect the proposal,
-human decision, and released action.
+Human-AI guidance recommends making capabilities and consequences clear while
+allowing users to dismiss or correct outputs \cite{amershi2019guidelines}. A
+reviewer can add context and judgment unavailable to a fixed policy, but the
+workflow must identify the authorized reviewer, the held candidate, and whether
+approval may modify it. Records should connect proposal, human decision, and any
+released action.
 
-Human involvement introduces its own variability. Workload, time pressure,
-interface clarity, and trust in automation can affect whether a person notices
-an error or follows a recommendation. Empirical work on reliance shows that
-people adjust trust based on their understanding of why an automated aid succeeds
-or fails, and that inappropriate reliance can persist when this understanding is
-weak \cite{dzindolet2003trust}. Human review can also dominate elapsed time and
-create an operational bottleneck.
+Review also adds variability. Workload, delay, interface clarity, and trust in
+automation can affect decisions. People adjust trust according to how they
+understand an automated aid's successes and failures, and weak understanding can
+support inappropriate reliance \cite{dzindolet2003trust}. Human review can also
+become the main source of elapsed time.
 
-HITL is therefore neither an automatic safety guarantee nor a substitute for
-validation. Invalid candidates should be stopped before they ask a person to
-legitimize them, and the pending state must itself prevent release. The thesis
-uses HITL in this narrower executable sense; its observed behavior and timing
-are reported later without treating the sessions as a general usability study.
+Human oversight is therefore not sufficient by itself. Invalid candidates should
+fail validation first, and pending must prevent release. The later evaluation
+uses this executable meaning of HITL rather than treating the sessions as a
+general usability study.
 
 \subsection[Reliability Evaluation of LLM and Agent Systems]{Reliability Evaluation of\\LLM and Agent Systems}\label{subsec:theory-reliability}
 
-For the bounded case-based evaluation in this thesis, reliability is
-operationalized through an explicit task boundary and an observable oracle. The
-oracle states which terminal outcome is expected for a defined input.
-Correctness asks whether an attempt matched that expectation, while consistency
-asks whether repeated attempts produced the same normalized outcome. These
-study-level measures can diverge: a system may repeat the same wrong action
-consistently, or reach a correct outcome through variable intermediate behavior.
+Reliability can be evaluated against an oracle that defines the expected terminal
+outcome for a given input. Correctness asks whether an attempt matches that
+outcome; consistency asks whether repetitions produce the same normalized
+outcome. A system may therefore be consistently wrong or reach the correct result
+through variable intermediate behavior.
 
-Agent evaluation is difficult when benchmarks mix models, scaffolding, tools,
-and costs or report only aggregate accuracy. Kapoor et al. argue for standardized,
-reproducible evaluation and for considering efficiency alongside task success
-\cite{kapoor2025agentsmatter}. A configuration-level comparison should therefore
-name the complete configurations under test and avoid attributing a difference
-to one component unless an ablation isolates that component.
+Agent evaluations often combine models, scaffolding, tools, and costs. Kapoor et
+al. call for standardized, reproducible evaluation that considers efficiency as
+well as task success \cite{kapoor2025agentsmatter}. Comparisons should therefore
+name each complete configuration and avoid assigning a difference to one
+component without an isolating ablation.
 
-The reporting discipline adopted in Chapter~\ref{sec:method} retains every
-attempted run, including errors, timeouts, missing observations, and unexpected
-terminals. Replacing a failed attempt with a successful rerun would change the
-denominator and conceal operational behavior. A small number of repetitions can
-support descriptive counts and summaries, but not statistical significance or a
-population failure rate.
-
-The study likewise defines latency through declared start and end events and
-keeps human waiting separate from automated processing. Descriptive summaries
-characterize the observed sample; they do not identify which internal component
-caused a delay when complete configurations perform unequal work.
-
-Finally, reportable claims should trace back through processed summaries to
-primary run records and execution identifiers. Model providers and hosted
-backends may change outside the repository, so versioned workflows, inputs,
-settings, raw failures, and processing rules improve reproducibility without
-making it complete. Chapter~\ref{sec:method} defines the concrete oracle,
-repetition, timing, and traceability rules used in this study.
+Repeated evaluation reveals observed variability. Chapter~\ref{sec:method}
+defines the repetition protocol. Small samples support descriptive counts and
+summaries, not statistical significance or population failure rates. Latency
+likewise requires declared start and end events, and complete configurations may
+perform unequal work. Chapter~\ref{sec:method} defines the study's concrete
+oracle, timing, and traceability rules.
 
 \subsection{Related Work and Positioning}\label{subsec:theory-related}
 
-The related work covers the closest parts of the problem rather than an exact
-predecessor: tool-using agents, an LLM-IoT framework, two safety-evaluation
-environments, and runtime enforcement. Table~\ref{tab:related-work} compares
-reported mechanisms and evaluations. A feature that is not reported is not
-necessarily absent from every implementation.
+The selected work covers tool-using agents, an LLM-IoT framework, two
+safety-evaluation environments, and runtime enforcement. Table~
+\ref{tab:related-work} compares reported mechanisms and evaluations; an
+unreported feature is not necessarily absent from every implementation.
 
 \begin{table}[!tb]
 \centering
@@ -416,50 +319,43 @@ different domains and contract \\
 \end{tabularx}
 \end{table}
 
-ReAct provides observable action-observation cycles, but its tasks do not
-establish conformance to an IoT action contract. Here, validation, policy, and,
-where required, HITL govern release; no direct performance comparison is made.
+ReAct provides observable action-observation cycles, but its tasks do not test
+conformance to an IoT action contract. Here, validation, policy, and, when
+required, HITL govern release rather than the tool-use cycle itself.
 
-LLMind is the most directly IoT-oriented study in the selected set. It converts
-human task descriptions through an intermediate finite-state machine into
-control scripts for collaboration among AI modules and IoT devices, and includes
-an experience-accumulation mechanism \cite{cui2025llmind}. Its focus is complex
-task execution across devices, assessed in two scenario-based feasibility
-experiments. The narrower temperature-to-fan study instead preserves an existing
-action interface and asks how a bounded
-decision configuration behaves under repeated normal, malformed, state-dependent,
-and controlled safety cases. The two works consequently address different scales
-and evaluation questions.
+LLMind is the most directly IoT-oriented study in the set. It converts human task
+descriptions through a finite-state machine into control scripts for AI modules
+and IoT devices and accumulates experience \cite{cui2025llmind}. Its two
+scenario-based feasibility experiments address complex tasks across devices. The
+narrower temperature-to-fan study preserves an existing action interface and
+repeats normal, malformed, state-dependent, and controlled safety cases. The
+works therefore differ in scale and evaluation question.
 
-ToolEmu and AgentDojo emphasize evaluation under risk. ToolEmu uses a language
-model to emulate tool execution, while another model-based evaluator assesses
-the resulting failures across many high-stakes toolkits
-\cite{ruan2024toolemu}. AgentDojo provides a dynamic environment of user tasks
-and prompt-injection attacks for assessing utility and security defenses
-\cite{debenedetti2024agentdojo}. Both demonstrate that normal
-task success alone is an incomplete view of an agent. Their sandbox and benchmark
-designs are adjacent to, but different from, a contract-specific gate that is
-executed on retained workflow runs.
+ToolEmu and AgentDojo evaluate agents under risk. ToolEmu emulates tool execution
+and uses a model-based evaluator to assess failures across high-stakes toolkits
+\cite{ruan2024toolemu}. AgentDojo combines user tasks and prompt-injection
+attacks to assess utility and security defenses
+\cite{debenedetti2024agentdojo}. Both show why normal task success is
+insufficient, but their sandbox and benchmark designs differ from an executed,
+contract-specific release gate.
 
 AgentSpec is a contemporary comparison identified during post-freeze report
-research, not a design source for the frozen implementation. It defines a
-domain-specific language for triggers, predicates, and runtime enforcement
-around agents and evaluates it in code, embodied-agent, and autonomous-driving
-settings \cite{wang2026agentspec}. It supports the broader distinction between
-model behavior and enforceable runtime rules. The thesis does not compare results
-across the two studies. Its policy vocabulary, shared action contract, simulated
-actuator, and controlled HITL trials form a substantially narrower evaluation
-boundary.
+research, not a design source for the frozen implementation. Its language defines
+triggers, predicates, and runtime enforcement for agents and is evaluated in
+code, embodied-agent, and autonomous-driving settings
+\cite{wang2026agentspec}. It supports the distinction between model behavior and
+enforceable rules. The present policy vocabulary, shared action contract,
+simulated actuator, and controlled HITL trials form a narrower boundary, so the
+results are not directly compared.
 
-Within the reviewed set, the present work is positioned differently by combining
-a bounded single Decision Agent with an unchanged IoT action contract,
-deterministic runtime validation and policy, executable HITL, and a repeated
-comparison against an inherited minimal-agent baseline in n8n. The
-workflow-to-action infrastructure and baseline remain
-\texttt{YACOUB\_INHERITED}, while the sensor and action contracts remain
+Within this set, the thesis combines a bounded single Decision Agent with an
+unchanged IoT action contract, deterministic validation and policy, executable
+HITL, and repeated comparison with an inherited minimal-agent baseline in n8n.
+The workflow-to-action infrastructure and baseline remain
+\texttt{YACOUB\_INHERITED}, and the sensor and action contracts remain
 \texttt{SHARED\_INTERFACE}; the extended decision configuration, controls, and
-new evaluation are \texttt{OBID\_CREATED}. This positioning describes the thesis
-boundary. It does not establish priority over all agentic IoT systems,
-superiority to the selected studies, or general production readiness.
+new evaluation are \texttt{OBID\_CREATED}. This positioning claims neither
+priority over agentic IoT systems, superiority to the selected studies, nor
+general production readiness.
 
 \endgroup
