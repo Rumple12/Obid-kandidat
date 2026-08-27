@@ -1,65 +1,143 @@
 \section{Introduction}\label{sec:intro}
-% REPORT WRITER: Skeleton only. Organize as an academic argument, not a numbered
-% project diary.
+
+\setlength{\emergencystretch}{2em}
 
 \subsection{Background and Motivation}\label{subsec:intro-background}
-% REPORT WRITER: Establish the IoT event-to-action reliability context and why
-% an LLM-controlled decision layer needs measurable runtime controls.
-% EVIDENCE SOURCES: docs/ongoing/project-overview.md; docs/ongoing/obid-scope.md.
-% [REFERENCE NEEDED: IoT event-action systems; workflow automation; LLM agents]
+
+IoT systems often transform sensor events into actions that change a device or
+service. Workflow automation can connect event intake, decision logic, and
+action execution in an inspectable sequence. A language-model-based component
+can make the decision stage responsive to event and state context rather than
+only a fixed branch. Its output, however, remains a generated proposal and
+cannot by itself be assumed to satisfy an interface contract or to be
+authorized for release.
+
+Reliability therefore concerns more than whether an action appears plausible.
+Decision behaviour must be measured under defined conditions, while observable
+runtime controls determine whether a proposal is contract-valid, permitted, or
+subject to human approval before it reaches an action interface. Such controls
+also distinguish blocked, pending, failed, and released outcomes. This thesis
+examines the problem through a bounded extension of an inherited n8n-based
+workflow-to-action system in one defined IoT scenario, without seeking to
+establish universal LLM reliability or production safety.
+
+% [REFERENCE NEEDED: IoT event-action systems]
+% [REFERENCE NEEDED: workflow automation and LLM agents]
+% [REFERENCE NEEDED: runtime validation and human oversight]
 
 \subsection{Problem Statement}\label{subsec:intro-problem}
-% REPORT WRITER: State the bounded problem of dependable action selection and
-% prevention of invalid or unapproved action release at the shared interface.
-% EVIDENCE SOURCES: docs/ongoing/research-questions.md;
-% docs/ongoing/collaboration-boundary.md.
-% SCOPE WARNING: do not frame the problem as universal production safety.
+
+The inherited Yacoub-compatible system provides the event-to-action boundary,
+middleware and action API, shared contracts, and a minimal-agent baseline. The
+bounded problem is to investigate a stronger decision layer at the same
+boundary: whether it produces expected actions across defined normal,
+malformed, and state-dependent cases, and whether contract-invalid or
+unapproved proposals are prevented from release. Compatibility must remain
+intact so that reliability and latency can be compared fairly with the
+inherited minimal agent. The technical and empirical challenge is therefore to
+extend agentic behaviour while keeping the action vocabulary, system boundary,
+and comparison conditions fixed.
 
 \subsection{Aim}\label{subsec:intro-aim}
-% REPORT WRITER: Map the aim directly to the stronger Obid decision/reliability
-% layer and RQ1-RQ3 without claiming inherited middleware as the contribution.
-% EVIDENCE SOURCES: docs/ongoing/project-overview.md; docs/ongoing/obid-scope.md.
+
+The aim is to design, implement, and evaluate a bounded n8n-based agentic
+decision and reliability layer that extends the inherited Yacoub-compatible
+workflow-to-action system while preserving the shared interface. The study
+addresses expected-action accuracy and consistency, runtime validation,
+deterministic policy and Human-in-the-Loop (HITL) control, and reliability and
+latency differences from the inherited minimal-agent baseline. It does not
+include rebuilding or redesigning the inherited middleware, contracts,
+baselines, or action-side infrastructure.
 
 \subsection{Research Questions}\label{subsec:intro-rqs}
-% REPORT WRITER: Insert RQ1-RQ3 verbatim from docs/ongoing/research-questions.md.
-% Do not paraphrase, reorder, or replace the inherited minimal-agent comparator.
-% RQ1 (LOCKED): How accurately and consistently does the extended n8n-based
-% agentic decision layer produce the expected IoT action across defined normal,
-% malformed, and state-dependent test cases?
-% RQ2 (LOCKED): How effectively do runtime structured-output validation, action
-% policies, and Human-in-the-Loop approval prevent invalid or risky agent actions
-% from reaching the shared IoT action interface?
-% RQ3 (LOCKED): What reliability and latency differences are observed between
-% the inherited minimal agent baseline and the extended Obid agentic workflow
-% under the same defined IoT test cases?
+
+The study is guided by the following research questions:
+
+\begin{description}
+\item[RQ1.] How accurately and consistently does the extended n8n-based
+agentic decision layer produce the expected IoT action across defined normal,
+malformed, and state-dependent test cases?
+
+\item[RQ2.] How effectively do runtime structured-output validation,
+action policies, and Human-in-the-Loop approval prevent invalid or risky agent
+actions from reaching the shared IoT action interface?
+
+\item[RQ3.] What reliability and latency differences are observed
+between the inherited minimal agent baseline and the extended Obid agentic
+workflow under the same defined IoT test cases?
+\end{description}
 
 \subsection{Scope and Delimitations}\label{subsec:intro-scope}
-% REPORT WRITER: One temperature-to-fan scenario, one primary model, one
-% single-agent workflow, one bounded-memory configuration, simulated fan.
-% EVIDENCE SOURCES: docs/ongoing/obid-scope.md; docs/decisions.md;
-% docs/ongoing/final-implementation-freeze.md.
-% SCOPE WARNING: no multi-agent, validator-agent, hardware, device, model, or
-% memory-strategy comparison; no production deployment claim.
+
+The study covers one temperature-to-fan scenario, one primary model
+configuration, one Decision Agent, exactly two read-only tools, one
+bounded-memory configuration, and one simulated fan target. It preserves the
+inherited middleware boundary and Yacoub-originated shared contracts, and uses a
+controlled repeated evaluation under frozen cases. Excluded are production
+deployment, generic safety or cybersecurity assurance, new physical Obid
+Raspberry Pi or GPIO validation, broad multi-agent architecture, the deferred
+validator-agent comparison, multiple models, memory strategies or devices,
+scalability benchmarking, and statistical generalization. The study thus
+evaluates one bounded Obid extension against one inherited comparator in one
+simulated setting. Earlier physical evidence remains inherited context.
 
 \subsection{Contributions}\label{subsec:intro-contributions}
-% REPORT WRITER: Separate OBID_CREATED cognition, runtime reliability, HITL,
-% and repeated evaluation from YACOUB_INHERITED infrastructure and baselines.
-% EVIDENCE SOURCES: docs/ongoing/collaboration-boundary.md;
-% docs/ongoing/final-claim-evidence-map.md.
-% EXPECTED TABLE: Contribution | Artifact/evidence | Provenance.
+
+The Obid contribution has three parts. The cognitive contribution is a stronger
+single-agent workflow with read-only tools, bounded memory, controlled
+ReAct-style execution, and structured internal decisions. The runtime
+reliability contribution places contract-specific validation, deterministic
+policy, and executable HITL before release to the shared interface. The
+evaluation contribution is a frozen repeated comparison with the inherited
+minimal agent, with retained failures, locked raw data, deterministic
+processing, and traceability to execution evidence. These are Obid-created
+contributions. The inherited middleware, contracts, threshold and action
+semantics, baselines, and earlier Raspberry Pi evidence provide context and
+comparison infrastructure but are not claimed as Obid-authored work.
 
 \subsection{AI Tool Use and Disclosure}\label{subsec:intro-ai-disclosure}
-% REPORT WRITER: Reserve the course-required disclosure; describe assistance,
-% human verification, audit gates, and limitations concisely.
-% EVIDENCE SOURCES: docs/ongoing/ai-tool-use.md; docs/ongoing/codex-workflow.md.
-% [CHECK METADATA: institution/course wording for required disclosure]
 
-\subsection{Division of Work and Collaboration Boundary}\label{subsec:intro-division}
-% REPORT WRITER: State one integrated system with two separately attributable
-% contributions. Reuse and verification do not transfer authorship.
-% EVIDENCE SOURCES: docs/ongoing/collaboration-boundary.md;
-% docs/ongoing/yacoub-handoff.md; docs/decisions.md.
+AI-assisted repository tools supported bounded planning, drafting, code and
+document modification, and review. The researcher defined the scope, approved
+major decisions, performed required private or manual runtime actions, and
+supplied the HITL decisions. Generated code and prose required verification and
+were not treated as runtime evidence. Technical claims instead relied on
+versioned artifacts, retained execution evidence, human review, and separate
+read-only audits. Those audits served as quality controls rather than
+experimental evidence. Credentials, transient links, private personal data,
+and hidden internal reasoning were excluded from repository evidence.
+
+% [CHECK METADATA: confirm MIUN/course-required AI-tool disclosure wording and placement]
+
+\subsection[Division of Work and Collaboration Boundary]{Division of Work and\\Collaboration Boundary}\label{subsec:intro-division}
+
+The thesis studies one integrated system with separately attributable
+contributions. Yacoub originated the workflow-to-action infrastructure,
+middleware and action API, threshold/action and baseline semantics, and earlier
+Raspberry Pi/action-side evidence. These components are classified as
+\mbox{\texttt{YACOUB\_INHERITED}}. The contracts retain Yacoub origin and serve
+as \mbox{\texttt{SHARED\_INTERFACE}} artifacts; shared use does not imply joint
+authorship.
+
+Obid created the extended decision and reliability layer, runtime controls and
+HITL, controlled evaluation, and new evidence; these are classified as
+\mbox{\texttt{OBID\_CREATED}}. Earlier physical evidence is inherited context,
+not Obid hardware validation. Reproducing, configuring, verifying, or evaluating
+an inherited component does not transfer its implementation authorship. New
+Obid observations remain Obid-created evidence even when they describe the
+inherited comparator.
 
 \subsection{Report Outline}\label{subsec:intro-outline}
-% REPORT WRITER: Give a concise eight-chapter roadmap after the chapter content
-% has stabilized. Do not narrate repository steps.
+
+Chapter~\ref{sec:theory} presents theory and related work on workflow
+automation, agentic decisions, and runtime control, and Chapter~\ref{sec:method}
+explains the method and controlled evaluation. Chapter~\ref{sec:system-design}
+motivates the design and scope, while Chapter~\ref{sec:implementation} describes
+the implementation and integration boundary. Chapter~\ref{sec:results} reports
+the observations without interpretation. Chapter~\ref{sec:discussion}
+interprets them and discusses validity, tradeoffs, broader relevance, ethics,
+and future work. Chapter~\ref{sec:conclusions} gives the direct research-question
+answers and conclusions. Appendix~\ref{app:artifact-index} indexes the frozen
+implementation and evidence artifacts used for traceability.
+
+\setlength{\emergencystretch}{0pt}
