@@ -8,9 +8,9 @@ The map follows the headings currently present under `thesis/MiunThesisTemplate-
 
 Allowed status values are used exactly as follows:
 
-- `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapters 2 and 8 remain at this status.
+- `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapter 8 remains at this status.
 - `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Chapter 1 is drafted and awaits independent audit; Chapters 3–7 have passed their full gates and are content-locked.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Chapter 2 is drafted and awaits independent audit; Chapters 1 and 3–7 have passed their full gates and are content-locked.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -195,7 +195,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - The approved Yacoub PDF is a visual/passing-format reference only. It cannot override frozen Obid evidence.
 - `reference/` is read-only source/history/collaborator material.
 - Yacoub's old two-case, single-run, specification-only-safety, stateless-Obid, Raspberry Pi-as-Obid, and CSV-measurement claims do not describe the final Obid study.
-- No web reference search or bibliography import is authorized in this bootstrap. `literature.bib` remains a build placeholder.
+- Chapter 2 reference research is complete with 22 verified, cited entries; no bibliography was imported wholesale. Later reference work remains separately scoped.
 - Repository implementation documents are not substitutes for external theory/related-work sources.
 - No active final report screenshots or figures exist. Later figures must be derived only from frozen architecture/data and must not expose credentials, owner/project data, transient HITL URLs, the retained local username/path, or hidden reasoning.
 - Use repository-relative paths in prose, tables, and figures; do not reproduce absolute temporary checkout paths found in three readiness evidence files.
@@ -469,12 +469,12 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Relevant report note(s):** Steps 7–10 report notes identify concepts that need literature, but are not literature themselves.
 - **Raw evidence:** None.
 - **Processed evidence:** None.
-- **Expected table(s):** Optional related-work comparison table after references are selected.
-- **Expected future figure(s):** Optional conceptual overview only if it materially improves explanation; no project architecture result figure here.
-- **References needed later:** All Chapter 2 topics listed below.
+- **Expected table(s):** One completed related-work comparison table covering five selected studies.
+- **Expected future figure(s):** None; no Chapter 2 figure was created.
+- **References verified:** 22 academic, standards, and official-documentation sources are cited in the completed Chapter 2 draft.
 - **Provenance:** External literature for general theory; Obid/Yacoub sources only for project positioning and terminology.
 - **Limitations/caveats:** Do not copy Yacoub's bibliography, invent BibTeX, or cite repository notes as substitutes for academic/authoritative sources.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.1 Workflow Automation and Orchestration
 
@@ -486,10 +486,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Optional terminology comparison of workflow, orchestration, and automation.
 - **Expected future figure(s):** None currently planned.
-- **References needed later:** Workflow automation and orchestration literature.
+- **References verified:** Foundational workflow-pattern and service-oriented orchestration literature.
 - **Provenance:** General claims from external sources; applied n8n configuration is `OBID_CREATED` on an inherited-compatible context.
 - **Limitations/caveats:** Keep general concepts separate from claims that a specific frozen workflow executed.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.2 n8n and Low-Code Workflow Automation
 
@@ -501,10 +501,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Optional project-relevant n8n node/category glossary.
 - **Expected future figure(s):** None.
-- **References needed later:** Official n8n documentation; low-code workflow automation research.
+- **References verified:** Peer-reviewed low-code research and official n8n workflow and hosting documentation.
 - **Provenance:** General platform description from authoritative external sources; frozen runtime setup is `OBID_CREATED`.
 - **Limitations/caveats:** Cite the version actually used, n8n `1.123.37`; avoid advertising language or claims about platform-wide reliability.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.3 IoT Event-Action Systems
 
@@ -516,10 +516,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Optional mapping of event, decision, action, and observable state roles.
 - **Expected future figure(s):** Optional generic event-action flow distinct from the Chapter 4 project architecture.
-- **References needed later:** IoT event-action and actuator-control literature.
+- **References verified:** Peer-reviewed IoT context-awareness and trigger-action programming research.
 - **Provenance:** General theory external; project middleware/action path `YACOUB_INHERITED`; compatibility boundary `SHARED_INTERFACE`.
 - **Limitations/caveats:** The Obid experiment stops at a simulated fan; do not generalize to physical deployment.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.4 Middleware and API Boundaries
 
@@ -531,10 +531,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Optional API-boundary concept and project example mapping.
 - **Expected future figure(s):** None here; final boundary figure belongs in Chapter 4.
-- **References needed later:** Middleware, REST/API boundaries, and interface compatibility.
+- **References verified:** Peer-reviewed service-oriented interface and coordination literature.
 - **Provenance:** General theory external; project middleware and routes `YACOUB_INHERITED`; endpoint meanings `SHARED_INTERFACE`.
 - **Limitations/caveats:** Do not imply Obid authored the Python middleware or that endpoint reachability proves agent correctness.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.5 Structured Data and JSON Contracts
 
@@ -546,10 +546,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Contract concepts and frozen project examples.
 - **Expected future figure(s):** None.
-- **References needed later:** JSON specification; JSON Schema draft 2020-12; interface-contract literature.
+- **References verified:** RFC 8259 and the JSON Schema Draft 2020-12 validation specification.
 - **Provenance:** General standards external; schemas are Yacoub-originated `SHARED_INTERFACE`; Obid no-drift verification is `OBID_CREATED`.
 - **Limitations/caveats:** The runtime action validator implements the frozen contract constraints, not a generic complete JSON Schema engine.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.6 LLM Agents and Agentic Workflows
 
@@ -561,10 +561,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** General agentic-workflow features versus the frozen project realization.
 - **Expected future figure(s):** None; project topology belongs in Chapter 4.
-- **References needed later:** LLM agents and tool-using agentic workflow research.
+- **References verified:** Peer-reviewed LLM-agent survey and agent-workflow research.
 - **Provenance:** General theory external; `CONFIG-OBID` realization `OBID_CREATED`; minimal baseline `YACOUB_INHERITED`.
 - **Limitations/caveats:** Do not describe `CONFIG-OBID` as multi-agent, unbounded, or merely a prompt around an LLM.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.7 ReAct and Tool Use
 
@@ -576,10 +576,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** ReAct concept; frozen observable implementation; explicit boundary.
 - **Expected future figure(s):** Optional abstract tool-observation loop, not chain-of-thought.
-- **References needed later:** Original ReAct paper and relevant tool-use literature.
+- **References verified:** The peer-reviewed ReAct paper and ToolEmu tool-risk evaluation paper.
 - **Provenance:** Theory external; controlled observable implementation `OBID_CREATED`.
 - **Limitations/caveats:** Discuss only observable calls, inputs, outputs, order, and termination; hidden chain-of-thought was not requested or retained.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.8 Memory in LLM-Agent Workflows
 
@@ -591,10 +591,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Memory types or properties relevant to the chosen window design.
 - **Expected future figure(s):** Optional active-window illustration.
-- **References needed later:** LLM-agent memory, bounded/window memory, and state management.
+- **References verified:** Peer-reviewed agent survey, Reflexion, and long-context research.
 - **Provenance:** Theory external; one frozen memory implementation `OBID_CREATED`.
 - **Limitations/caveats:** Process-local, two completed interactions, no restart durability, no physical deletion proof, and no memory-strategy superiority claim.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.9 Structured Output and Runtime Validation
 
@@ -606,10 +606,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Prompted structure versus runtime-enforced structure.
 - **Expected future figure(s):** None.
-- **References needed later:** Structured LLM output, runtime validation, and schema enforcement.
+- **References verified:** Peer-reviewed constrained-generation research and the authoritative JSON Schema validation specification.
 - **Provenance:** General concepts external; internal envelope and runtime validator `OBID_CREATED`; action contract `SHARED_INTERFACE`.
 - **Limitations/caveats:** Do not equate structured prompting with enforcement or claim generic security validation.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.10 Deterministic Safety Policies
 
@@ -621,10 +621,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Policy outcome and release semantics.
 - **Expected future figure(s):** Optional policy decision tree, later derived from the frozen policy.
-- **References needed later:** Deterministic policy gates, guardrails, and policy enforcement.
+- **References verified:** Foundational runtime policy-enforcement research and contemporary agent runtime-enforcement work.
 - **Provenance:** General theory external; specific policy `OBID_CREATED`.
 - **Limitations/caveats:** The policy is narrow and contract-specific; avoid production-safety or arbitrary-risk claims.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.11 Human-in-the-Loop
 
@@ -636,10 +636,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Pending, approval, and denial concepts.
 - **Expected future figure(s):** Optional generic HITL state transition.
-- **References needed later:** HITL, human oversight, and approval-gate literature.
+- **References verified:** Peer-reviewed human--AI interaction and trust-in-automation research.
 - **Provenance:** General concepts external; final executable gate `OBID_CREATED`; original concept may be cited as inherited Yacoub specification with care.
 - **Limitations/caveats:** Do not imply autonomous risk discovery, reviewer identity evidence, replay guarantees, or population-level human response times.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.12 Reliability Evaluation of LLM and Agent Systems
 
@@ -651,10 +651,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None in theory.
 - **Expected table(s):** Evaluation concepts and their later operationalization.
 - **Expected future figure(s):** None.
-- **References needed later:** Reliability/consistency evaluation of LLM agents; descriptive latency measurement; failure reporting.
+- **References verified:** Peer-reviewed LLM-agent evaluation and reproducibility literature; concrete study measurements remain in Chapter 3.
 - **Provenance:** General method concepts external; frozen evaluation design and execution `OBID_CREATED`.
 - **Limitations/caveats:** Literature choice must fit five repetitions per cell and descriptive analysis; do not imply significance or population estimates.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 2.13 Related Work and Positioning
 
@@ -666,10 +666,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **Processed evidence:** None.
 - **Expected table(s):** Related work; system/domain; agents/tools/memory; runtime controls; evaluation; relation to Obid.
 - **Expected future figure(s):** None currently planned.
-- **References needed later:** Agentic IoT, low-code agent workflows, structured-output validation, HITL control, and reliability studies.
+- **References verified:** Five selected academic studies covering tool use, LLM--IoT orchestration, risk evaluation, prompt-injection evaluation, and runtime enforcement.
 - **Provenance:** External works cited normally; Yacoub explicitly collaborator/reference; Obid positioning `OBID_CREATED`.
 - **Limitations/caveats:** Do not copy Yacoub bibliography or claim novelty/superiority without a literature-supported comparison.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ## Chapter 3 — Methodology
 
@@ -2027,8 +2027,8 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Area | Current mapped entries | Heading coverage | Required status gate | Map result |
 |---|---:|---|---|---|
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
-| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT`; independent audit pending | `DRAFTED_NEEDS_AUDIT` |
-| Chapter 2 | 14 | Chapter overview plus all 13 current subsections | References deferred | `SKELETON_ONLY`, `NEEDS_REFERENCE` |
+| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Content-locked after full gate | Complete |
+| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 11 printed pages | Draft and references complete; independent audit pending | `DRAFTED_NEEDS_AUDIT` |
 | Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Content-locked after full gate | Complete |
 | Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
 | Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Content-locked after full gate | Complete |
@@ -2036,7 +2036,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
-| References | 1 | Bibliography placeholder | No sources added in bootstrap | `SKELETON_ONLY`, `NEEDS_REFERENCE` |
+| References | 1 | 22 verified Chapter 2 entries; later-chapter reference work remains separately scoped | Chapter 2 source gate complete | `NEEDS_REFERENCE` for remaining report work |
 | **Total** | **120** | All current front-matter/report/appendix areas mapped | Current writing gates recorded | Complete |
 
 ### Validation checklist for the next report-writing task
@@ -2048,14 +2048,14 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapter 1 overview and Sections 1.1–1.9 are drafted with `DRAFTED_NEEDS_AUDIT` and await independent audit; Chapters 3–7 have completed their audit/repair/re-audit gates and remain content-locked.
+- [x] Chapters 1 and 3–7 have completed their audit/repair/re-audit gates and remain content-locked; Chapter 2 overview and Sections 2.1–2.13 are drafted with verified references and await independent audit.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
 - [x] Yacoub LaTeX/PDF use restricted to structural/visual reference; Yacoub content/results/metadata excluded.
-- [x] External references and figures remain future placeholders only.
+- [x] Chapter 2 contains 22 verified citations and one related-work table; no figure was created. Later-chapter references and all figures remain separately scoped.
 - [x] No new experiment, image, implementation change, evidence rewrite, or substantive thesis prose is part of this map.
 
 ## Recommended next bounded writing task
 
-Run the independent Chapter 1 audit. Do not begin Chapter 2 yet. Chapters 3–7 remain content-locked. References and figures remain separately scoped unless explicitly requested.
+Run the independent Chapter 2 theory/reference audit. Do not begin Chapter 8 yet. Chapters 1 and 3–7 remain content-locked.
