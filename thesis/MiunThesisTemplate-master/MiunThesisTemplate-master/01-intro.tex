@@ -45,9 +45,9 @@ decision and reliability layer that extends the inherited Yacoub-compatible
 workflow-to-action system while preserving the shared interface. The study
 addresses expected-action accuracy and consistency, runtime validation,
 deterministic policy and Human-in-the-Loop (HITL) control, and reliability and
-latency differences from the inherited minimal-agent baseline. It does not
-include rebuilding or redesigning the inherited middleware, contracts,
-baselines, or action-side infrastructure.
+latency differences from the inherited minimal-agent baseline. The inherited
+implementation remains outside the contribution boundary described in
+Section~\ref{subsec:intro-division}.
 
 \subsection{Research Questions}\label{subsec:intro-rqs}
 
@@ -91,9 +91,8 @@ policy, and executable HITL before release to the shared interface. The
 evaluation contribution is a frozen repeated comparison with the inherited
 minimal agent, with retained failures, locked raw data, deterministic
 processing, and traceability to execution evidence. These are Obid-created
-contributions. The inherited middleware, contracts, threshold and action
-semantics, baselines, and earlier Raspberry Pi evidence provide context and
-comparison infrastructure but are not claimed as Obid-authored work.
+contributions; the inherited context and infrastructure remain outside the
+authorship claim summarized in Section~\ref{subsec:intro-division}.
 
 \subsection{AI Tool Use and Disclosure}\label{subsec:intro-ai-disclosure}
 
@@ -111,21 +110,18 @@ and hidden internal reasoning were excluded from repository evidence.
 
 \subsection[Division of Work and Collaboration Boundary]{Division of Work and\\Collaboration Boundary}\label{subsec:intro-division}
 
-The thesis studies one integrated system with separately attributable
-contributions. Yacoub originated the workflow-to-action infrastructure,
-middleware and action API, threshold/action and baseline semantics, and earlier
-Raspberry Pi/action-side evidence. These components are classified as
-\mbox{\texttt{YACOUB\_INHERITED}}. The contracts retain Yacoub origin and serve
-as \mbox{\texttt{SHARED\_INTERFACE}} artifacts; shared use does not imply joint
-authorship.
-
-Obid created the extended decision and reliability layer, runtime controls and
-HITL, controlled evaluation, and new evidence; these are classified as
-\mbox{\texttt{OBID\_CREATED}}. Earlier physical evidence is inherited context,
-not Obid hardware validation. Reproducing, configuring, verifying, or evaluating
-an inherited component does not transfer its implementation authorship. New
-Obid observations remain Obid-created evidence even when they describe the
-inherited comparator.
+The thesis studies one integrated system with separately attributable work.
+Yacoub originated the workflow-to-action infrastructure, middleware and action
+API, threshold/action and baseline semantics, and earlier Raspberry
+Pi/action-side evidence. The inherited implementation is
+\mbox{\texttt{YACOUB\_INHERITED}}; the Yacoub-originated contracts are
+\mbox{\texttt{SHARED\_INTERFACE}}, whose shared use does not imply joint
+authorship. Obid's extended decision and reliability layer, runtime controls,
+HITL, evaluation, and new evidence are \mbox{\texttt{OBID\_CREATED}}.
+Reproducing or evaluating inherited work does not transfer its implementation
+authorship, while new observations remain Obid-created evidence even when they
+describe the inherited comparator. Earlier physical evidence remains inherited
+context rather than Obid hardware validation.
 
 \subsection{Report Outline}\label{subsec:intro-outline}
 

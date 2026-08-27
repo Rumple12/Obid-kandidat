@@ -12,30 +12,12 @@ and threats to validity are deferred to Chapter~7.
 
 \subsection{Evaluation Overview}\label{subsec:results-overview}
 
-The evaluation compared exactly two configurations at the same inherited
-temperature-to-fan boundary. \texttt{CONFIG-BASELINE} was the stateless minimal
-agent inherited from Yacoub and is therefore labelled
-\texttt{YACOUB\_INHERITED}. \texttt{CONFIG-OBID} was the final Obid-created
-single-agent workflow with bounded memory, validation, policy, and HITL. Both
-used \texttt{models/gemini-2.5-flash}, stored generation options
-\texttt{\{\}}, and no fallback model. No validator-agent or multi-agent
-configuration formed part of the experiment. The action-side boundary was the
-frozen Yacoub middleware with a simulated fan; the results do not represent a
-new physical Obid hardware test.
-
-The results address the research questions in their frozen wording:
-
-\noindent\textbf{RQ1.} How accurately and consistently does the extended n8n-based
-agentic decision layer produce the expected IoT action across defined normal,
-malformed, and state-dependent test cases?
-
-\noindent\textbf{RQ2.} How effectively do runtime structured-output validation, action
-policies, and Human-in-the-Loop approval prevent invalid or risky agent actions
-from reaching the shared IoT action interface?
-
-\noindent\textbf{RQ3.} What reliability and latency differences are observed between the
-inherited minimal agent baseline and the extended Obid agentic workflow under
-the same defined IoT test cases?
+The evaluation compared the two configurations defined in
+Table~\ref{tab:method-configurations} at the inherited simulated-fan boundary.
+\texttt{CONFIG-BASELINE} remains \texttt{YACOUB\_INHERITED}, while
+\texttt{CONFIG-OBID} is \texttt{OBID\_CREATED}; both used the same primary model
+identifier and shared interface. The results address RQ1--RQ3 as stated in
+Section~\ref{subsec:intro-rqs}.
 
 The recorded dataset contains 70 core comparison attempts, five controlled
 invalid-action attempts, and ten HITL attempts. The core comparison supplies
@@ -45,13 +27,10 @@ configurations---form the automated-latency subset. The invalid-action and HITL
 phases supply the RQ2 observations. HITL human-wait time is reported separately
 and is not included in the automated-latency subset.
 
-The pre-observation case oracle and protocol define correctness. Locked raw
-Step~10 records control what was observed. For the one R03 interpretation
-issue, the append-only correction is applied above the historical processed
-classification without changing either raw or processed bytes. Processed
-tables and traceability then provide reproducible summaries linked to the raw
-run and top-level execution identities. Development and readiness evidence
-from earlier steps is used only in Section~\ref{subsec:results-negative} and is
+The pre-observation oracle defines correctness and the locked Step~10 records
+control what was observed. The append-only R03 correction supersedes only the
+historical interpretation, without changing raw or processed bytes. Earlier
+readiness evidence appears only in Section~\ref{subsec:results-negative} and is
 not substituted for a Step~10 result.
 
 \subsection{Execution Integrity and Dataset}\label{subsec:results-integrity}
@@ -92,23 +71,10 @@ Non-success n8n statuses & 2 records & Retained; both occur within the 11 incorr
 \end{tabularx}
 \end{table}
 
-The actual order matched all 85 planned rows, including the prescribed order
-of each configuration pair. Every primary identity had one
-\codepath{attempt\_started} event and one result event. There were no dangling
-attempts, replaced repetitions, or result-driven tuning. The ten stateful
-sequences were retained contiguously as A $\rightarrow$ B $\rightarrow$ C,
-with no reset inside a sequence. The ten HITL pending snapshots were also
-unique and linked to their corresponding final records. Child workflow
-execution IDs were retained as evidence links; they were not counted as
-additional repetitions.
-
-The phase boundary also remained visible in the actual order. Primary records
-1--70 belong to the core comparison, records 71--75 to invalid-action safety,
-and records 76--85 to HITL. No invalid-action or HITL attempt interrupted the
-core schedule. Within the core phase, all five frozen rounds retained their
-prescribed case order and configuration-pair order. This allows the reported
-denominators to be reconciled directly with the planned identities rather than
-being reconstructed from only the successful terminals.
+The actual order matched the plan, with no dangling attempts or replacement
+runs. Stateful A $\rightarrow$ B $\rightarrow$ C sequences remained contiguous,
+and every HITL snapshot linked to its final record. Child execution IDs remain
+evidence links rather than additional repetitions.
 
 Three operational restorations were recorded before repetition~1. The exact
 frozen Yacoub middleware was started, the private model credential attachment
@@ -117,11 +83,8 @@ were activated before the persistent n8n runtime was restarted. Each entry has
 \texttt{semantic\_change: false} and \texttt{result\_replacement: false}.
 They are pre-run setup observations, not experimental attempts or tuning.
 
-Raw parsing and the privacy check passed before the lock. The processed
-manifest in turn identifies that raw lock as its source, and the traceability
-table maps every summary row back to a primary run ID and top-level n8n
-execution ID. Incorrect and non-success outcomes remained present throughout
-that chain.
+Raw parsing and privacy checks passed before locking; subsequent traceability
+retained incorrect and non-success outcomes through the processed summaries.
 
 \subsection[RQ1 - CONFIG-OBID Accuracy and Consistency]{RQ1 - CONFIG-OBID
 \texorpdfstring{\newline}{ }Accuracy and Consistency}\label{subsec:results-rq1}
@@ -154,11 +117,8 @@ Total & 35/35 & 100\% & Seven families at 100\% \\
 \end{tabularx}
 \end{table}
 
-Within the frozen cases, \texttt{CONFIG-OBID} produced the expected observable
-outcome in all 35 RQ1-relevant attempts. The repeated outcome was also the same
-within each family, giving 100\% modal agreement in every row. This includes
-the three ordinary temperature families, the malformed-input family, and all
-three positions in the state-dependent sequence.
+All 35 RQ1 attempts matched the oracle, and each family's modal outcome was also
+the correct outcome.
 
 The terminal observations provide more detail than the aggregate percentages.
 High and Threshold reached \texttt{/fan/on} and ended with the simulated fan
@@ -170,11 +130,8 @@ shared action while the fan remained on; and Memory C released
 oracle outcome. The workflow's internal \texttt{no\_action} representation is
 not an additional shared action-contract value.
 
-The result is bounded to the defined cases, one model, one controlled domain,
-and five repetitions per family. Natural-language reason wording was not
-exact-scored. A reason satisfied the contract when it was a non-empty valid
-string. The 35/35 result therefore does not establish universal or production
-reliability.
+The result is bounded to the defined cases and five repetitions per family;
+reason text was checked for a non-empty valid string rather than exact wording.
 
 % [FIGURE LATER: optional RQ1 case-family correctness chart]
 
@@ -238,22 +195,10 @@ Decision balance & Planned 5 approve / 5 deny & Actual 6 approve / 4 deny;
 \end{tabularx}
 \end{table}
 
-For all five assigned-approval trials, the submitted decision was
-\texttt{approve}. The held action was unchanged, its
-\texttt{requires\_approval} field remained true, and release occurred only
-after approval. Each trial called \texttt{/fan/on} once and changed the
-simulated fan from off to on.
-
-Five trials were assigned denial, but only four received an actual
-\texttt{deny} decision. In those four, the released action remained null, both
-action endpoints remained unused, and the fan stayed off. The remaining
-assigned-denial trial received approval and is reported explicitly in
-Section~\ref{subsec:results-rq2-r03}. Consequently, assigned-denial
-correctness is 4/5 rather than 5/5. The planned human decisions were five
-approvals and five denials; the actual submissions were six approvals and four
-denials. There was one controlled-decision protocol deviation. After applying
-the correction hierarchy described next, zero invalid or unapproved actions
-were observed crossing the shared interface.
+Approvals released the unchanged held action only after human input, while the
+four actual denials released nothing. The exceptional assigned-denial trial and
+the resulting correction hierarchy are recorded fully in
+Section~\ref{subsec:results-rq2-r03}.
 
 \subsection[RQ2 - Denial-R03 Protocol Deviation and Correction]{RQ2 - Denial-R03
 Protocol\texorpdfstring{\newline}{ }Deviation and Correction}\label{subsec:results-rq2-r03}
@@ -341,16 +286,12 @@ Memory C & 5/5 & 5/5 & 100\% & 100\% \\
 \end{tabularx}
 \end{table}
 
-Both configurations produced the expected outcome in 5/5 attempts for High,
-Low, Threshold, Memory A, and Memory C. The configurations differed in the
-Malformed and Memory-B families. For Malformed, the baseline produced 0/5
-correct outcomes while \texttt{CONFIG-OBID} produced 5/5. Three baseline
-attempts produced the same incorrect routed \texttt{fan\_off} outcome and two
-ended with non-success status, giving 60\% baseline modal agreement. For
-Memory B, the baseline produced a duplicate \texttt{fan\_on} action in all
-five attempts, while \texttt{CONFIG-OBID} produced the expected absence of a
-duplicate shared action in 5/5. The baseline's repeated incorrect outcome
-still gave 100\% modal agreement.
+Only Malformed and Memory B differed. For Malformed, the baseline was correct
+in 0/5 attempts: three routed an incorrect \texttt{fan\_off} action and two had
+non-success status, giving 60\% modal agreement; \texttt{CONFIG-OBID} was 5/5.
+For Memory B, the baseline's five duplicate \texttt{fan\_on} actions gave 0/5
+correctness but 100\% modal agreement, while \texttt{CONFIG-OBID} suppressed
+the duplicate in 5/5 attempts.
 
 These rows illustrate why modal agreement is reported separately from
 correctness: an outcome may be consistent without matching the oracle. The
@@ -392,20 +333,10 @@ Threshold & Obid & 4279, 4487, 4365, 4689, 4593 & 4487 & 4279 & 4689 & 4482.6 \\
 \end{tabularx}
 \end{table}
 
-The Obid configuration had a higher median automated latency than the inherited
-baseline in all three measured case families. The paired
-medians were 3792 versus 2130~ms for High, 4472 versus 2105~ms for Low, and
-4487 versus 2083~ms for Threshold. All five values remain visible for each
-cell; no observation was removed as an outlier. The mean is labelled
-supplementary, while the median, minimum, and maximum are the frozen primary
-descriptive summaries.
-
-These values describe five observations per cell and no statistical
-significance, confidence interval, or population estimate is claimed. The
-complete configurations perform different amounts of work, but the experiment
-did not isolate the latency contribution of memory, tools, validation, policy,
-or any other individual component. Interpretation of the configuration-level
-difference is therefore reserved for Chapter~7.
+The Obid median was higher in all three measured families. Every observation
+remains in Table~\ref{tab:results-rq3-latency}; no outlier was removed, and the
+mean remains supplementary. These descriptive configuration-level values do
+not isolate component latency or support inferential claims.
 
 % [FIGURE LATER: RQ3 automated latency distributions/observations]
 
@@ -540,48 +471,19 @@ statuses belong to the five malformed records and are not counted again.
 Similarly, R03 remains an assigned-oracle error while its approved release is
 not recast as an invalid or unapproved crossing.
 
-The earlier readiness observations document implementation development and
-compatibility limits. They include inherited output fencing, tool-schema and
-wrapper incompatibilities, and the original child-Wait fail-closed outcome.
-They did not occur as any of the 85 primary Step~10 attempts and therefore do
-not alter the RQ percentages. Retained provider interruptions are classified
-separately as an infrastructure limitation. Provider and measurement
-availability are reported as such, rather than being presented as final
-system failures.
+The readiness and infrastructure observations in the table are retained
+development context, not Step~10 attempts or additions to the RQ denominators.
 
-The result provenance follows the frozen collaboration boundary. Baseline
-semantics, threshold and action meanings, the middleware/action boundary,
-inherited endpoint behavior, and prior physical Raspberry Pi context remain
-inherited from Yacoub. These items carry the label
-\texttt{YACOUB\_INHERITED}. The prior Pi evidence is also
-\texttt{REFERENCE\_ONLY} for this experiment. The Yacoub-originated sensor and
-action contracts and their compatible endpoint meanings carry the label
-\texttt{SHARED\_INTERFACE}. The Obid configuration, Step~10 orchestration and
-identities, raw observations, pending snapshots, processing, traceability, R03
-correction, and the result tables in this chapter are Obid-created. Their
-provenance label is \texttt{OBID\_CREATED}. Reproducing and measuring inherited
-behavior does not transfer its authorship.
+The baseline and middleware remain \texttt{YACOUB\_INHERITED}, the prior Pi
+evidence is \texttt{REFERENCE\_ONLY}, and the contracts remain
+\texttt{SHARED\_INTERFACE}. Step~10 observations, processing, correction, and
+result tables are \texttt{OBID\_CREATED}; measuring inherited behavior does not
+transfer its implementation authorship. Table~\ref{tab:method-provenance}
+records the formal boundary.
 
 \subsection{Summary of Results}\label{subsec:results-summary}
 
-The frozen evaluation retained all 85 scheduled primary attempts in their
-planned order, with 85 unique run IDs and 85 unique top-level execution IDs.
-No repetition was replaced. Within the seven frozen RQ1 families,
-\texttt{CONFIG-OBID} produced the expected observable outcome in 35/35
-attempts and had 100\% modal agreement in every family.
-
-For RQ2, all five injected \texttt{fan\_reverse} candidates were blocked, and
-all ten HITL actions remained unreleased while pending. Assigned approvals
-were correct in 5/5 trials. Assigned denials were correct in 4/5 because R03
-received actual approval rather than the assigned denial. The final account
-therefore records five planned approvals and five planned denials, six actual
-approvals and four actual denials, one protocol deviation, and zero invalid or
-unapproved crossings while retaining the historical processed crossing flag.
-
-For RQ3, the configurations produced the same 5/5 correctness in High, Low,
-Threshold, Memory A, and Memory C. They differed in Malformed and Memory B,
-where the baseline recorded 0/5 and the Obid configuration recorded 5/5. Across
-the 30 automated-latency observations, the Obid configuration had the higher
-median in all three measured families. HITL timing remained separate, and
-missing token and cost telemetry was left unavailable rather than estimated.
-Chapter~7 considers their interpretation and limitations.
+All 85 scheduled attempts were retained without replacement. The RQ1, RQ2, and
+RQ3 tables preserve the exact correctness, release-control, reliability, and
+latency observations, while the R03 section preserves the correction hierarchy.
+Chapter~\ref{sec:discussion} considers their interpretation and limitations.

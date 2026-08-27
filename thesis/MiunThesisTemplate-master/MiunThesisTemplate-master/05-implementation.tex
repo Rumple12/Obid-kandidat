@@ -2,14 +2,8 @@
 
 \setlength{\emergencystretch}{2em}
 
-This chapter describes the frozen implementation used in the study. The
-implementation combines an inherited workflow-to-action boundary with an
-Obid-created decision and reliability layer. Three provenance labels are used
-throughout the chapter:
-\mbox{\codepath{YACOUB\_INHERITED}} for reused collaborator components and semantics,
-\mbox{\codepath{SHARED\_INTERFACE}} for the adopted sensor and action boundaries, and
-\mbox{\codepath{OBID\_CREATED}} for the agentic decision layer, runtime controls, and
-evaluation support.
+This chapter describes the frozen implementation and applies the provenance
+vocabulary defined in Table~\ref{tab:method-provenance} to its components.
 
 \subsection{System Overview}\label{subsec:impl-overview}
 
@@ -21,16 +15,11 @@ post-agent validation, deterministic policy, and an executable
 human-in-the-loop (HITL) gate. Both configurations ultimately select the
 existing Yacoub middleware route for the simulated fan.
 
-Within \texttt{CONFIG-OBID}, a valid event first reaches the Decision Agent.
-The agent uses the threshold tool and, when recent state is unavailable, the
-status tool. It then returns either a candidate action or the internal
-\texttt{no\_action} form. Candidate actions pass through the runtime validator
-and policy before any endpoint can be selected. A directly allowed candidate
-is routed immediately, an invalid candidate is blocked, and an
-approval-required candidate remains held until a human approves or denies it.
-The validated four-field action authorizes and selects the inherited
-\texttt{/fan/on} or \texttt{/fan/off} route; the Python endpoint itself does
-not consume that action object as an HTTP request body.
+Within \texttt{CONFIG-OBID}, the Decision Agent uses read-only threshold and
+state information to return a candidate action or internal
+\texttt{no\_action}. The following sections describe how validation, policy,
+and conditional HITL determine whether a candidate can reach an inherited fan
+route.
 
 % [FIGURE LATER: final CONFIG-OBID implementation flow]
 
@@ -59,10 +48,6 @@ extraction, raw locking, processing, and traceability. &
 \bottomrule
 \end{tabularx}
 \end{table}
-
-The final action boundary is the inherited in-memory simulated fan. Existing
-Raspberry Pi and action-side material remains Yacoub evidence rather than
-evidence created by this project.
 
 \subsection{Frozen n8n Runtime}\label{subsec:impl-runtime}
 
@@ -132,27 +117,14 @@ The Decision Agent's status tool calls only the first route. After a
 candidate has been authorized, deterministic routing selects one of the two
 fan-action routes. The evaluation configurations can also receive events
 directly at their n8n webhooks; consequently, not every evaluated input passes
-through the inherited \texttt{/sensor-event} normalization path.
+through the inherited \texttt{/sensor-event} normalization path. The Python fan
+endpoint itself does not consume the four-field action as an HTTP request body.
 
-The shared sensor contract is a JSON object with exactly
-\texttt{sensor\_id}, \texttt{timestamp}, \texttt{type}, \texttt{value}, and
-\texttt{unit}. The frozen scenario accepts the type \texttt{temperature} and
-unit \texttt{C}. The action contract is a JSON object with exactly
-\texttt{action\_id}, \texttt{target}, \texttt{reason}, and
-\texttt{requires\_approval}; extra properties are not permitted. Its actions
-are \texttt{fan\_on} and \texttt{fan\_off}, and its only target is
-\texttt{fan\_1}. The shared action has no risk field and no
-\texttt{no\_action} value.
+The implementation preserves the exact sensor/action contracts, target
+\texttt{fan\_1}, and inclusive threshold rule defined in
+Section~\ref{subsec:method-scenario}. The shared action contains neither a risk
+field nor an internal \texttt{no\_action} value.
 
-The implemented configurations preserve the inherited rule
-\[
-\begin{aligned}
-  \text{temperature} \geq 30.0\,^{\circ}\mathrm{C}
-  &\Rightarrow \texttt{fan\_on}, \\
-  \text{temperature} < 30.0\,^{\circ}\mathrm{C}
-  &\Rightarrow \texttt{fan\_off}.
-\end{aligned}
-\]
 This threshold and its action meanings are Yacoub-owned semantics. Obid's
 contribution is the agentic decision and runtime reliability behavior around
 that unchanged rule. The inherited middleware's empty-body and empty-object
@@ -609,24 +581,17 @@ without extending the shared action \\
 \end{tabularx}
 \end{table}
 
-The direct pre-decision seam has a baseline ingress and a separate Obid
-pre-agent ingress. The Step 8 safety harness enters at the post-agent seam. It
-calls \texttt{runtime-safety-v1}, the same component used by
-\texttt{CONFIG-OBID} v2. The final \texttt{runtime-safety-v2-hitl} preserves that
-parser, validator, and no-context policy behavior while adding the exact HITL
-policy-context handler. The Step 9 harness enters at the policy seam and
-contains the same embedded Wait/form parameters as final v3. These sanitized
-harness exports were activated only for bounded verification and evaluation
-work; they do not redefine the sensor or action schemas or create alternate
-safety behavior.
+The direct seam has separate baseline and Obid ingresses; the Step 8 and Step 9
+harnesses enter at the post-agent and policy seams respectively and exercise
+the same safety and HITL components used by the frozen configurations. Their
+sanitized exports were activated only for bounded verification and evaluation;
+they do not redefine the shared schemas or create alternate safety behavior.
 
 \subsection{Repeated Evaluation Tooling}\label{subsec:impl-eval-tooling}
 
-Three frozen programs implement repeated-evaluation support outside the
-decision semantics. The schedule contains 85 planned primary attempts: 70 in
-the two-configuration core comparison, five at the invalid-action seam, and
-ten at the HITL seam. The count describes the implemented schedule; observed
-outcomes are reported in Chapter~6.
+Three frozen programs implement, outside the decision semantics, the planned
+85-attempt schedule defined in Section~\ref{subsec:method-repetition}: 70 core,
+five invalid-action, and ten HITL attempts.
 
 \begin{table}[H]
 \centering
@@ -656,17 +621,12 @@ outliers, estimates no unavailable cost, and does not collect hidden reasoning
 \end{tabularx}
 \end{table}
 
-The runner stores the planned order before dispatch and assigns a stable
-primary run ID to every schedule entry. Five balanced outer rounds rotate the
-ordinary case blocks and alternate the temporal order of the two
-configurations. Each memory A--B--C sequence remains indivisible, with resets
-between configurations and repetitions rather than inside the sequence.
-Safety-only attempts follow the core schedule. The runner records an attempt
-start before dispatch, controls the simulated-fan precondition, associates
-top-level and child n8n execution IDs, and appends errors, rejects, missing
-values, and deviations instead of replacing them. HITL is coordinated
-manually: the program can observe the pending state and present the transient
-form location, but the human supplies the actual approve or deny decision.
+The runner assigns stable run identities, controls preconditions, associates
+top-level and child executions, and appends errors, rejects, missing values, and
+deviations rather than replacing attempts. The order, resets, and indivisible
+memory sequences follow Section~\ref{subsec:method-repetition}. HITL remains
+manual: the program observes pending state, but a human supplies the actual
+decision.
 
 The extractor runs inside the pinned container against the n8n SQLite database
 opened in read-only mode. It does not parse or return the workflow record that
@@ -677,35 +637,13 @@ model call and token fields are retained only when n8n exposes them. Hidden
 chain-of-thought and private scratchpad data are neither requested nor
 extracted.
 
-Raw evidence is append-only during execution. It includes the planned and
-actual order, attempt events, one primary record per attempt, pending HITL
-snapshots, and operational deviations.
-
-Once completeness, uniqueness, schedule, no-dangling-attempt, and privacy
-checks pass, a SHA-256 manifest establishes the raw-data lock. Its identifier
-is \texttt{STEP10\_RAW\_DATA\_LOCK\_V1}.
-
-The processor refuses to run without this lock and re-hashes every critical
-raw file before producing the processed CSV and Markdown summaries.
-
-The traceability table maps each
-summary source back to the primary run ID, top-level n8n execution, and linked
-child executions.
-
-The implemented evidence flow is:
-\begin{quote}
-\centering
-\small
-frozen case and protocol $\rightarrow$ scheduled runtime attempt
-$\rightarrow$ attempt and event evidence $\rightarrow$ primary run record
-$\rightarrow$ raw-data lock $\rightarrow$ deterministic processing
-$\rightarrow$ processed summaries $\rightarrow$ traceability.
-\end{quote}
-If a later interpretation needs correction, a separate append-only correction
-can supersede that interpretation without rewriting the historical raw or
-processed artifacts. The correction mechanism preserves the earlier
-processing state; the specific experimental interpretation belongs to the
-results chapter.
+Raw evidence is append-only. After completeness, schedule, privacy, and
+no-dangling-attempt checks, a SHA-256 manifest establishes
+\texttt{STEP10\_RAW\_DATA\_LOCK\_V1}. The processor refuses unlocked input,
+re-hashes the critical files, and produces summaries whose traceability rows
+lead back to primary and linked execution identities. Append-only corrections
+can supersede an interpretation without rewriting historical raw or processed
+artifacts.
 
 \subsection{Configuration and Reproducibility}\label{subsec:impl-reproducibility}
 
@@ -770,34 +708,16 @@ credentials or owner metadata. Repository-relative paths and frozen Git
 identities are sufficient for the report; local temporary checkout paths and
 personal data are intentionally excluded.
 
-Reproducibility remains bounded by systems outside the repository. The model
-identifier, node version, stored empty options, runtime version, and absence of
-a fallback are frozen, but the remote provider backend and defaults are not
-claimed to be permanently reproducible. The final system also stops at a
-simulated fan rather than new physical Obid hardware. These boundaries do not
-change the recorded implementation identity, but they delimit what a later
-replication can reproduce directly from the artifact package.
+The frozen local identities support bounded reconstruction, not permanent
+reproduction of the remote provider or new physical Obid operation.
 
 % [REFERENCE NEEDED: reproducible workflow exports and model-service versioning]
 
 \subsection{Summary of Implementation}\label{subsec:impl-summary}
 
-The frozen implementation places an Obid-created single-agent decision and
-reliability path on an unchanged Yacoub-compatible action boundary. One
-Decision Agent uses the inherited threshold semantics through a deterministic
-tool, reads simulated fan state through a separate read-only tool when recent
-state is unavailable, and uses a two-interaction process-local memory to
-support state-aware decisions. Its internal envelope distinguishes a shared
-action candidate from an internal \texttt{no\_action}.
-
-Every candidate that proceeds beyond cognition is parsed and checked against
-the exact shared action contract before deterministic policy can execute.
-Policy may release it directly, block it, or hold it for the caller-embedded
-Wait/form gate. Approval releases only the unchanged stored action; denial and
-all invalid states release nothing. Controlled seams and frozen evaluation
-programs provide attributable inputs, attempt preservation, privacy-scoped
-execution extraction, raw-data locking, deterministic processing, and
-run-to-execution traceability. This produces an auditable configuration while
-keeping the inherited, shared, and Obid-created boundaries explicit.
+The frozen implementation adds a bounded Obid decision path and executable
+validation, policy, and HITL controls to the unchanged shared action boundary.
+Its controlled seams and evaluation tooling preserve attributable attempts,
+locked processing, and traceability without changing inherited authorship.
 
 \setlength{\emergencystretch}{0pt}

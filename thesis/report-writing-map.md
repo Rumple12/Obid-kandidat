@@ -10,7 +10,7 @@ Allowed status values are used exactly as follows:
 
 - `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapter 8 remains at this status.
 - `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Detailed mappings retain this drafting-stage status; Chapters 1–7 have passed their full gates and are content-locked.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Detailed mappings retain this drafting-stage status; Chapters 1–7 passed their chapter gates before the approved global redundancy edit and are temporarily editorially reopened pending its independent audit.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -2011,7 +2011,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 - **Purpose:** Provide the final bibliography generated from verified citations used in the thesis.
 - **Main claim/question:** Which sources actually support each theory, method, platform, related-work, and interpretation claim?
-- **Frozen source artifacts:** `thesis/MiunThesisTemplate-master/MiunThesisTemplate-master/literature.bib` is currently an empty/comment-only build placeholder.
+- **Frozen source artifacts:** `thesis/MiunThesisTemplate-master/MiunThesisTemplate-master/literature.bib` contains the 22 verified entries currently cited in Chapter 2.
 - **Relevant report note(s):** None.
 - **Raw evidence:** None.
 - **Processed evidence:** None.
@@ -2020,20 +2020,20 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** All `NEEDS_REFERENCE` topics mapped above; authoritative MIUN/n8n/JSON Schema sources; academic ReAct, agent, memory, HITL, IoT, reliability, validity, and ethics sources; proper Yacoub collaborator citation.
 - **Provenance:** Bibliographic work belongs to the Obid report; cited works retain normal authorship.
 - **Limitations/caveats:** Do not web-search or add references during bootstrap; do not copy Yacoub's bibliography or invent BibTeX.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `NEEDS_REFERENCE` for remaining later-chapter source work.
 
 ## Coverage and status index
 
 | Area | Current mapped entries | Heading coverage | Required status gate | Map result |
 |---|---:|---|---|---|
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
-| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Content-locked after full gate | Complete |
-| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 8 printed pages | Content-locked after full gate | Complete |
-| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Content-locked after full gate | Complete |
-| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
-| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Content-locked after full gate | Complete |
-| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
-| Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
+| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 8 printed pages | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
 | References | 1 | 22 verified Chapter 2 entries; later-chapter reference work remains separately scoped | Chapter 2 source gate complete | `NEEDS_REFERENCE` for remaining report work |
@@ -2048,7 +2048,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapters 1–7 have completed their full audit/repair/re-audit gates and are content-locked; Step 13 chapter drafting is complete; Chapter 8 remains `SKELETON_ONLY`.
+- [x] Chapters 1–7 completed their prior chapter gates; the approved global redundancy edit has temporarily reopened them pending independent audit. Step 13 chapter drafting is complete and Chapter 8 remains `SKELETON_ONLY`.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2058,4 +2058,4 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 ## Recommended next bounded editorial task
 
-Step 13 chapter drafting is complete. Before Chapter 8, the approved read-only global redundancy audit may be run across the locked Chapters 1–7. Chapter 8 remains `SKELETON_ONLY` and must not be drafted as part of that audit.
+Run the independent global-trim audit across the edited Chapters 1–7, followed only by accepted bounded repair and targeted re-audit. Chapter 8 remains `SKELETON_ONLY` until that gate passes.

@@ -61,36 +61,16 @@ observations \\
 \end{tabularx}
 \end{table}
 
-The three research questions were operationalized once and retained in their
-final wording:
+The formal wording of RQ1--RQ3 is given in
+Section~\ref{subsec:intro-rqs}. Sections~\ref{subsec:method-rq1}--
+\ref{subsec:method-latency} operationalize those questions without reporting
+their values.
 
-\begin{quote}
-\noindent\textbf{RQ1.} How accurately and consistently does the extended
-n8n-based agentic decision layer produce the expected IoT action across defined
-normal, malformed, and state-dependent test cases?
-
-\noindent\textbf{RQ2.} How effectively do runtime structured-output validation,
-action policies, and Human-in-the-Loop approval prevent invalid or risky agent
-actions from reaching the shared IoT action interface?
-
-\noindent\textbf{RQ3.} What reliability and latency differences are observed
-between the inherited minimal agent baseline and the extended Obid agentic
-workflow under the same defined IoT test cases?
-\end{quote}
-
-Sections~\ref{subsec:method-rq1}--\ref{subsec:method-latency} define the
-corresponding measures without reporting their values.
-
-Development and report preparation used AI-assisted repository tooling under
-bounded task instructions. The researcher selected the scope, approved key
-decisions, performed the necessary private runtime actions, and supplied the
-actual HITL decisions. Separate runner, read-only audit, and bounded-repair
-roles limited each task and supported review by an independent context. Report
-writing was separated from implementation work. Generated code or prose was
-not accepted as proof of runtime behaviour: implementation claims required
-versioned artifacts and runtime evidence, while experimental claims required
-the frozen raw records. Audit passes were quality gates on completed work, not
-additional trials or data points.
+AI-assisted repository tooling was used under the responsibilities disclosed in
+Section~\ref{subsec:intro-ai-disclosure}. Generated artifacts were not runtime
+evidence: implementation claims required versioned artifacts and runtime
+evidence, while experimental claims required frozen raw records. Audit passes
+were quality gates rather than additional trials or data points.
 
 % [REFERENCE NEEDED: engineering design-and-evaluation or design science methodology]
 % [REFERENCE NEEDED: repeated LLM-agent evaluation]
@@ -213,15 +193,9 @@ simulated boundary, applicable core stimuli, and repetition count} \\
 \end{tabularx}
 \end{table}
 
-The two Obid tools could only calculate the desired state from the frozen
-threshold or read the current simulated fan status. Neither tool could call an
-action endpoint. The memory window exposed at most two completed interaction
-pairs to the model and was not restart-durable. Bounded visibility did not
-mean that older backing history was physically deleted. Candidate actions passed
-through deterministic runtime validation and policy before release; an
-approval-required path used an actual waiting human gate. These are
-configuration definitions needed to understand the comparison, rather than a
-reproduction of the implementation detail in Chapter~5.
+The two tools were read-only and could not call an action endpoint. Candidate
+actions still passed through the executable validation, policy, and HITL path
+described in Sections~\ref{subsec:impl-validator}--\ref{subsec:impl-hitl}.
 
 \subsection{Frozen Evaluation Protocol}\label{subsec:method-protocol}
 
@@ -640,23 +614,11 @@ be reconstructed perfectly \\
 \end{tabularx}
 \end{table}
 
-The observable oracle is intentionally narrow: it establishes whether the
-defined action boundary behaved as expected for the frozen cases, not whether
-the system is universally reliable or production-safe. Controlled injection
-allows the validator and HITL gate to be tested at exact stages, but it does
-not reproduce every route a naturally generated error might take. Similarly,
-the two-interaction memory is one process-local strategy, and the study does
-not compare it with longer, persistent, or alternative memory designs.
-
-The planned five attempts per cell support transparent descriptive summaries,
-not statistical generalization. Human decisions and waiting times belong to
-one controlled execution context. Provider-side implementation, private
-credential attachment, and some default generation behaviour remain outside
-the frozen repository package. Finally, the simulated fan makes state changes
-observable without conflating the study with hardware deployment, but it
-precludes claims about new physical Obid operation. These limitations bound
-the conclusions to the two frozen configurations, the stated scenario, and
-the retained evidence chain.
+The oracle and controlled injections test named observable paths, not universal
+reliability or every route a naturally generated error might take. The domain,
+sampling, memory, hardware, latency-attribution, and reproducibility limits in
+Table~\ref{tab:method-limitations} bound the conclusions to the two frozen
+configurations, the stated scenario, and the retained evidence chain.
 
 % [REFERENCE NEEDED: research validity framework]
 

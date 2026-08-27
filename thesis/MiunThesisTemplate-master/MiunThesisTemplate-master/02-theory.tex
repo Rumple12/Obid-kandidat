@@ -4,12 +4,8 @@
 
 \section{Theory and Related Work}\label{sec:theory}
 
-This chapter introduces the theory needed to understand an agentic decision
-layer in an event-driven IoT workflow. It covers orchestration, interfaces,
-event-action systems, agents, tool use, memory, runtime controls, human
-oversight, and evaluation before comparing selected related work. Chapters~
-\ref{sec:method}--\ref{sec:results} present the project-specific methods,
-design, implementation, and results.
+This chapter introduces the workflow, agent, runtime-control, evaluation, and
+related-work concepts used by the project-specific chapters that follow.
 
 \subsection{Workflow Automation and Orchestration}\label{subsec:theory-workflow}
 
@@ -86,9 +82,8 @@ messages, and response behavior \cite{papazoglou2003serviceoriented}. A stable
 contract lets independently owned components agree on fields, meanings, and
 errors while keeping proposal and execution responsibilities separate.
 Compatibility requires both transport and semantic agreement: successful HTTP
-delivery proves only that a request was exchanged. In this study, the middleware
-and action API remain inherited infrastructure used through a shared boundary;
-their integration does not transfer authorship.
+delivery proves only that a request was exchanged. The project's inherited and
+shared boundary is defined formally in Table~\ref{tab:method-provenance}.
 
 \subsection{Structured Data and JSON Contracts}\label{subsec:theory-json}
 
@@ -136,9 +131,8 @@ can enforce limits that instructions alone cannot. A workflow can thus make
 several tool-assisted decisions while remaining restricted to a narrow action
 vocabulary and human approval.
 
-The evaluated system is one constrained single-agent configuration, not
-unrestricted host access. Chapter~\ref{sec:implementation} defines its tools,
-memory, and release path.
+Chapter~\ref{sec:implementation} defines the project's bounded tools, memory,
+and release path.
 
 \subsection{ReAct and Tool Use}\label{subsec:theory-react}
 
@@ -185,9 +179,8 @@ become stale after an external device changes. Remembered state records a prior
 interaction, whereas a live observation provides newer evidence about the
 environment.
 
-The later configuration uses recent, session-scoped, process-local memory rather
-than durable storage. Its interpretation therefore depends on both retained
-conversation and external state obtained through tools.
+Chapter~\ref{sec:implementation} implements one recent, session-scoped,
+process-local memory strategy.
 
 \subsection[Structured Output and Runtime Validation]{Structured Output and\\Runtime Validation}\label{subsec:theory-validation}
 
@@ -319,43 +312,19 @@ different domains and contract \\
 \end{tabularx}
 \end{table}
 
-ReAct provides observable action-observation cycles, but its tasks do not test
-conformance to an IoT action contract. Here, validation, policy, and, when
-required, HITL govern release rather than the tool-use cycle itself.
+ReAct supplies the observable tool-use pattern, while LLMind is the set's most
+IoT-oriented comparison but addresses broader cross-device tasks
+\cite{yao2023react,cui2025llmind}. ToolEmu and AgentDojo provide adjacent safety
+evaluations rather than an executed contract-specific release comparison
+\cite{ruan2024toolemu,debenedetti2024agentdojo}.
 
-LLMind is the most directly IoT-oriented study in the set. It converts human task
-descriptions through a finite-state machine into control scripts for AI modules
-and IoT devices and accumulates experience \cite{cui2025llmind}. Its two
-scenario-based feasibility experiments address complex tasks across devices. The
-narrower temperature-to-fan study preserves an existing action interface and
-repeats normal, malformed, state-dependent, and controlled safety cases. The
-works therefore differ in scale and evaluation question.
-
-ToolEmu and AgentDojo evaluate agents under risk. ToolEmu emulates tool execution
-and uses a model-based evaluator to assess failures across high-stakes toolkits
-\cite{ruan2024toolemu}. AgentDojo combines user tasks and prompt-injection
-attacks to assess utility and security defenses
-\cite{debenedetti2024agentdojo}. Both show why normal task success is
-insufficient, but their sandbox and benchmark designs differ from an executed,
-contract-specific release gate.
-
-AgentSpec is a contemporary comparison identified during post-freeze report
-research, not a design source for the frozen implementation. Its language defines
-triggers, predicates, and runtime enforcement for agents and is evaluated in
-code, embodied-agent, and autonomous-driving settings
-\cite{wang2026agentspec}. It supports the distinction between model behavior and
-enforceable rules. The present policy vocabulary, shared action contract,
-simulated actuator, and controlled HITL trials form a narrower boundary, so the
-results are not directly compared.
-
-Within this set, the thesis combines a bounded single Decision Agent with an
-unchanged IoT action contract, deterministic validation and policy, executable
-HITL, and repeated comparison with an inherited minimal-agent baseline in n8n.
-The workflow-to-action infrastructure and baseline remain
-\texttt{YACOUB\_INHERITED}, and the sensor and action contracts remain
-\texttt{SHARED\_INTERFACE}; the extended decision configuration, controls, and
-new evaluation are \texttt{OBID\_CREATED}. This positioning claims neither
-priority over agentic IoT systems, superiority to the selected studies, nor
-general production readiness.
+AgentSpec was identified during post-freeze report research and was not a design
+source for the frozen implementation. Its executable rules support the
+model-behavior versus enforcement distinction, but its domains and contract
+differ \cite{wang2026agentspec}. None of the selected studies is a direct
+experimental comparator; this thesis instead compares its bounded configuration
+with the inherited minimal-agent baseline. Table~\ref{tab:method-provenance}
+records the ownership boundary, and the positioning claims neither priority,
+general superiority, nor production readiness.
 
 \endgroup
