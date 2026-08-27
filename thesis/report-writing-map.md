@@ -8,9 +8,9 @@ The map follows the headings currently present under `thesis/MiunThesisTemplate-
 
 Allowed status values are used exactly as follows:
 
-- `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting is outside this bootstrap task.
-- `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No Chapter 6 entry remains at this status after the substantive first draft.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. This applies to every Chapter 4–6 entry; Chapters 4 and 5 have passed and are content-locked, while Chapter 6 awaits independent audit.
+- `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapters 1–2 and 7–8 remain at this status.
+- `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Chapter 3 is drafted and awaits independent audit; Chapters 4–6 have passed their full gates and are content-locked.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -686,7 +686,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Research/design methodology, validity, and descriptive repeated evaluation.
 - **Provenance:** Method design/execution `OBID_CREATED`; inherited comparator and interface explicitly labelled.
 - **Limitations/caveats:** Planning and readiness are not result evidence; no new runs or retrospective protocol edits.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.1 Research and Design Approach
 
@@ -701,7 +701,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Appropriate design science, constructive, or engineering research method source; AI-assistance disclosure guidance.
 - **Provenance:** Obid methodology.
 - **Limitations/caveats:** Reorganize academically; do not write “Step 1, then Step 2”; audits are completion review, not experiment data.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.2 Collaboration and Provenance Boundary
 
@@ -716,7 +716,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Citation for Yacoub's thesis/repository; authorship/collaboration rules only if institutionally required.
 - **Provenance:** Explicit persistent vocabulary.
 - **Limitations/caveats:** Verification and compatible reproduction do not transfer authorship; Pi evidence remains inherited/reference-only.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.3 Controlled Temperature-to-Fan Scenario
 
@@ -731,7 +731,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** IoT scenario design and controlled-test context.
 - **Provenance:** Semantics and simulated boundary `YACOUB_INHERITED` / `SHARED_INTERFACE`; test scenario formalization `OBID_CREATED`.
 - **Limitations/caveats:** One sensor type, one target, simulated fan; no physical Obid hardware experiment.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.4 Baseline and Extended Configuration Definitions
 
@@ -746,7 +746,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None beyond Chapter 2 concepts.
 - **Provenance:** Baseline semantics `YACOUB_INHERITED`; Obid configuration `OBID_CREATED`.
 - **Limitations/caveats:** The deterministic baseline is contextual only, not the RQ3 comparator; model provider backend/defaults are not immutable.
-- **Status:** `SKELETON_ONLY`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`.
 
 ### 3.5 Frozen Evaluation Protocol
 
@@ -761,7 +761,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Preregistration/frozen-protocol or reproducible evaluation principles, if used.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** No later evidence may be described as if it established the pre-observation oracle; operational restorations were non-semantic.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.6 Repeated-Run Design and Order Control
 
@@ -776,7 +776,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Repeated-measures/order-control literature if needed.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** n=5/cell supports descriptive consistency only; every attempt remains in the denominator; memory A→B→C is indivisible.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.7 Case Matrix
 
@@ -791,7 +791,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Test-case design literature if required.
 - **Provenance:** Case/oracle design `OBID_CREATED`; threshold and action semantics inherited/shared.
 - **Limitations/caveats:** Malformed case bypasses inherited normalization at a direct comparable seam; invalid action is injected post-agent; HITL enters controlled policy input.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.8 Correctness and Consistency Measurement
 
@@ -806,7 +806,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Accuracy/consistency reporting for repeated LLM-agent evaluations.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Exact reason text is not a metric; correctness is limited to the frozen observable oracle and five attempts per family.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.9 Safety and HITL Measurement
 
@@ -821,7 +821,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** HITL and runtime assurance evaluation.
 - **Provenance:** Runtime controls/evaluation `OBID_CREATED`; action interface `SHARED_INTERFACE`; endpoint semantics inherited.
 - **Limitations/caveats:** Retain assigned denial 4/5, actual 6/4, deviation 1, crossings 0; do not let historical crossing=1 control the final interpretation.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.10 Automated Latency Measurement
 
@@ -836,7 +836,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Latency measurement and descriptive statistics.
 - **Provenance:** Measurements `OBID_CREATED`; comparator inherited.
 - **Limitations/caveats:** Human waiting excluded; n=5/cell; mean supplementary; no primary standard deviation, significance, outlier removal, or component causality.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.11 Raw-Data Retention and Failure Handling
 
@@ -851,7 +851,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Reproducible data-retention practice if required.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Raw evidence is immutable; do not hide two non-success baseline malformed runs, R03, missing telemetry, or operational deviations.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.12 Processing, Traceability, and Reproducibility
 
@@ -866,7 +866,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Reproducible computational evaluation and data provenance.
 - **Provenance:** `OBID_CREATED`.
 - **Limitations/caveats:** Historical processed RQ2 output remains immutable; append-only correction changes interpretation, not bytes; credentials/provider backend are not frozen artifacts.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ### 3.13 Threats and Limitations of the Method
 
@@ -881,7 +881,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** Research-validity framework.
 - **Provenance:** Threat analysis `OBID_CREATED`; inherited limitations labelled by source.
 - **Limitations/caveats:** Cover one model/domain, n=5/cell, simulated boundary, controlled seams, provider defaults, process-local memory, session-specific HITL time, unequal workload, no cost, missing token telemetry, and no model/memory/device/multi-agent comparison.
-- **Status:** `SKELETON_ONLY`, `NEEDS_REFERENCE`.
+- **Status:** `DRAFTED_NEEDS_AUDIT`, `NEEDS_REFERENCE`.
 
 ## Chapter 4 — Choice of Approach / System Design
 
@@ -2029,10 +2029,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
 | Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Chapter 2 | 14 | Chapter overview plus all 13 current subsections | References deferred | `SKELETON_ONLY`, `NEEDS_REFERENCE` |
-| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Must remain not drafted | `SKELETON_ONLY` |
-| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT` | Complete |
-| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT` | Complete |
-| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT` | Complete |
+| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Every entry must include `DRAFTED_NEEDS_AUDIT`; independent audit pending | `DRAFTED_NEEDS_AUDIT` |
+| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
+| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Content-locked after full gate | Complete |
+| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Content-locked after full gate | Complete |
 | Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
@@ -2048,7 +2048,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapters 4 and 5 have completed their audit/repair/re-audit gates and remain content-locked; every Chapter 6 overview/subsection is drafted with `DRAFTED_NEEDS_AUDIT` and awaits independent audit.
+- [x] Chapter 3 overview and Sections 3.1–3.13 are drafted with `DRAFTED_NEEDS_AUDIT` and await independent audit; Chapters 4–6 have completed their audit/repair/re-audit gates and remain content-locked.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2058,4 +2058,4 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 ## Recommended next bounded writing task
 
-Run the independent Chapter 6 audit. Do not begin Chapter 3 or Chapter 7 yet. Chapters 4 and 5 have completed their audit/repair/re-audit gates and remain content-locked. References and figures remain separately scoped unless explicitly requested.
+Run the independent Chapter 3 audit. Do not begin Chapter 7 yet. Chapters 4–6 remain content-locked. References and figures remain separately scoped unless explicitly requested.

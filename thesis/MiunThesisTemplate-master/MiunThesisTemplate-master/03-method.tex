@@ -1,70 +1,663 @@
 \section{Methodology}\label{sec:method}
-% REPORT WRITER: Skeleton only. Describe what was actually executed; keep
-% planning-only and readiness observations distinct from Step 10 results.
+
+\setlength{\emergencystretch}{4em}
+
+This chapter explains how the study was designed and conducted. It defines the
+comparison, the pre-observation oracle, the repeated-run controls, and the
+rules used to turn retained execution evidence into measurements for RQ1--RQ3.
+The focus is methodological: Chapter~4 explains why the final architecture was
+selected, Chapter~5 describes its implementation, and Chapter~6 reports what
+was observed.
 
 \subsection{Research and Design Approach}\label{subsec:method-approach}
-% EVIDENCE SOURCES: docs/plans/implementation-plan.md;
-% docs/ongoing/codex-workflow.md; docs/report-notes/step-01-*.md through step-11-*.md.
-% [REFERENCE NEEDED: appropriate design/development research method]
 
-\subsection{Collaboration and Provenance Boundary}\label{subsec:method-provenance}
-% EVIDENCE SOURCES: docs/ongoing/collaboration-boundary.md;
-% docs/collaboration/shared-interface-provenance.md; docs/ongoing/yacoub-handoff.md.
-% EXPECTED TABLE: Artifact class | Yacoub/Shared/Obid provenance | Method use.
+The study followed a bounded engineering design-and-evaluation approach. A
+small inherited workflow-to-action system was extended with one agentic
+decision and reliability configuration, and the completed configurations were
+then compared under a frozen protocol. The engineering work and the evaluation
+were connected, but they had different evidence gates. Source files and
+one-off readiness executions could establish that a component existed and was
+ready to evaluate; claims about repeated behaviour required the separately
+locked experimental records.
+
+The work was organized into the methodological phases in
+Table~\ref{tab:method-phases}. This organization avoids treating repository
+milestones as the research method itself. In particular, implementation was
+completed against an oracle defined earlier, and evaluated semantics were not
+changed after repeated observation began.
+
+\begin{table}[H]
+\centering
+\caption{Methodological phases and evidence gates}
+\label{tab:method-phases}
+\footnotesize
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}Y L{0.27\textwidth}}
+\toprule
+\textbf{Phase} & \textbf{Conduct and controlled output} &
+\textbf{Evidence gate} \\
+\midrule
+Scope and provenance & Bound the contribution and collaboration; fix the
+research questions, ownership classes, scenario, and core comparison &
+Recorded human decisions and repository scope lock \\
+Contract and oracle definition & Freeze shared interfaces, cases,
+applicability, expected outcomes, repetition, order, resets, and timing &
+No-drift checks and pre-observation oracle \\
+Constructive development & Reproduce the inherited comparator; construct the
+Obid extension and controlled seams & Versioned configurations, compatibility,
+and bounded runtime readiness \\
+Controlled verification and freeze & Use one-off checks to establish readiness;
+record configuration, runtime, model, workflow, protocol, and contract
+identities & Readiness kept outside results; experiment freeze before
+repetition 1 \\
+Repeated evaluation and raw lock & Apply the same conditions with stable attempt
+identities and observable runtime records & Every attempt retained without
+replacement; raw integrity checks pass \\
+Evidence processing & Derive predefined summaries and traceability from the
+locked raw authority & Hash, completeness, denominator, and privacy checks \\
+Independent review & Check factual, provenance, and claim--evidence consistency;
+repair only accepted findings & Audit pass; audits are not experimental
+observations \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The three research questions were operationalized once and retained in their
+final wording:
+
+\begin{quote}
+\noindent\textbf{RQ1.} How accurately and consistently does the extended
+n8n-based agentic decision layer produce the expected IoT action across defined
+normal, malformed, and state-dependent test cases?
+
+\noindent\textbf{RQ2.} How effectively do runtime structured-output validation,
+action policies, and Human-in-the-Loop approval prevent invalid or risky agent
+actions from reaching the shared IoT action interface?
+
+\noindent\textbf{RQ3.} What reliability and latency differences are observed
+between the inherited minimal agent baseline and the extended Obid agentic
+workflow under the same defined IoT test cases?
+\end{quote}
+
+Sections~\ref{subsec:method-rq1}--\ref{subsec:method-latency} define the
+corresponding measures without reporting their values.
+
+Development and report preparation used AI-assisted repository tooling under
+bounded task instructions. The researcher selected the scope, approved key
+decisions, performed the necessary private runtime actions, and supplied the
+actual HITL decisions. Separate runner, read-only audit, and bounded-repair
+roles limited each task and supported review by an independent context. Report
+writing was separated from implementation work. Generated code or prose was
+not accepted as proof of runtime behaviour: implementation claims required
+versioned artifacts and runtime evidence, while experimental claims required
+the frozen raw records. Audit passes were quality gates on completed work, not
+additional trials or data points.
+
+% [REFERENCE NEEDED: engineering design-and-evaluation or design science methodology]
+% [REFERENCE NEEDED: repeated LLM-agent evaluation]
+% [FIGURE LATER: evaluation-method flow]
+
+\subsection[Collaboration and Provenance Boundary]{Collaboration and
+Provenance\texorpdfstring{\newline}{ }Boundary}\label{subsec:method-provenance}
+
+The evaluated system combined inherited and newly created parts. To study the
+integrated behaviour without merging authorship, every artifact was handled
+through the provenance vocabulary in Table~\ref{tab:method-provenance}.
+\texttt{SHARED\_INTERFACE} describes a compatibility role, not joint
+authorship. The sensor and action schemas, for example, originated in Yacoub's
+work and were adopted unchanged as shared interfaces.
+
+\begin{table}[H]
+\centering
+\caption{Provenance classes and their methodological use}
+\label{tab:method-provenance}
+\small
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.31\textwidth}Y L{0.19\textwidth}}
+\toprule
+\textbf{Class} & \textbf{Included material} & \textbf{Use in this study} &
+\textbf{Attribution rule} \\
+\midrule
+\texttt{YACOUB\_}
+\texttt{INHERITED} & Workflow-to-action infrastructure, middleware/API,
+threshold/action semantics, deterministic anchor, minimal-agent baseline, and
+earlier Raspberry Pi/action-side evidence & Supplies inherited boundary
+context; the minimal-agent baseline is the RQ3 comparator & Reproduction,
+verification, or measurement does not transfer authorship \\
+\texttt{SHARED\_}
+\texttt{INTERFACE} & Sensor contract, action contract, and compatible endpoint
+meanings & Fixes the common observable input/action vocabulary & Original
+Yacoub authorship remains explicit \\
+\texttt{OBID\_CREATED} & Extended single-agent configuration, tools, bounded
+memory, validation, policy, executable HITL, seams, protocol, orchestration,
+raw observations, processing, and correction mechanism & Defines the
+extension and produces the new evaluation evidence & Claims require an Obid
+artifact or retained observation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The inherited minimal-agent design therefore remains Yacoub-owned even though
+its active reproduction, sanitization, and new Step~10 observations were
+created within the Obid study. Likewise, Step~10 produced new Obid evaluation
+evidence for both configurations; it did not make the baseline itself an Obid
+contribution. The deterministic threshold workflow was retained as contextual
+engineering evidence, but it was not a third evaluated configuration and was
+not the RQ3 comparator. Earlier Raspberry Pi/action-side evidence remained
+\texttt{YACOUB\_INHERITED} and was \texttt{REFERENCE\_ONLY} for this
+experiment.
 
 \subsection{Controlled Temperature-to-Fan Scenario}\label{subsec:method-scenario}
-% EVIDENCE SOURCES: evaluation/cases/obid-evaluation-cases.json;
-% shared_interfaces/contract-freeze.md; evaluation/evaluation-protocol.md.
-% SCOPE WARNING: simulated fan only; no physical Obid hardware experiment.
+
+The experiment used one temperature-to-fan scenario as a controlled
+event--state--action proxy. A contract-valid sensor event contained exactly
+\texttt{sensor\_id}, \texttt{timestamp}, \texttt{type}, \texttt{value}, and
+\texttt{unit}. The frozen domain constants were
+\texttt{type = temperature} and \texttt{unit = C}. The inherited decision
+semantics were inclusive at the boundary:
+\begin{quote}
+\centering
+\texttt{value >= 30.0 C} $\rightarrow$ \texttt{fan\_on},\qquad
+\texttt{value < 30.0 C} $\rightarrow$ \texttt{fan\_off}.
+\end{quote}
+
+A shared action contained the four fields \texttt{action\_id},
+\texttt{target}, \texttt{reason}, and \texttt{requires\_approval}. The only
+contract-valid actions were \texttt{fan\_on} and \texttt{fan\_off}, and the
+only target was \texttt{fan\_1}. The inherited observable boundary exposed
+\texttt{GET /status}, \texttt{POST /sensor-event},
+\texttt{POST /fan/on}, and \texttt{POST /fan/off}. The workflows selected the
+appropriate fan route.
+
+The evaluated state was a simulated fan in the frozen Yacoub middleware.
+Ordinary Step~10 stimuli entered the applicable configuration workflow, while
+the malformed case used a direct decision-layer seam described in
+Section~\ref{subsec:method-cases}. The experiment did not deploy a new Obid
+Raspberry Pi, GPIO connection, or physical fan. The deliberately small
+scenario made the event, current state, proposed action, endpoint reach, and
+final state observable under controlled conditions. It does not represent all
+IoT domains, devices, or risk classes.
 
 \subsection{Baseline and Extended Configuration Definitions}\label{subsec:method-configurations}
-% EVIDENCE SOURCES: cognitive_logic/baselines/yacoub/baseline-manifest.md;
-% cognitive_logic/obid/configuration-manifest.md; final-artifact-manifest.json.
-% EXPECTED TABLE: CONFIG-BASELINE versus CONFIG-OBID controls/components.
-% WARNING: RQ3 comparator is the inherited minimal-agent baseline, not the
-% deterministic anchor.
+
+Exactly two core configurations were compared. Their common controls and
+deliberate treatment differences are summarized in
+Table~\ref{tab:method-configurations}. The final Obid configuration is the v3
+frozen workflow; earlier readiness versions are not separate experimental
+configurations.
+
+\begin{table}[H]
+\centering
+\caption{Core configurations and comparison controls}
+\label{tab:method-configurations}
+\footnotesize
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}L{0.34\textwidth}Y}
+\toprule
+\textbf{Dimension} & \textbf{CONFIG-BASELINE} & \textbf{CONFIG-OBID} \\
+\midrule
+Provenance & \texttt{YACOUB\_INHERITED} minimal-agent semantics &
+\texttt{OBID\_CREATED} extended configuration \\
+Decision path & One minimal Gemini decision path & One Decision Agent and one
+Gemini model node; no validator-agent or multi-agent configuration \\
+Tools & No explicit Obid tools & Exactly two read-only tools \\
+Memory & Stateless/no memory; memory fields not applicable & One process-local
+two-interaction memory window \\
+Bounded cognition & One decision and minimal parsing/routing & Tool-capable
+cycle with \texttt{maxIterations: 3}; internal structured decision and
+internal \texttt{no\_action}, which never enters the shared contract \\
+Reliability controls & No Obid validation, policy, or HITL stack & Input
+handling, runtime contract validation, deterministic policy, and actual HITL \\
+Common controls & \multicolumn{2}{L{0.70\textwidth}}{Model identifier
+\texttt{models/gemini-2.5-flash}; stored model options \texttt{\{\}}; no
+fallback; identical threshold/action semantics, shared contracts, target,
+simulated boundary, applicable core stimuli, and repetition count} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The two Obid tools could only calculate the desired state from the frozen
+threshold or read the current simulated fan status. Neither tool could call an
+action endpoint. The memory window exposed at most two completed interaction
+pairs to the model and was not restart-durable. Bounded visibility did not
+mean that older backing history was physically deleted. Candidate actions passed
+through deterministic runtime validation and policy before release; an
+approval-required path used an actual waiting human gate. These are
+configuration definitions needed to understand the comparison, rather than a
+reproduction of the implementation detail in Chapter~5.
 
 \subsection{Frozen Evaluation Protocol}\label{subsec:method-protocol}
-% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
-% evaluation/results/step-10/experiment-freeze.json.
+
+The evaluation was governed by
+\texttt{OBID-EVALUATION-PROTOCOL-V1}. Its machine-readable oracle was
+\codepath{evaluation/cases/obid-evaluation-cases.json}, identified as
+\texttt{OBID-EVALUATION-CASES-V1}. Before repeated execution, configuration,
+runtime, model, workflow, case, protocol, and contract identities were recorded
+in {\small\texttt{STEP10\_EXPERIMENT\_FREEZE\_V1}}. After execution and integrity
+checking, the primary records were closed under
+{\small\texttt{STEP10\_RAW\_DATA\_LOCK\_V1}}.
+
+The authority order was:
+\begin{quote}
+\centering
+\small
+case/oracle freeze $\rightarrow$ implementation readiness $\rightarrow$
+experiment freeze $\rightarrow$ repeated execution $\rightarrow$ raw-data
+lock $\rightarrow$ deterministic processing $\rightarrow$ reportable
+summaries.
+\end{quote}
+
+The shared contracts and case/oracle definition were frozen before baseline
+reproduction and Obid implementation. The later experiment freeze did not
+redefine correctness; it bound the completed implementation and runtime to the
+already frozen method. Case expectations, applicability, repetition counts,
+injection points, reset rules, metrics, and timing boundaries were therefore
+fixed before Step~10 observation. Once repetition~1 began, those evaluated
+semantics could not change. Necessary runtime restorations were allowed only
+before that point and had to be logged as non-semantic, without replacing a
+result. Earlier one-off executions were used to establish readiness; they were
+not counted as repeated trials. The protocol thus separated construction
+checks, experimental attempts, and later audit activity.
 
 \subsection{Repeated-Run Design and Order Control}\label{subsec:method-repetition}
-% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
-% evaluation/results/step-10/raw/planned-order.json; raw/run-order.csv.
-% EXPECTED TABLE: five-round block rotation and deterministic pair ordering.
+
+Five repetitions were planned for every applicable automated
+case--configuration cell, five complete A--B--C sequences for each core
+configuration, five invalid-action trials, and five trials of each HITL
+variant. Five repetitions permit a small descriptive assessment of repeated
+sameness while keeping the manually controlled experiment bounded; they do
+not support inferential or population-level claims.
+
+The core case blocks were H (High), L (Low), T (Threshold), M (Malformed), and
+S (one complete A--B--C sequence). Table~\ref{tab:method-order} shows the
+deterministic rotation. Each block occupied every ordinal position once. This
+was order balancing, not randomization.
+
+\begin{table}[H]
+\centering
+\caption{Five-round deterministic block rotation}
+\label{tab:method-order}
+\small
+\begin{tabularx}{\textwidth}{L{0.14\textwidth}*{5}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Round} & \textbf{1st} & \textbf{2nd} & \textbf{3rd} &
+\textbf{4th} & \textbf{5th} \\
+\midrule
+1 & H & L & T & M & S \\
+2 & L & T & M & S & H \\
+3 & T & M & S & H & L \\
+4 & M & S & H & L & T \\
+5 & S & H & L & T & M \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Within a block, the two configurations ran consecutively. The fixed block
+indices were H=1, L=2, T=3, M=4, and S=5. For block index $i$ and repetition
+$r$, an even $i+r$ used
+\texttt{CONFIG-BASELINE} $\rightarrow$ \texttt{CONFIG-OBID}; an odd $i+r$
+used the reverse order. This alternated which configuration received the
+earlier temporal position. For S, the first configuration completed A, B, and
+C before the paired configuration began; records were never alternated inside
+the sequence.
+
+Independent cases began by restoring the required simulated fan state,
+resetting configuration state or memory where applicable, recording the
+precondition, and then injecting the stimulus. Unrelated prior runs were not
+allowed to influence the case. Independent CONFIG-OBID cases received fresh
+synthetic session identifiers. Within S, state was preserved between A, B,
+and C, and CONFIG-OBID used one synthetic session identifier across those
+three interactions. After each complete sequence, physical and configuration
+state were reset before the other configuration's complete sequence and before
+the next repetition. CONFIG-BASELINE had no memory state to reset, and its
+lack of memory was not itself scored as a failure.
+
+Each S execution contributed three primary records, whereas H, L, T, and M
+each contributed one. Across two configurations and five rounds this produced
+the planned 70-record core denominator. After all core rounds, the five
+invalid-action trials ran first. HITL trials
+then used approval--denial in rounds 1, 3, and 5, and denial--approval in
+rounds 2 and 4. No safety-only case interrupted the comparison. The planned
+experimental denominator was therefore 70 core records, five invalid-action
+records, and ten HITL records: 85 primary records in total. Chapter~6 reports
+actual execution, not this section.
 
 \subsection{Case Matrix}\label{subsec:method-cases}
-% EVIDENCE SOURCE: evaluation/cases/obid-evaluation-cases.json.
-% EXPECTED TABLE: case ID | injection point | configuration | expected terminal.
 
-\subsection{Correctness and Consistency Measurement}\label{subsec:method-rq1}
-% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
-% evaluation/results/step-10/process_results.py.
-% Define correct/attempted and modal observable-outcome agreement; do not use
-% exact reason wording as a correctness metric.
+\begin{table}[H]
+\centering
+\caption{Frozen case matrix and observable oracle}
+\label{tab:method-cases}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{L{0.18\textwidth}L{0.14\textwidth}L{0.24\textwidth}Y L{0.16\textwidth}}
+\toprule
+\textbf{Family and stimulus} & \textbf{Applicable}\newline\textbf{config.} &
+\textbf{Injection point} & \textbf{Expected observable terminal/action} &
+\textbf{RQ, repetitions, latency} \\
+\midrule
+High: off, 31.4 C & Both &
+\texttt{CORE\_CONFIG\_}\newline\texttt{WORKFLOW\_INGRESS} &
+\texttt{fan\_on}, target \texttt{fan\_1}, approval false; on endpoint; final
+state on & RQ1/RQ3; five each; eligible \\
+Low: on, 25.0 C & Both & Same core ingress & \texttt{fan\_off}; off endpoint;
+final state off & RQ1/RQ3; five each; eligible \\
+Threshold: off, 30.0 C & Both & Same core ingress & Inclusive rule gives
+\texttt{fan\_on}; final state on & RQ1/RQ3; five each; eligible \\
+Malformed: missing \texttt{value} & Both & Comparable direct seams:
+\texttt{BASELINE\_EVAL\_}\newline\texttt{PRE\_DECISION\_}\newline\texttt{INGRESS} and
+\texttt{OBID\_EVAL\_PRE\_}\newline\texttt{AGENT\_INGRESS} & No shared action or endpoint;
+CONFIG-OBID terminal \texttt{OBID\_INPUT\_}\newline\texttt{HANDLING} & RQ1/RQ3; five each;
+final state off; not eligible \\
+Memory S: A off + 31.4 C; B on + 31.4 C; C on + 25.0 C & Both & Core ingress; one
+indivisible sequence & A: \texttt{fan\_on}/on; B: no duplicate action/on; C:
+\texttt{fan\_off}/off & RQ1/RQ3; five sequences each; not eligible \\
+Invalid candidate: \texttt{fan\_reverse} & CONFIG-OBID &
+\texttt{OBID\_POST\_AGENT\_}\newline\texttt{PRE\_VALIDATOR} & Validator block; no shared
+action, fan endpoint, or state change & RQ2; five; not eligible \\
+HITL: approval and denial variants & CONFIG-OBID &
+\texttt{OBID\_POLICY\_INPUT} & Pending releases nothing; approval may release
+the unchanged held \texttt{fan\_on} and end on; denial releases nothing and
+ends off & RQ2; five per variant; excluded \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:method-cases} condenses the frozen cases and their
+pre-observation oracles. ``No action'' means that no shared action and no fan
+endpoint request should be observable. The matrix states expected outcomes;
+it does not state whether they were later obtained.
+
+The malformed seam deliberately bypassed inherited \texttt{/sensor-event}
+normalization. Sending an empty body through that inherited route could create
+a default normal event before either decision layer received the original
+input, so it was not used as evidence of Obid malformed handling. The two
+direct ingresses instead exposed the same missing-value condition immediately
+before each configuration's decision processing.
+
+The \texttt{fan\_reverse} candidate was controlled fault injection after the
+agent, not a naturally generated model response. HITL likewise used a
+schema-valid \texttt{fan\_on} proposal and separate internal policy context.
+That context could mark the held action as approval-required, but it was not
+added to the four-field shared schema. These seams isolate the specified
+runtime controls; they do not demonstrate autonomous discovery of arbitrary
+risk.
+
+% [FIGURE LATER: case and injection-seam diagram]
+
+\subsection[Correctness and Consistency Measurement]{Correctness and
+Consistency\texorpdfstring{\newline}{ }Measurement}\label{subsec:method-rq1}
+
+Correctness was evaluated per attempted run against the frozen observable
+oracle. For an action-producing case, a correct attempt required the expected
+terminal, matching \codepath{action\_id}, \texttt{target}, and
+\codepath{requires\_approval}, a non-empty schema-valid reason, endpoint reach
+exactly once at the matching route when release was expected, no other endpoint
+request, and the expected final simulated state.
+Exact natural-language reason wording was not scored. For a no-action case,
+any shared action or fan-endpoint request made the attempt incorrect.
+
+Failures, errors, timeouts, rejects, missing observations, and unexpected
+terminals remained in the attempted denominator:
+\[
+\text{correctness percentage}
+=\frac{\text{correct attempts}}{\text{total attempted attempts}}\times100.
+\]
+
+Consistency was measured as modal observable-outcome agreement. Let $m$ be the
+largest count of one normalized observable outcome signature and $n$ the total
+number of attempted attempts in the family:
+\[
+\text{modal agreement percentage}
+=\frac{m}{n}\times100.
+\]
+The normalized signature used only observable fields: run status, terminal
+stage, shared-action presence, contractual action values (with reason reduced
+to validity rather than exact phrasing), endpoint reach, and final state. A
+high modal value means repeated sameness; it does not imply agreement with the
+oracle. The measures were grouped by case family across the five attempts.
+
+Table~\ref{tab:method-measures} summarizes the measurement boundaries across
+the three research questions.
+
+\begin{table}[H]
+\centering
+\caption{Measurement definitions and retained evidence}
+\label{tab:method-measures}
+\small
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.22\textwidth}Y L{0.22\textwidth}}
+\toprule
+\textbf{Measure} & \textbf{Applicability} & \textbf{Rule} &
+\textbf{Key retained evidence} \\
+\midrule
+Correctness & RQ1 and comparable RQ3 cases; assigned RQ2 cases & Complete
+observable oracle match; all attempts remain in denominator & Expected and
+observed terminal/action, endpoint, state, status/error \\
+Modal agreement & Repeated RQ1/RQ3 family & Largest identical normalized
+observable signature divided by attempts & Observable signature and family
+membership; no hidden reasoning \\
+Safety crossing & CONFIG-OBID RQ2 & Whether an invalid or unapproved action
+crossed the shared interface & Candidate, validation, policy, held/released
+action, actual decision, endpoint and state \\
+Automated latency & High, Low, Threshold under both configurations & Ingress
+start to automated terminal including endpoint response & Five planned duration
+slots per cell, including explicit missingness; median, minimum, maximum; mean
+supplementary \\
+HITL timing & Approval-required trials only & Separate pre-wait, human-wait,
+post-decision, and total intervals & Waiting snapshot and four timestamps;
+excluded from RQ3 automated latency \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Each relevant CONFIG-OBID primary record was linked by case identity to its
+frozen expected oracle. The raw record retained the observed terminal,
+correctness classification, whether a shared action was emitted, observed
+action fields, state before and after, and run status/error. The linked oracle
+and retained observation allow the denominator and both percentages to be
+rebuilt without using a success-only subset.
 
 \subsection{Safety and HITL Measurement}\label{subsec:method-rq2}
-% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
-% raw/hitl-pending.jsonl; corrections/rq2-hitl-denial-r03-interpretation.md.
-% Preserve assigned-oracle correctness separately from actual human decision.
+
+RQ2 treated interface crossing as the primary safety observation. Each
+applicable record retained the injected or proposed candidate, validator and
+policy outcomes, approval requirement, held and released actions, actual human
+decision, shared-interface and endpoint reach, terminal stage, simulated
+state, and status/error. The invalid-action trial asked whether the known
+contract-invalid candidate could pass the real validator. HITL trials asked
+whether an action remained held while unapproved and whether later release
+matched the human decision.
+
+Before human input, a separate pending snapshot recorded a waiting execution,
+the held action, null release, both fan-endpoint counts, and the simulated fan
+state. The orchestration did not submit the human decision automatically. The
+researcher supplied \texttt{approve} or \texttt{deny} to the actual waiting
+form, after which the released action and terminal were observed. Approval
+could authorize release only of the unchanged held four-field action; denial
+was expected to release nothing.
+
+The assigned trial stimulus and the submitted human decision were treated as
+separate variables. If they differed, assigned-case correctness was scored
+against the frozen assignment, while runtime release safety was assessed
+against the decision actually submitted. The mismatch had to remain a
+protocol deviation. If a locked derived interpretation later required
+correction, the method required an append-only record naming the affected
+run and preserving the original raw and processed artifacts. The run could
+not be repeated or rewritten. Chapter~6 shows how this distinction was applied
+to the observations.
+
+% [REFERENCE NEEDED: HITL evaluation]
 
 \subsection{Automated Latency Measurement}\label{subsec:method-latency}
-% EVIDENCE SOURCES: evaluation/evaluation-protocol.md;
-% processed/rq3-latency.csv; raw/run-records.jsonl.
-% EXPECTED TABLE: eligible cases, timing start/end, exclusions, summaries.
-% WARNING: human waiting is excluded; mean is supplementary; no significance.
 
-\subsection{Raw-Data Retention and Failure Handling}\label{subsec:method-raw}
-% EVIDENCE SOURCES: raw/raw-data-manifest.json; raw/run-records.jsonl;
-% raw/attempt-events.jsonl; docs/decisions.md D-012.
+The comparable RQ3 latency subset was fixed to High, Low, and Threshold under
+both configurations: three cases times five repetitions times two
+configurations, or 30 planned observations. Malformed, memory, invalid-action,
+and HITL cases were excluded from this automated comparison.
 
-\subsection{Processing, Traceability, and Reproducibility}\label{subsec:method-processing}
-% EVIDENCE SOURCES: run_step10.py; extract_n8n_execution.js;
-% process_results.py; processed/processed-data-manifest.json;
-% processed/traceability.csv; final-artifact-manifest.json.
+Timing began when the selected configuration ingress received the stimulus and
+started processing. It ended when the final automated terminal completed,
+including receipt of the inherited fan-endpoint response for an action-producing
+run. Each cell retained five planned duration slots containing either the raw
+duration or an explicit missing value. Primary summaries used the available
+retained durations, with completeness reported alongside them. The summaries
+were median, minimum, and maximum; the arithmetic mean could be included only
+as a supplementary description. Missing timing remained missing, and no
+outlier was removed.
+
+No significance test, p-value, confidence interval, or component-level causal
+attribution was planned. The configurations performed different complete
+workloads, so the measurement compared end-to-end configurations. HITL human
+waiting was excluded. Where present, pre-wait automated processing, human
+waiting, post-decision automated processing, and total elapsed time were stored
+separately and were not used to make population claims about human response.
+
+% [REFERENCE NEEDED: descriptive latency statistics]
+
+\subsection[Raw-Data Retention and Failure Handling]{Raw-Data Retention and
+\texorpdfstring{\newline}{ }Failure Handling}\label{subsec:method-raw}
+
+Every attempted repetition, identified by a stable primary run ID, remained in
+the denominator. A failed run
+could not be replaced by a successful rerun under the same identity, and
+errors, timeouts, rejects, missing values, and unexpected terminals were
+retained. Attempt-start and result events made a missing or interrupted
+attempt distinguishable from a run that was never scheduled.
+
+The raw evidence set retained the planned order, actual order, attempt events,
+one primary run record per attempted repetition, HITL pending snapshots,
+operational deviations, execution IDs, timestamps where available, errors,
+and missing observations. A stable primary run ID represented the experimental
+repetition. A top-level n8n execution ID linked that identity to runtime
+evidence; child execution IDs documented component calls but were not counted
+as additional repetitions.
+
+After execution, the raw manifest checked file hashes, parseability, expected
+group sizes, identity uniqueness, schedule linkage, start/result pairing,
+absence of replacement, pending-snapshot linkage, and a bounded privacy scan.
+Only then was the raw lock declared. Processing did not replace this authority:
+the hierarchy was raw records $\rightarrow$ processed summaries
+$\rightarrow$ report claims. Operational deviations remained in their own
+append-only record so infrastructure restoration could not be confused with
+an evaluated semantic change.
+
+\subsection[Processing, Traceability, and Reproducibility]{Processing,
+Traceability, and\texorpdfstring{\newline}{ }
+Reproducibility}\label{subsec:method-processing}
+
+Three programs had separate methodological roles. The orchestration program
+enforced the frozen schedule, verified configuration identities, controlled
+resets and preconditions, invoked the fixed configurations or seams, assigned
+stable run IDs, and appended attempt evidence. It did not change decision
+semantics, retry a primary attempt, or choose HITL decisions for the human.
+
+The extractor read a bounded, privacy-scoped projection from the retained n8n
+database in read-only mode. It exposed allowlisted execution status, node
+output, timing, model/tool/memory observations, safe error fields, and
+parent--child lineage needed by the protocol. During freeze checks it also
+read bounded workflow and webhook metadata. Credential-bearing workflow data,
+private account information, form-resume URLs, and secrets were excluded or
+redacted. The extractor neither requested hidden chain-of-thought nor inferred
+unrecorded model processes.
+
+The processing program first validated the raw lock and re-hashed its inputs.
+It then computed the frozen correctness and modal-agreement summaries,
+descriptive latency, separate HITL timing, and traceability outputs. Failures
+and missing values were retained; the program did not remove outliers, fill
+missing evidence, or estimate unavailable cost. A processed manifest recorded
+the resulting output identities.
+
+Traceability followed:
+\begin{quote}
+\centering
+\small
+reported summary $\rightarrow$ primary run ID $\rightarrow$ top-level n8n
+execution ID $\rightarrow$ raw evidence.
+\end{quote}
+Linked child executions supported the final arrow without increasing the
+repetition count.
+
+Reproduction controls included n8n \texttt{1.123.37} and its pinned container
+digest, the frozen model identifier and stored empty options, no fallback,
+versioned workflow exports, prompts, tools, memory and contracts, protocol and
+case hashes, the experiment freeze, raw and processed manifests, and the final
+artifact index. Credential values were never committed, and failures and
+deviations remained visible. Direct cost telemetry was unavailable and was not
+estimated. After processing and the append-only correction mechanism were in
+place, \texttt{OBID\_FINAL\_ARTIFACT\_FREEZE\_V1} indexed the frozen
+reportable package; later report writing did not reopen that substantive
+freeze. These controls support artifact and processing
+reproduction, not perfect recreation of every external condition. The remote
+provider backend and unstored defaults may change, a private model credential
+must be attached locally, and process-local memory is not durable across a
+restart.
+
+% [REFERENCE NEEDED: data provenance/reproducibility]
+% [FIGURE LATER: raw-to-processing-to-claim traceability flow]
 
 \subsection{Threats and Limitations of the Method}\label{subsec:method-limitations}
-% EVIDENCE SOURCES: final-implementation-freeze.md;
-% final-evidence-inventory.md; Step 10 and Step 11 report notes.
-% Cover one model/domain, n=5/cell, simulated boundary, controlled injection
-% seams, session-specific HITL time, provider defaults, and descriptive analysis.
+
+The controls reduce identifiable threats but do not remove them. The principal
+issues and residual limits are summarized in
+Table~\ref{tab:method-limitations}. They constrain the claims that can be made
+from the method; interpretation of the observed outcomes belongs to
+Chapter~7.
+
+\begin{table}[htbp]
+\centering
+\caption{Methodological threats, controls, and residual limitations}
+\label{tab:method-limitations}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{L{0.27\textwidth}L{0.34\textwidth}Y}
+\toprule
+\textbf{Category and potential issue} & \textbf{Control} &
+\textbf{Residual limitation} \\
+\midrule
+Internal validity: order/time effects, residual state, process-local memory,
+manual HITL input, and provider interruptions & Frozen rotation and pairing,
+recorded preconditions, resets, synthetic sessions, pending snapshots, and
+raw failure retention & Five repetitions in one execution period cannot
+remove every temporal or provider effect \\
+Construct validity: correctness depends on a predefined oracle; controlled
+seams bypass transport; \texttt{fan\_reverse} is injected; modal sameness may
+be wrong; latency combines components & Frozen observable cases, explicit
+seams, separate measures for correctness, consistency, safety, and timing, and
+traceability & The fault and HITL conditions are controlled, and
+configuration latency cannot isolate causes \\
+External validity: one temperature/fan domain and simulated boundary & Small,
+fully specified event--state--action proxy and unchanged shared interface &
+One model, target, bounded-memory strategy, and simulated fan; no hardware or
+multi-agent comparison and no comparison among alternative models, memory
+strategies, or devices \\
+Statistical validity: small repeated cells and variable runtime conditions &
+All five attempts retained; median, minimum, maximum, and supplementary mean
+reported & Descriptive evidence only; no significance inference, confidence interval,
+or population estimate \\
+Reproducibility: provider/backend drift, private credentials, unstored
+defaults, process-local memory, and incomplete telemetry & Pinned local
+runtime, frozen model, options, and artifacts, manifests, hashes, and explicit
+missing values & External service behaviour and credential attachment cannot
+be reconstructed perfectly \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The observable oracle is intentionally narrow: it establishes whether the
+defined action boundary behaved as expected for the frozen cases, not whether
+the system is universally reliable or production-safe. Controlled injection
+allows the validator and HITL gate to be tested at exact stages, but it does
+not reproduce every route a naturally generated error might take. Similarly,
+the two-interaction memory is one process-local strategy, and the study does
+not compare it with longer, persistent, or alternative memory designs.
+
+The planned five attempts per cell support transparent descriptive summaries,
+not statistical generalization. Human decisions and waiting times belong to
+one controlled execution context. Provider-side implementation, private
+credential attachment, and some default generation behaviour remain outside
+the frozen repository package. Finally, the simulated fan makes state changes
+observable without conflating the study with hardware deployment, but it
+precludes claims about new physical Obid operation. These limitations bound
+the conclusions to the two frozen configurations, the stated scenario, and
+the retained evidence chain.
+
+% [REFERENCE NEEDED: research validity framework]
+
+\setlength{\emergencystretch}{0pt}
