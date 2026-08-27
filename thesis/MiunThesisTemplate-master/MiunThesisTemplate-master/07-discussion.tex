@@ -1,54 +1,638 @@
 \section{Discussion}\label{sec:discussion}
-% REPORT WRITER: Skeleton only. Begin with limitations and preserve all frozen
-% claim boundaries before interpreting the research questions.
+\setlength{\emergencystretch}{4em}
+
+This chapter interprets the observations reported in Chapter~\ref{sec:results}
+within the study design described in Chapter~\ref{sec:method}. The discussion
+begins with the principal evidence boundaries because the positive observations
+only have meaning within those boundaries. It then considers the three research
+questions, the reliability--latency tradeoff, the role of the extended
+configuration, and the implications of placing executable controls between a
+model proposal and the shared action interface. The final sections distinguish
+inherited and Obid-created work, assess validity threats, and identify broader
+conceptual relevance, ethical concerns, and evidence-generating future work.
 
 \subsection{Limitations First}\label{subsec:discussion-limitations-first}
-% EVIDENCE SOURCES: final-implementation-freeze.md;
-% final-evidence-inventory.md; Step 6--11 report notes.
+
+The evaluation was deliberately narrow. It studied one temperature-to-fan
+scenario with one simulated fan target under a fixed threshold rule, using one stored model
+identifier and one bounded-memory configuration. This creates a controlled
+comparison, but it restricts any claim about other sensors, actions, devices,
+models, or operational environments. In particular, the work did not conduct a
+new physical Obid Raspberry Pi experiment and did not test production safety,
+deployment scale, or recovery from device and network failures.
+
+The repeated evidence is also descriptive. Each applicable case/configuration
+cell contains five attempts from one execution period. Those repetitions reveal
+whether the same frozen behavior recurred during that period, but they do not
+support significance testing, confidence intervals, population estimates, or a
+claim that future provider behavior will be identical. The comparison likewise
+contains no second model, alternative memory strategy, multi-agent
+configuration, or additional device against which the observed behavior could
+be generalized.
+
+Several safety and input cases entered through controlled seams. The malformed
+family represented one missing-\texttt{value} form, the invalid-action family
+injected one unsupported \texttt{fan\_reverse} candidate, and the HITL family
+supplied one exact approval-required policy context. These cases provide direct
+evidence about the exercised validation and release paths. They do not show
+that the model naturally generated every fault, that the system autonomously
+identified arbitrary risk, or that all malformed and hostile inputs would be
+contained. State-dependent behavior was similarly limited to one
+A$\rightarrow$B$\rightarrow$C sequence.
+
+Table~\ref{tab:discussion-limitations} connects these boundaries to the claims
+they restrict. The limitations are not all defects. Some, such as controlled
+injection and a narrow action vocabulary, improve attribution inside the test,
+while reducing the range of situations to which the result can be transferred.
+
+\begin{table}[H]
+\centering
+\caption{Principal evidence boundaries and their reporting consequences}
+\label{tab:discussion-limitations}
+\small
+\begin{tabularx}{\textwidth}{L{0.24\textwidth}L{0.35\textwidth}Y}
+\toprule
+\textbf{Boundary} & \textbf{Claim affected} & \textbf{Reporting consequence} \\
+\midrule
+One temperature-to-fan domain, one model setting, one target, and a simulated
+actuator & RQ1--RQ3 and broader IoT relevance & Interpret the observations for
+the frozen scenario; do not claim device, domain, hardware, or production
+generality. \\
+Five attempts per cell in one execution period & Accuracy, consistency, and
+latency & Use descriptive counts and summaries only; make no significance,
+confidence, or population claim. \\
+One malformed form, one injected unsupported action, one policy context, and
+one state sequence & Input, safety, HITL, and state-dependent coverage & Treat
+the observations as tests of named paths, not exhaustive robustness or
+autonomous risk discovery. \\
+One two-interaction, process-local memory strategy & Interpretation of
+Memory~B & Do not infer durability, memory-strategy superiority, or an isolated
+memory effect. \\
+Complete-configuration timing and session-specific HITL & RQ3 latency and human
+delay & Do not assign delay to individual components or combine human waiting
+with automated latency. \\
+Six actual approvals, four actual denials, and one controlled-decision deviation
+& HITL correctness and safety & Keep assigned-oracle correctness separate from
+behavior under the actual submitted decision. \\
+Provider/runtime dependence, one unavailable token record, and no direct cost
+telemetry & Reproducibility and resource interpretation & Do not claim perfect
+reproduction, complete token coverage, or an economic result. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The bounded memory was process-local and non-durable. Its active window exposed
+two completed interactions, but a process restart could remove that state, and
+the stored state represented recent decision context rather than an independent
+confirmation that a physical actuator had executed. Latency was measured across
+complete configurations with unequal workloads, so the data cannot isolate the
+time attributable to the model, tools, memory, validation, policy, or routing.
+The HITL durations are even more context-dependent: human waiting came from ten
+controlled sessions, with six actual approvals, four actual denials, and one
+departure from the assigned decision. Finally, one positive model-call record
+lacked token telemetry and direct cost telemetry was unavailable. These gaps
+limit resource and cost interpretation without invalidating the retained
+observable action evidence.
 
 \subsection{Interpretation of RQ1}\label{subsec:discussion-rq1}
-% EVIDENCE SOURCES: Chapter 6 RQ1 table; final-claim-evidence-map.md RQ1-01--03.
-% WARNING: bounded frozen cases, not universal reliability.
+
+\noindent\textbf{RQ1:} How accurately and consistently does the extended
+n8n-based agentic decision layer produce the expected IoT action across defined
+normal, malformed, and state-dependent test cases?
+
+Within the frozen cases, CONFIG-OBID produced the expected observable outcome
+in all 35 of 35 attempts. High, Low, Threshold, Malformed, and Memory A, B, and C
+each produced 5/5 correct attempts, as reported in
+Table~\ref{tab:results-rq1}. The inclusive threshold boundary remained intact:
+an input of $30.0\,^{\circ}\mathrm{C}$ led to the expected \texttt{fan\_on}
+action. The malformed event terminated without a shared action. In the memory
+sequence, A and C produced the required state-changing actions, while B kept
+the already-on state without issuing a duplicate action.
+
+Modal agreement was 100\% in every family. In these observations, repeated
+sameness therefore aligned with correctness: the most common normalized
+outcome was also the frozen expected outcome in every family. That alignment is
+important because consistency alone is not a quality measure. A system can
+repeat the same incorrect action, as the baseline Memory-B observations later
+demonstrate.
+
+The evidence therefore supports only a narrow interpretation: CONFIG-OBID
+behaved accurately and consistently across the observed repetitions of the exact normal,
+malformed, and state-dependent cases. It is not evidence of universal agent
+reliability. Only one malformed form and one bounded state sequence were tested,
+and five repetitions per family remain a small descriptive sample. The reason
+field was checked as a non-empty, schema-valid string, not scored for exact
+wording or broader semantic quality. No alternative memory strategy or IoT
+domain was evaluated, so RQ1 cannot support claims about memory-design
+superiority, durable state, or behavior beyond the frozen interface.
 
 \subsection{Interpretation of RQ2}\label{subsec:discussion-rq2}
-% EVIDENCE SOURCES: Chapter 6 RQ2 tables; correction note; claim map RQ2-01--04.
-% WARNING: retain 4/5 denial correctness, one deviation, zero invalid/unapproved crossings.
+
+\noindent\textbf{RQ2:} How effectively do runtime structured-output validation,
+action policies, and Human-in-the-Loop approval prevent invalid or risky agent
+actions from reaching the shared IoT action interface?
+
+The controlled RQ2 trials distinguish three layers of release control. First,
+the contract-invalid \texttt{fan\_reverse} candidate was blocked in 5/5 attempts
+with \texttt{UNKNOWN\_ACTION}. Policy did not release an action, neither fan
+endpoint was called, and the simulated fan remained off. The candidate was
+injected after the agent boundary, so this result concerns the actual runtime
+validator rather than the probability that a model would naturally invent that
+particular action. It also shows that approval was not a rescue path for an
+invalid proposal: the proposal stopped before HITL.
+
+Second, all ten approval-required trials were observed while genuinely pending.
+Each pending snapshot contained the held action, a null released action, zero
+calls to both action endpoints, and an off fan state. The evidence therefore
+supports a practical distinction between displaying an action for review and
+authorizing it to cross the interface. A schema-valid proposal had not become an
+executable action merely because it had reached the review stage.
+
+Third, actual human input determined what happened after the gate. The five
+assigned approval attempts were correct: release occurred only after approval,
+and the unchanged held \texttt{fan\_on} action reached \texttt{/fan/on}. Four of
+the five assigned denial attempts received an actual denial and released
+nothing. Assigned denial correctness was therefore 4/5, not 5/5. Across the ten
+trials, the plan contained five approvals and five denials, while the submitted
+decisions contained six approvals and four denials. This difference was retained
+as one controlled-human-decision protocol deviation.
+
+\paragraph{Denial R03.}
+Run \texttt{\seqsplit{S10\_EVAL-HITL-01B\_CONFIG-OBID\_R03}} was assigned a
+denial but received an actual approval. Before that input, its action remained
+held, its release was null, neither endpoint had been called, and the fan was
+off. After the approval, the same valid action was released unchanged and
+reached \texttt{/fan/on}. The run remains incorrect against the assigned denial
+oracle; assigned denial remains 4/5, and the total number of incorrect primary
+outcomes remains 11. At runtime, however, the release followed an actual
+approval. It was neither invalid nor unapproved, and it must not be described as
+a successful denial, a validator failure, a policy failure, or a HITL semantic
+failure.
+
+This distinction explains why the locked historical processed crossing flag of
+\texttt{1} and the final interpretation of zero invalid or unapproved
+crossings can coexist. The append-only correction preserves the raw record, the
+original processed output, the assigned oracle, and the protocol deviation. It
+supersedes only the final crossing interpretation. Rewriting the decision or
+discarding the attempt would have made the assigned-denial aggregate look
+cleaner while weakening traceability. Retention instead exposes two different
+questions: whether the planned test instruction was followed, and whether the
+runtime released an action without the authorization it actually received.
+
+The RQ2 observations therefore support the effectiveness of the exercised
+contract validation, deterministic policy, pending hold, and human release gate
+within the frozen action interface. They do not prove production safety. Only
+one unsupported action form and one controlled policy context were used, and
+the system did not autonomously discover arbitrary risk. Replay protection,
+authentication, timeouts, idempotency, cryptographic integrity, and broad
+adversarial behavior were not evaluated.
 
 \subsection{Interpretation of RQ3}\label{subsec:discussion-rq3}
-% EVIDENCE SOURCES: Chapter 6 reliability/latency tables; claim map RQ3-01--02.
-% WARNING: no statistical significance or component-level causal attribution.
+
+\noindent\textbf{RQ3:} What reliability and latency differences are observed
+between the inherited minimal agent baseline and the extended Obid agentic
+workflow under the same defined IoT test cases?
+
+CONFIG-BASELINE and CONFIG-OBID agreed in the ordinary High, Low, and Threshold
+families: both configurations produced 5/5 correct outcomes in each. They also
+agreed on the state-changing actions in Memory A and Memory C, again at 5/5.
+The comparison therefore does not suggest that the extended configuration
+improved every tested event. For direct threshold-driven state changes, the
+inherited minimal agent already produced the expected observable actions across
+the observed repetitions.
+
+The configurations differed in the Malformed and Memory-B families. The
+baseline was correct in 0/5 malformed attempts, compared with 5/5 for Obid. Its
+malformed outcomes had 60\% modal agreement because three attempts routed an
+incorrect \texttt{fan\_off} action while two ended with non-success statuses.
+For Memory B, the baseline issued a duplicate \texttt{fan\_on} action in all
+five attempts. It consequently had 100\% modal agreement but 0/5 correctness,
+whereas Obid produced the expected no-action outcome in 5/5. The scored failure
+was the duplicate observable action, not the mere fact that the baseline was
+configured without memory. These results reinforce that modal agreement measures
+repetition, not correctness.
+
+The automated latency comparison covered only High, Low, and Threshold. Median
+duration was 2130~ms for the baseline and 3792~ms for Obid in High, 2105~ms and
+4472~ms in Low, and 2083~ms and 4487~ms in Threshold. CONFIG-OBID therefore had
+the higher median in all three measured families. All five observations in each
+cell were retained, including the longer values; none was removed as an outlier.
+These medians describe complete configuration paths, not isolated component
+timings. With five observations per cell, they support no significance or
+population-level performance claim.
+
+Table~\ref{tab:discussion-rq-synthesis} summarizes the interpretive boundary
+across the three questions without repeating the complete result tables from
+Chapter~\ref{sec:results}.
+
+\begin{table}[htbp]
+\centering
+\caption{Research-question evidence and bounded interpretation}
+\label{tab:discussion-rq-synthesis}
+\small
+\begin{tabularx}{\textwidth}{L{0.21\textwidth}L{0.42\textwidth}Y}
+\toprule
+\textbf{Evidence cluster} & \textbf{Bounded interpretation} &
+\textbf{Unsupported inference} \\
+\midrule
+RQ1: 35/35; 100\% modal agreement in each Obid family & Expected outcomes and
+repeated sameness aligned within the frozen normal, malformed, and
+state-dependent cases. & Universal reliability, semantic reason quality, or
+generality to other cases and domains \\
+RQ2: invalid candidate, pending hold, approval, denial, and corrected crossing
+measure & The exercised controls prevented contract-invalid or actually
+unapproved release; actual human input remained part of the system. & Production
+safety, arbitrary threat containment, or autonomous risk identification \\
+RQ3 reliability: agreement in five families; differences in Malformed and
+Memory B & The complete configurations differed in the malformed-input and
+duplicate-suppression case families. & General
+superiority or causation by the model, a tool, memory, or one control \\
+RQ3 latency: higher Obid median in all three eligible families & CONFIG-OBID had
+higher observed median automated duration in the measured cells. &
+Statistical significance, production performance, or component-level delay \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The RQ3 comparator is the inherited minimal CONFIG-BASELINE. The separate
+deterministic anchor served as contextual engineering evidence and was not a
+third experimental comparator. The findings also do not establish that the
+underlying model itself improved: the configurations differed in input handling,
+tools, state representation, memory, validation, policy, and routing as a whole.
 
 \subsection{Reliability and Latency Tradeoff}\label{subsec:discussion-tradeoff}
-% EVIDENCE SOURCES: processed/rq3-reliability.csv; processed/rq3-latency.csv.
-% [REFERENCE NEEDED: reliability-latency tradeoffs in agent systems]
+
+The central tradeoff is visible only at configuration level. CONFIG-OBID
+produced correct frozen outcomes in the Malformed and Memory-B families where
+CONFIG-BASELINE did not, while CONFIG-OBID also showed higher median automated
+latency in each of the three latency-eligible families. These observations are
+associated with the extended decision and reliability path as a complete
+system. They do not show that a particular control caused a particular delay,
+nor that reliability always requires the same latency increase.
+
+\begin{table}[htbp]
+\centering
+\caption{Evidence-supported reliability--latency tradeoff}
+\label{tab:discussion-tradeoff}
+\small
+\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.24\textwidth}L{0.23\textwidth}Y}
+\toprule
+\textbf{Observation} & \textbf{Bounded benefit} & \textbf{Observed cost} &
+\textbf{Interpretive limit} \\
+\midrule
+Both configurations were 5/5 in High, Low, and Threshold & No reliability loss
+for the extended path in these cells & Higher Obid median in every measured cell
+& No inference about significance or future workloads \\
+Malformed differed 0/5 versus 5/5 & Correct termination without a shared action
+in the exercised Obid input-handling path & Malformed was not part of the
+automated latency subset & Do not
+assign the difference to one component or generalize to all malformed input \\
+Memory B differed 0/5 versus 5/5 & Duplicate action was suppressed in the Obid
+sequence & No component-specific timing or ablation was collected & Do not
+attribute the result to memory alone \\
+Executable safety and HITL added release controls & Invalid and pending actions
+were kept from release in the controlled trials & Human-dependent completion
+when approval was required & HITL waiting is separate from automated RQ3
+latency and is not a usability result \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Whether this tradeoff is acceptable depends on the application. A bounded
+automation task may tolerate higher automated latency when stronger release
+controls matter more than response speed. Another task may require a tighter
+deadline and simpler controls. The present data cannot
+resolve that design decision outside the simulated fan scenario, and it provides
+no basis for an economic cost comparison.
+
+% [REFERENCE NEEDED: agent reliability and latency]
 
 \subsection{Role of Tools and Bounded Memory}\label{subsec:discussion-tools-memory}
-% EVIDENCE SOURCES: Step 7 evidence; memory A/B/C Step 10 results.
-% WARNING: no component-ablation or memory-strategy superiority evidence.
+
+The readiness evidence showed that the permitted tool-use cycle could execute:
+cold sessions could obtain the threshold and current status, while recent state
+could replace an unnecessary status lookup. In the repeated evaluation,
+Memory~B specifically required the already-on state to be recognized and a
+duplicate action to be suppressed. CONFIG-OBID produced that no-action outcome
+in all five attempts, while CONFIG-BASELINE issued duplicate \texttt{fan\_on}
+in all five.
+
+The evidence is consistent with the intended combined role of controlled tool
+use, explicit state representation, and bounded memory. It does not identify
+which of those elements caused the difference. No ablation removed the tools or
+memory independently, and the two configurations also differed in prompts,
+input handling, validation, policy, and routing. The study therefore cannot
+claim that memory alone produced Memory-B correctness, that another memory
+design would perform worse, or that the agent had broad planning ability.
+
+The memory boundary is also operationally important. Two completed interactions
+were visible within a synthetic session, but the state was process-local rather
+than restart-durable. It supported one short controlled sequence; it did not
+replace device confirmation, persistent storage, or a general history service.
+
+% [REFERENCE NEEDED: ReAct/tool use and memory]
 
 \subsection{Significance of Runtime Validation and HITL}\label{subsec:discussion-safety}
-% EVIDENCE SOURCES: Step 8/9 implementation evidence; Step 10 RQ2 results.
-% [REFERENCE NEEDED: validation, deterministic guardrails, and HITL]
-% WARNING: no production-safety or arbitrary-input prevention claim.
+
+The safety results illustrate the difference between prompt instructions and
+executable release controls. A prompt can request a permitted action and valid
+shape, but the model output remained a candidate. Contract-specific validation
+ran before release, deterministic policy selected allow, block, or approval
+handling, and a valid approval-required action remained held until a human
+decision. An invalid action stopped before HITL, so an approval could not turn
+\texttt{fan\_reverse} into an allowed action. For a valid held action, approval
+released the unchanged four-field object and denial released nothing.
+
+Within the frozen action interface, this arrangement moved final release
+authority outside the model. The practical value is not that the model becomes
+incapable of error, but that a proposal must pass observable, deterministic
+conditions before the runtime can invoke an action endpoint. The R03 deviation further
+shows why the human cannot be treated as a deterministic software component:
+the system followed the actual approval, while the experiment remained
+incorrect against its assigned denial.
+
+The ten segmented HITL records add a separate timing implication. Human waiting
+was the largest segment in every observed trial. HITL therefore changes the
+completion model from purely automated processing to a human-dependent one.
+Response time can vary with the person, interface, workload, and context, so
+these session-specific durations are not a general usability study. They were
+correctly excluded from the automated RQ3 latency comparison; mixing them with
+automated duration would obscure both the configuration cost and the human
+oversight cost.
+
+An earlier child-Wait placement failed closed during readiness work and was
+replaced before the frozen experiment. That development evidence is relevant
+because a configured review node alone did not guarantee that approval
+propagated to the caller. It is not an additional experimental result. The
+final observation concerns the repaired, frozen topology and its executable
+pending/release behavior.
+
+These controls remain contract-specific. The study did not evaluate generic
+cybersecurity, arbitrary adversarial input, cryptographic integrity,
+authentication, replay, timeout handling, or complete failure prevention. The
+controlled policy context supplied risk rather than discovering it
+autonomously. Zero observed invalid or unapproved crossings should therefore be
+read as a result of the exercised trials, not as a production-safety guarantee.
+
+% [REFERENCE NEEDED: validation and deterministic guardrails]
+% [REFERENCE NEEDED: HITL and human oversight]
 
 \subsection{Inherited and Obid Attribution}\label{subsec:discussion-provenance}
-% EVIDENCE SOURCES: collaboration-boundary.md; final claim/evidence map.
-% WARNING: Pi/action-side evidence remains YACOUB_INHERITED / REFERENCE_ONLY.
+
+The comparison integrated inherited and newly created work without changing
+authorship. The middleware and action infrastructure, threshold and action
+semantics, minimal-agent baseline, deterministic anchor, and earlier Raspberry
+Pi/action-side context remain \texttt{YACOUB\_INHERITED}; the prior physical
+material is used here only as \texttt{REFERENCE\_ONLY}. The sensor and action
+contracts and compatible endpoint meanings remain the
+\texttt{SHARED\_INTERFACE}. Reproducing and measuring those artifacts did not
+make them an Obid implementation contribution.
+
+The stronger single Decision Agent configuration, two read-only tools, bounded
+memory, internal decision envelope, executable runtime validation,
+deterministic policy and HITL, controlled seams, evaluation protocol, and
+evidence processing are \texttt{OBID\_CREATED}. Earlier Yacoub safety and HITL
+specification concepts remain inherited reference context. Step 10 also
+produced new Obid evaluation evidence for
+both configurations, including the raw records, summaries, traceability, and
+append-only R03 correction. Evaluation ownership and implementation ownership
+are therefore different: the observations of baseline weaknesses are new
+evidence, but the evaluated baseline remains inherited.
+
+This distinction limits the contribution claim in two directions. Obid should
+not claim the middleware, shared action contract, baseline, or prior physical
+action-side work. Conversely, the repeated comparison and executable
+validation/policy/HITL evidence concern the Obid study, not Yacoub's earlier
+evaluation. The deterministic anchor provides context for compatibility and
+does not replace CONFIG-BASELINE as the RQ3 comparator.
 
 \subsection{Threats to Validity}\label{subsec:discussion-validity}
-% Cover internal, construct, external, and reproducibility threats using the
-% audited limitations; distinguish provider/runtime limitations from results.
-% [REFERENCE NEEDED: validity framework]
+
+The main threats arise from when and how the runs were executed, what the frozen
+oracle represents, and how narrowly the configuration space was sampled.
+Table~\ref{tab:discussion-validity} pairs each category with the controls that
+were actually used and the risk that remains. The controls reduce uncertainty;
+they do not eliminate it.
+
+For internal validity, the deterministic five-round rotation balanced ordinal
+positions but was not randomization. Pairing the configurations, alternating
+which ran first, resetting state, and isolating memory sessions reduced obvious
+order and carry-over effects. Provider conditions could still change during the
+execution period, process-local state could behave differently after a restart,
+and manual approval remained variable. Retaining interruptions, failed attempts,
+and the R03 deviation rather than substituting successful reruns prevents those
+events from being hidden, but does not make them disappear.
+
+Construct validity depends on the frozen observable oracle. It captures action
+presence, contractual fields, terminal stage, endpoint use, and simulated final
+state, which fit the research questions. It does not score hidden reasoning or
+the semantic quality of natural-language reasons beyond schema validity.
+Malformed input bypassed normal transport normalization at comparable seams,
+\texttt{fan\_reverse} was injected rather than generated naturally, and policy
+risk was supplied in a controlled context. Complete-configuration latency also
+bundles unequal work. These choices improve control over specific constructs
+while narrowing what those constructs mean.
+
+External and statistical limits reinforce each other. A single small case matrix
+and five attempts per cell cannot establish behavior across other models,
+memory designs, action vocabularies, physical devices, execution dates, or human
+populations. Reproducibility is stronger for repository artifacts than for the
+external service: versions, options, exports, manifests, raw records, and
+traceability were frozen, but provider implementation details, private
+credential attachment, and unstored defaults remain outside the repository.
+The appropriate standard is bounded traceability, not a claim of perfect
+reproducibility.
+
+\begin{table}[H]
+\centering
+\caption{Threats, controls, and residual interpretive risk}
+\label{tab:discussion-validity}
+\footnotesize
+\begin{tabularx}{\textwidth}{L{0.21\textwidth}L{0.34\textwidth}Y}
+\toprule
+\textbf{Category} & \textbf{Main threat} & \textbf{Control and residual risk} \\
+\midrule
+Internal & Temporal/provider variation, residual state and memory, manual input,
+one decision deviation, and restorations & Rotating paired order, resets,
+synthetic sessions, snapshots, and logs reduce but do not remove temporal and
+human variability. \\
+Construct & Oracle-specific correctness, controlled seams and injection,
+unscored reason semantics, and unequal workloads & Frozen definitions, separate
+metrics, and traceability clarify the measure; they do not establish general
+reasoning quality, risk discovery, or component effects. \\
+External & One domain, sensor, target, model, memory strategy, and simulated fan
+& A common bounded scenario supports comparison, but transfer to physical,
+higher-risk, multi-device, multi-model, or multi-agent systems is untested. \\
+Statistical conclusion & Five attempts per cell during one execution period &
+Full retention and no outlier removal support description only; no significance,
+confidence, population, or long-term stability inference follows. \\
+Reproducibility & External provider behavior and credentials, non-durable memory,
+one unavailable token record, and no direct cost data & Pinned identities,
+exports, manifests, raw records, and correction support traceability, not exact
+future reproduction or complete resource/cost coverage. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% [REFERENCE NEEDED: research-validity framework]
 
 \subsection{Broader IoT Relevance}\label{subsec:discussion-relevance}
-% [REFERENCE NEEDED: related IoT control contexts]
-% WARNING: do not imply device/hardware/scalability generality from one scenario.
+
+The scenario can be read as a small event--state--action proxy for contexts such
+as building ventilation, bounded industrial monitoring, environmental sensing,
+health or environmental monitoring workflows, and facility or laboratory
+automation. What may transfer conceptually is the control pattern, not the
+measured performance:
+
+\begin{center}
+\small
+event $\rightarrow$ controlled decision $\rightarrow$ contract validation\\
+$\rightarrow$ deterministic policy $\rightarrow$ optional human approval
+$\rightarrow$ approved action interface
+\end{center}
+
+None of those wider contexts was implemented. Each would need its own event and
+action contracts, allowed vocabulary, risk policy, approval responsibilities,
+and regulatory analysis. A health-related or industrial action may have much
+greater consequences than switching a simulated fan. Physical-device behavior,
+security and access control, concurrency and scale, communication failure, and
+recovery would therefore require direct testing before the pattern could be
+used operationally.
+
+The narrow shared action interface illustrates one potentially useful design
+principle: keep the model-facing decision space separate from a small,
+validated actuator vocabulary. A second is to make hold and release states
+observable so that approval can be audited. These are design implications from
+the prototype and its frozen evidence, not empirical proof that the same pattern
+will succeed in another sector.
+
+% [REFERENCE NEEDED: broader IoT control contexts]
 
 \subsection{Ethical and Societal Considerations}\label{subsec:discussion-ethics}
+
+AI-mediated control raises responsibility questions even when the action is as
+limited as a simulated fan. An operator should be able to see what action is
+proposed, why it is within the allowed vocabulary, whether policy requires
+approval, and what decision released it. Moving release authority outside the
+model can support accountability only if the validation and policy are themselves
+understandable, maintained, and appropriate for the domain.
+
+Human oversight also creates risks. A reviewer may approve too quickly because
+the system appears reliable, misunderstand the consequence, or become fatigued
+by repeated requests. Conversely, a slow response may make an otherwise safe
+action ineffective. R03 gives a concrete, bounded example of responsibility
+when human input differs from the planned procedure: the runtime followed the
+actual approval, while the evidence preserved that the assigned denial was not
+performed. A real deployment would need clear authority, escalation, timeout,
+and accountability rules rather than assuming that a human presence alone
+solves automation risk.
+
+The study applied privacy minimization to its evidence. No personal reviewer
+identity was needed, credential values and transient private links were
+excluded, and the extracted execution view was bounded to required evidence.
+These choices reduce unnecessary exposure but do not establish secure access
+control. A production system would still need authentication, authorization,
+credential management, integrity protection, and attention to potentially
+sensitive sensor data.
+
+Finally, consequences rise with the domain. An incorrect ventilation command
+may cause discomfort or wasted energy; an incorrect industrial or health-related
+command can threaten equipment or people. Narrow action contracts, explicit
+approval, auditability, and retention of failures are therefore ethically
+relevant, but the prototype does not resolve automation bias, human workload,
+security, or responsibility. Hiding failed and unexpected trials would make
+those concerns harder to assess; retaining them supports more honest oversight.
+
 % [REFERENCE NEEDED: ethics of AI-mediated control and human oversight]
 
 \subsection{Future Work}\label{subsec:discussion-future}
-% EVIDENCE SOURCES: docs/ongoing/obid-scope.md; docs/decisions.md D-015;
-% final-implementation-freeze.md deferred-work section.
-% Include the deferred validator-agent only as future work; other candidates may
-% include broader cases, models, devices, hardware, durability, and larger samples.
+
+Future work should generate evidence for the limitations identified above,
+rather than add features without a corresponding evaluation. Every direction
+below changes either the evaluated implementation or the frozen protocol and
+would therefore require an explicit reopening of the implementation/evidence
+freeze before new observations could be reported.
+
+\begin{enumerate}
+\item \textbf{Larger and multi-date repetitions.} The motivating limitation is
+five observations per cell from one execution period. The implementation could
+remain fixed, but the protocol and schedule would need additional repetitions
+on separate dates. New raw records should support uncertainty and temporal
+stability analysis chosen in advance. The evidence freeze would need to reopen
+for a new evaluation campaign.
+
+\item \textbf{Broader malformed and unsupported-action families.} The current
+evidence covers one missing field and one injected \texttt{fan\_reverse}
+candidate. The case manifest, controlled seams, and oracles should be extended
+to additional missing, extra, mistyped, malformed-JSON, target, and action
+conditions. Evidence would need to show validator terminals, interface crossing,
+endpoint counts, and state for every new family. Both protocol and evidence
+freezes would need to reopen.
+
+\item \textbf{Additional policies and HITL contexts.} One exact policy context
+cannot represent different risk levels or approval responsibilities. This work
+would add explicit deterministic policies and corresponding review scenarios,
+then collect pending, approval, denial, timeout, and deviation evidence for each.
+Because policy semantics and evaluated behavior would change, the implementation
+and evidence freezes would both need to reopen.
+
+\item \textbf{Stronger release-channel controls.} Authentication, replay
+protection, idempotency, timeouts, and stronger action integrity were outside the
+prototype. Implementing them would change the middleware-facing release path.
+New negative, retry, duplicate-request, expired-approval, and tamper tests would
+be required, including recovery observations. This is a substantive freeze
+reopening, not a documentation-only extension.
+
+\item \textbf{Physical hardware and multiple targets.} The simulated fan does
+not establish physical actuation, device feedback, or multi-device routing.
+Future implementation could connect approved actions to instrumented hardware
+and add separately contracted targets. Evidence should include command receipt,
+measured physical state, communication failures, safe recovery, and target
+isolation. Hardware and new contracts require reopening both freezes.
+
+\item \textbf{Durable or alternative bounded memory.} The current memory is one
+process-local two-interaction strategy. A comparison could introduce restart-
+durable state and at least one alternative bounded strategy while preserving
+common stimuli. Evidence should cover restart behavior, stale-state handling,
+duplicate suppression, contamination between sessions, and latency. Any new
+state component and comparison protocol require reopening the freezes.
+
+\item \textbf{Additional model configurations.} One stored model configuration
+cannot show model sensitivity. A controlled comparison should keep contracts,
+prompts where compatible, cases, release controls, order, and timing boundaries
+fixed while varying a declared model configuration. New reliability, safety,
+latency, and telemetry records would be needed. The model/runtime and evidence
+identities would change, so the freeze must reopen.
+
+\item \textbf{Deferred validator-agent comparison.} The optional second-agent
+configuration remains \texttt{DEFERRED\_AFTER\_FINAL\_FREEZE} and was not
+implemented. A future supplementary configuration could compare it with the
+deterministic runtime validator without replacing the core system. It would
+require a new architecture identity, matched cases, explicit failure and latency
+measures, and provenance records. Implementing or evaluating it requires an
+explicit freeze reopening.
+
+\item \textbf{Richer resource and cost telemetry.} One positive-call token record
+was unavailable and direct cost telemetry was absent. Future orchestration could
+capture provider-approved token, request, retry, resource, and billed-cost fields
+without estimating missing values. Completeness checks and traceability to each
+primary run would be required. Instrumentation and the evidence schema would
+change, so a new freeze would be necessary.
+
+\item \textbf{Human-factors evaluation.} Ten controlled sessions do not measure
+usability, workload, comprehension, or population response time. An appropriate
+study would need a reviewer interface, participant and ethics procedures,
+defined tasks, decision-quality measures, workload/usability instruments, and
+separate human and automated timing. The resulting evidence would constitute a
+new study and would require explicit reopening of the relevant implementation,
+protocol, and evidence freezes.
+\end{enumerate}
+
+These directions preserve the central lesson of the current boundary: a new
+feature becomes a supported thesis claim only when its behavior is evaluated
+under a declared protocol and retained evidence. Until such work is performed,
+the validator-agent, additional models and memories, physical devices, stronger
+security controls, and broader human study remain future work rather than
+current contributions.
+
+\setlength{\emergencystretch}{0pt}
