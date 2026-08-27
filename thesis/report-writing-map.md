@@ -10,10 +10,18 @@ Allowed status values are used exactly as follows:
 
 - `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun. Chapter 8 remains at this status.
 - `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Detailed mappings retain this drafting-stage status; Chapters 1–7 passed their chapter gates before the approved global redundancy edit and are temporarily editorially reopened pending its independent audit.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Detailed mappings retain this drafting-stage vocabulary as historical bookkeeping; Chapters 1–7 have completed the global redundancy audit/edit/repair/re-audit gate and are content-locked again.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
+
+### Current chapter lock checkpoint
+
+- Chapters 1–7: `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`.
+- Stage 13 chapter drafting and the global redundancy pass are complete.
+- Chapter 8 remains `SKELETON_ONLY`.
+- The bibliography contains 22 verified cited entries.
+- The next substantive report-writing task is Chapter 8 — Conclusions.
 
 ## Source-of-truth and evidence controls
 
@@ -60,6 +68,7 @@ Path convention: any entry using `raw/<file>` resolves to `evaluation/results/st
 | Step 9 | `docs/report-notes/step-09-human-in-the-loop-runtime.md` |
 | Step 10 | `docs/report-notes/step-10-repeated-reliability-evaluation.md` |
 | Step 11 | `docs/report-notes/step-11-final-implementation-and-evidence-freeze.md` |
+| Step 13 | `docs/report-notes/step-13-global-cross-chapter-redundancy-edit.md` |
 
 ### Frozen identities
 
@@ -2027,13 +2036,13 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Area | Current mapped entries | Heading coverage | Required status gate | Map result |
 |---|---:|---|---|---|
 | Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
-| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified sources; 8 printed pages | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
-| Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Independent global-trim audit pending after prior full gate | Temporarily reopened |
+| Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified cited entries; 8 printed pages | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 4 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
+| Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Must remain not drafted | `SKELETON_ONLY` |
 | Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
 | References | 1 | 22 verified Chapter 2 entries; later-chapter reference work remains separately scoped | Chapter 2 source gate complete | `NEEDS_REFERENCE` for remaining report work |
@@ -2048,7 +2057,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapters 1–7 completed their prior chapter gates; the approved global redundancy edit has temporarily reopened them pending independent audit. Step 13 chapter drafting is complete and Chapter 8 remains `SKELETON_ONLY`.
+- [x] Chapters 1–7 completed the global redundancy audit/edit/repair/re-audit gate and are `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`. Stage 13 chapter drafting and the global redundancy pass are complete; Chapter 8 remains `SKELETON_ONLY`.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2058,4 +2067,4 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 ## Recommended next bounded editorial task
 
-Run the independent global-trim audit across the edited Chapters 1–7, followed only by accepted bounded repair and targeted re-audit. Chapter 8 remains `SKELETON_ONLY` until that gate passes.
+Draft Chapter 8 — Conclusions from the relocked Chapters 1–7 and frozen evidence. Chapter 8 remains `SKELETON_ONLY` until that separate bounded task begins; no implementation change or new experiment is authorized.
