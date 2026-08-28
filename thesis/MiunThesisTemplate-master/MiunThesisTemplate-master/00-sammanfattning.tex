@@ -1,7 +1,40 @@
 \section*{Sammanfattning}\label{sec:sammanfattning}
-% REPORT WRITER: Swedish counterpart to the final English abstract.
-% Draft only after the English abstract and final conclusions are stable.
-% EVIDENCE SOURCES: same frozen sources as 00-abstract.tex.
-% SCOPE WARNING: preserve all numerical and provenance qualifications when
-% translating; do not introduce claims absent from the English abstract.
-% [CHECK METADATA: final Swedish keywords]
+
+\setlength{\emergencystretch}{2em}
+
+Arbetsflöden för sakernas internet (IoT) kan koppla sensorhändelser till fysiska
+eller simulerade åtgärder, men språkmodellsförslag är inte nödvändigtvis
+kontraktsenliga eller godkända för utförande. Syftet var att utforma,
+implementera och utvärdera Obids bidrag: ett avgränsat agentbaserat besluts- och
+tillförlitlighetslager med en enda agent som utökar den ärvda
+Yacoub-kompatibla n8n-gränsen mellan arbetsflöde och åtgärd och bevarar det
+gemensamma åtgärdsgränssnittet. Lagret kombinerade två verktyg med enbart
+läsåtkomst, begränsat minne, körtidsvalidering, deterministisk policy och en
+exekverbar mekanism för människa i loopen (HITL). \texttt{CONFIG-OBID}
+jämfördes med den ärvda baslinjen med en minimal agent,
+\texttt{CONFIG-BASELINE}, under ett fryst protokoll med upprepade försök i ett
+temperaturstyrt fläktscenario; alla planerade primära försök, inklusive fel och
+avvikelser, behölls.
+
+Totalt behölls 85 primära försök. \texttt{CONFIG-OBID} gav det förväntade
+utfallet i 35/35 RQ1-försök. Körtidsvalideringen blockerade alla fem injicerade
+ogiltiga åtgärder; i alla tio väntande HITL-försök hölls åtgärden kvar utan
+frisläppning. Tilldelade godkännanden gav korrekt utfall i 5/5 försök och
+tilldelade avslag i 4/5, eftersom en människa faktiskt godkände ett tilldelat
+avslagsförsök; detta kvarstod som en protokollavvikelse. Ingen ogiltig eller
+icke godkänd åtgärd passerade det gemensamma åtgärdsgränssnittet i de
+observerade försöken. Jämfört med \texttt{CONFIG-BASELINE} skilde sig
+tillförlitligheten vid hantering av felaktigt strukturerade indata och
+undertryckning av duplicerade åtgärder; \texttt{CONFIG-OBID} uppvisade högre
+medianlatens för automatiserad behandling i alla tre uppmätta fallfamiljer.
+Resultaten visar att den avgränsade utökningen förenade förväntat
+beslutsbeteende med exekverbara frisläppningskontroller i den utvärderade
+miljön, men fastställer inte universell tillförlitlighet eller
+produktionssäkerhet. Underlaget begränsas till en modell, ett temperaturstyrt
+fläktscenario, fem repetitioner per cell och en simulerad fläkt vid
+systemgränsen.
+
+Nyckelord: n8n, agentbaserade arbetsflöden, sakernas internet,
+körtidsvalidering, människa i loopen, arbetsflödesautomatisering
+
+\setlength{\emergencystretch}{0pt}

@@ -1,10 +1,36 @@
 \section*{Abstract}\label{sec:abstract}
-% REPORT WRITER: Draft only after Chapters 4-8 and final conclusions are stable.
-% Purpose: one self-contained 200-250 word summary of aim, method, bounded
-% results, conclusion, and limitations, followed by keywords.
-% EVIDENCE SOURCES: docs/ongoing/research-questions.md;
-% docs/ongoing/final-implementation-freeze.md;
-% docs/ongoing/final-claim-evidence-map.md; frozen Chapter 6 tables.
-% SCOPE WARNING: do not claim universal reliability, production safety,
-% statistical significance, or physical Obid hardware validation.
-% [CHECK METADATA: final keywords]
+
+\setlength{\emergencystretch}{2em}
+
+IoT workflows can connect sensor events to physical or simulated actions, but a
+language-model proposal is not necessarily contract-valid or authorized. The
+aim was to design, implement, and evaluate the Obid contribution: a bounded
+single-agent decision and reliability layer that extends an inherited
+Yacoub-compatible n8n workflow-to-action boundary while preserving the shared
+action interface. The layer combined two read-only tools, bounded memory,
+runtime validation, deterministic policy, and executable Human-in-the-Loop
+(HITL) control.
+\texttt{CONFIG-OBID} and the inherited minimal-agent baseline,
+\texttt{CONFIG-BASELINE}, were compared under a frozen repeated protocol in one
+temperature-to-fan scenario; every scheduled primary attempt, including
+failures and deviations, was retained.
+
+The evaluation retained 85 primary attempts. \texttt{CONFIG-OBID} produced the
+expected outcome in 35/35 RQ1 attempts. Runtime validation blocked all five
+injected invalid actions, and all ten pending HITL trials held the action
+without release. Assigned approvals were 5/5; assigned denials were 4/5 because
+one assigned denial received an actual human approval and remained a protocol
+deviation. Zero invalid or unapproved actions crossed the shared interface in
+the observed trials. Relative to \texttt{CONFIG-BASELINE}, reliability
+differences occurred in malformed-input handling and duplicate-action
+suppression, while \texttt{CONFIG-OBID} had higher median automated latency in
+all three measured families. These results show that the bounded extension
+combined expected decision behavior with executable release controls in the
+evaluated setting, but do not establish universal reliability or production
+safety. The evidence is limited to one model, one temperature/fan scenario,
+five repetitions per cell, and a simulated fan boundary.
+
+Keywords: n8n, agentic workflows, Internet of Things, runtime validation,
+Human-in-the-Loop, workflow automation
+
+\setlength{\emergencystretch}{0pt}
