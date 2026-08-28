@@ -568,46 +568,211 @@ def generate_config_obid_pipeline(output: Path) -> None:
 
 
 def generate_evaluation_evidence_flow(output: Path) -> None:
-    fig, ax = canvas((7.25, 5.25))
+    fig, ax = canvas((7.25, 5.00))
 
     phases = (
-        (0.68, 0.285, COLORS["blue_pale"], COLORS["blue_dark"], "1  FROZEN DESIGN - before observation"),
-        (0.365, 0.27, COLORS["gray_pale"], COLORS["line"], "2  IMMUTABLE RUNTIME EVIDENCE"),
-        (0.045, 0.275, COLORS["gold_pale"], COLORS["gold"], "3  TRACEABLE CLAIMS AND FINAL FREEZE"),
+        (0.675, 0.305, COLORS["blue_pale"], COLORS["blue_dark"], "1  FROZEN DESIGN — BEFORE OBSERVATION"),
+        (0.325, 0.325, COLORS["gray_pale"], COLORS["line"], "2  IMMUTABLE RUNTIME EVIDENCE"),
+        (0.005, 0.290, COLORS["gold_pale"], COLORS["gold"], "3  TRACEABLE CLAIMS AND FINAL FREEZE"),
     )
     for y, height, fill, edge, title in phases:
-        ax.add_patch(Rectangle((0.015, y), 0.97, height, facecolor=fill, edgecolor=edge, linewidth=1.0, zorder=0))
-        ax.text(0.03, y + height - 0.035, title, ha="left", va="center", fontsize=8.1, fontweight="bold", color=edge)
+        ax.add_patch(Rectangle((0.015, y), 0.97, height, facecolor=fill, edgecolor=edge, linewidth=1.05, zorder=0))
+        ax.text(0.03, y + height - 0.035, title, ha="left", va="center", fontsize=9.2, fontweight="bold", color=edge)
 
-    add_box(ax, 0.035, 0.74, 0.245, 0.13, "Frozen cases + protocol\n+ shared contracts\ncases and oracle fixed first", facecolor=COLORS["white"], edgecolor=COLORS["blue_dark"], weight="bold", fontsize=7.3)
-    add_box(ax, 0.37, 0.74, 0.23, 0.13, "Fixed run order and\nconfiguration pairing", facecolor=COLORS["white"], edgecolor=COLORS["blue_dark"], weight="bold")
-    add_box(ax, 0.69, 0.72, 0.26, 0.17, "Repeated runtime executions\ncore comparison\ninvalid-action injection\nactual HITL trials", facecolor=COLORS["white"], edgecolor=COLORS["blue_dark"], weight="bold", fontsize=7.2)
-    add_arrow(ax, (0.28, 0.805), (0.37, 0.805), color=COLORS["blue_dark"])
-    add_arrow(ax, (0.60, 0.805), (0.69, 0.805), color=COLORS["blue_dark"])
+    # Phase 1: one unambiguous left-to-right frozen-design flow.
+    add_box(
+        ax,
+        0.025,
+        0.750,
+        0.310,
+        0.130,
+        "Frozen cases & oracle\nshared contracts & protocol\nfixed before observation",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["blue_dark"],
+        weight="bold",
+        fontsize=7.6,
+    )
+    add_box(
+        ax,
+        0.370,
+        0.750,
+        0.230,
+        0.130,
+        "Fixed run order &\nconfiguration pairing",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["blue_dark"],
+        weight="bold",
+        fontsize=7.8,
+    )
+    add_box(
+        ax,
+        0.645,
+        0.740,
+        0.330,
+        0.150,
+        "Repeated runtime executions\ncore comparison | invalid-action\ninjection | actual HITL trials",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["blue_dark"],
+        weight="bold",
+        fontsize=7.5,
+    )
+    add_arrow(ax, (0.335, 0.815), (0.370, 0.815), color=COLORS["blue_dark"], linewidth=1.3)
+    add_arrow(ax, (0.600, 0.815), (0.645, 0.815), color=COLORS["blue_dark"], linewidth=1.3)
 
-    add_box(ax, 0.035, 0.43, 0.25, 0.125, "Append-only attempt events\n+ primary run records\n(no result replacement)", facecolor=COLORS["white"], edgecolor=COLORS["line"], weight="bold", fontsize=6.8)
-    add_box(ax, 0.34, 0.43, 0.18, 0.125, "Pending HITL\nsnapshots", facecolor=COLORS["white"], edgecolor=COLORS["line"], weight="bold")
-    add_box(ax, 0.58, 0.43, 0.15, 0.125, "Raw-data lock\nbefore processing", facecolor=COLORS["white"], edgecolor=COLORS["line"], weight="bold")
-    add_box(ax, 0.79, 0.43, 0.16, 0.125, "Deterministic\nprocessing", facecolor=COLORS["white"], edgecolor=COLORS["line"], weight="bold")
-    add_routed_arrow(ax, ((0.79, 0.72), (0.79, 0.66), (0.16, 0.66), (0.16, 0.555)), color=COLORS["line"])
-    add_routed_arrow(ax, ((0.85, 0.72), (0.85, 0.64), (0.43, 0.64), (0.43, 0.555)), color=COLORS["line"])
-    add_routed_arrow(ax, ((0.285, 0.47), (0.31, 0.47), (0.31, 0.395), (0.655, 0.395), (0.655, 0.43)), color=COLORS["line"])
-    add_arrow(ax, (0.52, 0.492), (0.58, 0.492), color=COLORS["line"])
-    add_arrow(ax, (0.73, 0.492), (0.79, 0.492), color=COLORS["line"])
+    # Phase 2: a visible split between universal attempt records and HITL-only
+    # snapshots, followed by a single merge before the raw-data lock.
+    branch_point = (0.505, 0.565)
+    add_routed_arrow(
+        ax,
+        ((0.810, 0.740), (0.810, 0.590), (0.505, 0.590), branch_point),
+        color=COLORS["line"],
+        linewidth=1.25,
+    )
+    ax.plot(*branch_point, marker="o", markersize=3.6, color=COLORS["line"], zorder=6)
+    add_routed_arrow(ax, (branch_point, (0.265, 0.565), (0.265, 0.535)), color=COLORS["line"], linewidth=1.2)
+    add_routed_arrow(ax, (branch_point, (0.7725, 0.565), (0.7725, 0.535)), color=COLORS["line"], linewidth=1.2)
+    add_arrow_label(ax, 0.325, 0.548, "all attempts", fontsize=7.0, color=COLORS["ink"])
+    add_arrow_label(ax, 0.685, 0.548, "HITL trials only", fontsize=7.0, color=COLORS["ink"])
 
-    add_box(ax, 0.03, 0.105, 0.14, 0.115, "RQ1 / RQ2 / RQ3\nsummaries", facecolor=COLORS["white"], edgecolor=COLORS["gold"], weight="bold", fontsize=6.3)
-    add_box(ax, 0.205, 0.085, 0.22, 0.155, "Traceability\nsummary -> run ID ->\nn8n execution ID ->\nraw evidence", facecolor=COLORS["white"], edgecolor=COLORS["gold"], weight="bold", fontsize=6.3)
-    add_box(ax, 0.465, 0.085, 0.19, 0.155, "Append-only R03\ninterpretation correction\nraw + historical processed\nevidence unchanged", facecolor=COLORS["white"], edgecolor=COLORS["gold"], weight="bold", fontsize=5.6)
-    add_box(ax, 0.69, 0.105, 0.105, 0.115, "Thesis\nclaims", facecolor=COLORS["white"], edgecolor=COLORS["gold"], weight="bold", fontsize=6.7)
-    add_box(ax, 0.83, 0.085, 0.125, 0.155, "Independent\naudit + final freeze", facecolor=COLORS["white"], edgecolor=COLORS["gold"], weight="bold", fontsize=5.9)
+    add_box(
+        ax,
+        0.015,
+        0.415,
+        0.500,
+        0.120,
+        "Attempt events + primary run records\nAll attempts; no result replacement\nFailures / rejects / timeouts\nand deviations retained",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["line"],
+        weight="bold",
+        fontsize=7.4,
+    )
+    add_box(
+        ax,
+        0.570,
+        0.440,
+        0.405,
+        0.095,
+        "Pending HITL snapshots\nConditional evidence",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["line"],
+        weight="bold",
+        fontsize=7.8,
+    )
 
-    add_routed_arrow(ax, ((0.87, 0.43), (0.87, 0.335), (0.10, 0.335), (0.10, 0.22)), color=COLORS["gold"])
-    add_arrow(ax, (0.17, 0.162), (0.205, 0.162), color=COLORS["gold"])
-    add_arrow(ax, (0.425, 0.162), (0.465, 0.162), color=COLORS["gold"])
-    add_arrow(ax, (0.655, 0.162), (0.69, 0.162), color=COLORS["gold"])
-    add_arrow(ax, (0.795, 0.162), (0.83, 0.162), color=COLORS["gold"])
+    merge_point = (0.525, 0.410)
+    ax.plot((0.265, 0.265, 0.525), (0.415, 0.410, 0.410), color=COLORS["line"], linewidth=1.2, zorder=2)
+    ax.plot((0.7725, 0.7725, 0.525), (0.440, 0.410, 0.410), color=COLORS["line"], linewidth=1.2, zorder=2)
+    ax.plot(*merge_point, marker="o", markersize=3.6, color=COLORS["line"], zorder=6)
 
-    ax.text(0.505, 0.345, "Raw evidence is locked before any summary is derived; failures, rejects, timeouts and deviations remain visible.", ha="center", va="center", fontsize=6.9, color=COLORS["muted"])
+    add_box(
+        ax,
+        0.400,
+        0.335,
+        0.230,
+        0.060,
+        "Raw-data lock\nbefore processing",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["line"],
+        weight="bold",
+        fontsize=7.6,
+    )
+    add_box(
+        ax,
+        0.695,
+        0.335,
+        0.280,
+        0.060,
+        "Deterministic processing",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["line"],
+        weight="bold",
+        fontsize=7.8,
+    )
+    add_arrow(ax, merge_point, (0.515, 0.395), color=COLORS["line"], linewidth=1.25)
+    add_arrow(ax, (0.630, 0.365), (0.695, 0.365), color=COLORS["line"], linewidth=1.25)
+
+    # Phase 3: the main claim flow stays universal; traceability and R03 are
+    # explicitly secondary supports that converge on the thesis claims.
+    add_box(
+        ax,
+        0.040,
+        0.175,
+        0.210,
+        0.065,
+        "RQ1 / RQ2 / RQ3\nsummaries",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["gold"],
+        weight="bold",
+        fontsize=8.0,
+    )
+    add_box(
+        ax,
+        0.405,
+        0.175,
+        0.170,
+        0.065,
+        "Thesis claims",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["gold"],
+        weight="bold",
+        fontsize=8.1,
+    )
+    add_box(
+        ax,
+        0.735,
+        0.175,
+        0.220,
+        0.065,
+        "Independent audit &\nfinal freeze",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["gold"],
+        weight="bold",
+        fontsize=7.8,
+    )
+    add_arrow(ax, (0.250, 0.2075), (0.405, 0.2075), color=COLORS["gold"], linewidth=1.3)
+    add_arrow(ax, (0.575, 0.2075), (0.735, 0.2075), color=COLORS["gold"], linewidth=1.3)
+
+    add_box(
+        ax,
+        0.110,
+        0.015,
+        0.350,
+        0.115,
+        "Traceability\nsummary → primary run ID\n→ n8n execution ID → raw evidence",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["gold"],
+        linewidth=1.0,
+        linestyle="dashed",
+        weight="bold",
+        fontsize=7.0,
+    )
+    add_box(
+        ax,
+        0.520,
+        0.015,
+        0.455,
+        0.115,
+        "R03 interpretation correction\nRQ2 only\nraw and historical processed evidence\nunchanged",
+        facecolor=COLORS["white"],
+        edgecolor=COLORS["gold"],
+        linewidth=1.0,
+        linestyle="dashed",
+        weight="bold",
+        fontsize=6.9,
+    )
+    add_arrow(ax, (0.285, 0.130), (0.445, 0.175), color=COLORS["gold"], linewidth=1.15, linestyle="dashed")
+    add_arrow(ax, (0.7475, 0.130), (0.535, 0.175), color=COLORS["gold"], linewidth=1.15, linestyle="dashed")
+
+    # Continuous transition from processed evidence into the summary/claim
+    # phase. The horizontal segment stays in the inter-phase gap, and the
+    # final arrow enters the summaries box from the unobstructed left side.
+    add_routed_arrow(
+        ax,
+        ((0.835, 0.335), (0.835, 0.312), (0.005, 0.312), (0.005, 0.2075), (0.040, 0.2075)),
+        color=COLORS["gold"],
+        linewidth=1.3,
+        zorder=4,
+    )
 
     save_figure(fig, output, "Frozen evaluation and evidence traceability flow")
 
