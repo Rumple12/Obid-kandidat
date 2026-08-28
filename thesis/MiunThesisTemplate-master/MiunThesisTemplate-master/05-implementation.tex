@@ -51,12 +51,14 @@ extraction, raw locking, processing, and traceability. &
 
 \subsection{Frozen n8n Runtime}\label{subsec:impl-runtime}
 
-The workflows ran in a single Dockerized n8n service. The Compose
+The workflows ran in a single Dockerized n8n service
+\cite{n8nCreateRunWorkflows}. The Compose
 configuration pins n8n to version \texttt{1.123.37}. Its container image is
 \texttt{n8nio/n8n:1.123.37}. The image digest was recorded so that the tag
 alone is not the only runtime identifier. Port 5678 is published to the host,
 and n8n uses its default local SQLite store in the named volume
-\texttt{obid-n8n-data}, mounted at \texttt{/home/node/.n8n}. Both timezones use
+\texttt{obid-n8n-data}, mounted at \texttt{/home/node/.n8n}
+\cite{n8nDocker}. Both timezones use
 \texttt{Europe/Stockholm}. Diagnostics and version notifications are disabled
 in the Compose configuration.
 
@@ -89,13 +91,12 @@ The same effective model identifier was reconstructed for the inherited
 baseline from the matching pinned Gemini node default, and the portable
 baseline export records it explicitly. For both configurations, the stored
 generation options are the empty object \texttt{\{\}}. This means that the
-repository fixes the model identifier and the node/runtime version but does
+repository fixes the model identifier and the node/runtime version
+\cite{n8nNodeVersioning}, but does
 not claim that the remote provider backend or every provider-side default is
 immutable. The local encryption key and Gemini credential are private runtime
 prerequisites. They are supplied outside version control, and the portable
 workflow exports contain no credential identity or secret.
-
-% [REFERENCE NEEDED: official n8n workflow, persistence, and node-version documentation]
 
 \subsection{Yacoub-Compatible Boundary}\label{subsec:impl-integration}
 
@@ -176,7 +177,8 @@ The authoritative Obid workflow is
 \texttt{obid-agent-v3-hitl}. It combines the final cognitive path,
 runtime-safety subworkflow, caller-side policy routing, and embedded HITL
 gate. The workflow contains one n8n AI Agent v3 node and one Gemini model
-node. There is no second model, validator agent, or multi-agent exchange.
+node \cite{n8nAIAgent,n8nGeminiChatModel}. There is no second model, validator
+agent, or multi-agent exchange.
 
 At ingress, a deterministic Code node prepares the event and checks the
 minimum conditions needed by the decision layer. The request body must be an
@@ -231,8 +233,6 @@ gate, and internal envelope. Version 2 attaches runtime validation and policy
 after the candidate seam. Version 3 retains those components and adds actual
 HITL. The final v3 export, rather than the earlier step-specific manifests, is
 the workflow identity used for the frozen system.
-
-% [REFERENCE NEEDED: official n8n AI Agent and Gemini node documentation]
 
 \subsection{System Prompt and Structured Decision Envelope}\label{subsec:impl-prompt}
 
@@ -306,7 +306,7 @@ agent recursion, or credential \\
 \end{table}
 
 \texttt{temperature\_threshold\_tool} is an n8n Tool Code node, type version
-1.3. Its JavaScript rejects a non-finite value or a unit other than
+1.3 \cite{n8nCustomCodeTool}. Its JavaScript rejects a non-finite value or a unit other than
 \texttt{C}, applies the $30.0\,^{\circ}\mathrm{C}$ rule, and returns a JSON
 string containing \texttt{threshold\_c}, \texttt{relation},
 \texttt{desired\_action}, and \texttt{desired\_fan\_state}. The tool does not
@@ -321,15 +321,13 @@ The final Workflow Tool placement reflects a pinned-runtime compatibility
 constraint. Stricter singleton tool schemas and the installed legacy HTTP
 Tool were incompatible with the wrapper and routing behavior, so exact unit
 checking remained in code and the status lookup used the supported inline
-workflow form.
-
-% [REFERENCE NEEDED: official n8n Tool Code and Workflow Tool documentation]
+workflow form \cite{n8nWorkflowTool}.
 
 \subsection{Controlled ReAct Execution}\label{subsec:impl-react}
 
 The AI Agent implements a controlled ReAct-style, tool-mediated execution
 cycle. A cold-state event can require a threshold lookup, a status lookup, and
-then a final decision. The node's \texttt{maxIterations} setting is 3. This is
+then a final decision \cite{yao2023react}. The node's \texttt{maxIterations} setting is 3. This is
 the smallest installed bound that permits those two sequential tool rounds,
 followed by the final response. When recent memory already contains a usable
 state, the status lookup is omitted and only the threshold tool is needed.
@@ -347,15 +345,14 @@ The \texttt{returnIntermediateSteps} setting and streaming are disabled. The
 implementation neither requests nor stores hidden chain-of-thought, private
 scratchpad content, or an internal reasoning trace.
 
-% [REFERENCE NEEDED: ReAct and bounded tool-mediated agent execution]
-
 \subsection{Bounded Memory}\label{subsec:impl-memory}
 
 State reuse is implemented with one n8n Simple Memory node. Its identifier is
 \texttt{memoryBufferWindow}, and its type version is 1.3.
 
 The \texttt{contextWindowLength} setting is 2, meaning that the model-visible window
-contains the two latest completed input/final-output interaction pairs. Tool
+contains the two latest completed input/final-output interaction pairs
+\cite{n8nSimpleMemory,wang2024surveyagents,liu2024lostmiddle}. Tool
 calls inside an interaction do not consume separate memory slots. This gives
 the agent access to recent \texttt{state\_after} values without introducing a
 second memory strategy or long-term retrieval system.
@@ -376,8 +373,6 @@ load. Leaving the model-visible window must not be interpreted as physical
 deletion. The implemented purpose is bounded recent-state reuse and duplicate
 action suppression, not permanent history, a database-backed memory claim, or
 a comparison of memory techniques.
-
-% [REFERENCE NEEDED: n8n Simple Memory and bounded conversational memory]
 
 \subsection{Runtime Action Validation}\label{subsec:impl-validator}
 
@@ -434,9 +429,8 @@ frozen four-field schema. The pinned n8n Code-node environment did not expose
 a suitable ordinary external JSON Schema validator without changing the
 runtime. The implementation enforces the constraints present in this one
 contract; it is not a general JSON Schema engine, general security filter, or
-production-safety mechanism.
-
-% [REFERENCE NEEDED: JSON Schema and post-generation runtime validation]
+production-safety mechanism
+\cite{wright2022jsonschemavalidation,schneider2000enforceable}.
 
 \subsection{Deterministic Action Policy}\label{subsec:impl-policy}
 
@@ -505,7 +499,7 @@ policy-transformation integrity check. Failed preconditions terminate without
 creating a form.
 
 The gate uses \texttt{n8n-nodes-base.wait} type version 1.1 in
-\texttt{resume: form} mode, with no configured wait limit. Before waiting, a
+\texttt{resume: form} mode, with no configured wait limit \cite{n8nWait}. Before waiting, a
 Code node deep-copies the held action and stores a four-field snapshot. It
 also creates a synthetic request ID of the form
 \texttt{hitl-<execution-id>}. The form displays the action, policy reason, and
@@ -523,7 +517,8 @@ submitted fields. Exact approval with an unchanged held action releases that
 same action, still carrying \texttt{requires\_approval: true}. Denial releases
 null. Invalid decisions, integrity failures, and failed preconditions also
 release null. Approval is thus separate runtime authorization rather than a
-rewrite of the shared action.
+rewrite of the shared action
+\cite{amershi2019guidelines,nist2023airmf}.
 
 The workflow records start, request, decision, and completion timestamps.
 From these it derives pre-wait automation, human wait, post-decision
@@ -542,8 +537,6 @@ The final repair embeds the same precondition, request, Wait, finalization,
 and integrity behavior directly in \texttt{CONFIG-OBID} v3 and the HITL
 harness. Only placement changed. The contract, policy, decision vocabulary,
 held-action checks, and endpoint-release conditions remained the same.
-
-% [REFERENCE NEEDED: n8n Wait/form behavior and human-in-the-loop control]
 
 \subsection{Evaluation Seams and Harnesses}\label{subsec:impl-seams}
 
@@ -704,7 +697,8 @@ Action boundary & Frozen Yacoub middleware and simulated fan &
 
 The committed workflows are sanitized, inactive portable exports. Recreating
 the runtime therefore requires importing and activating them, attaching a
-private local model credential, and starting the exact inherited middleware.
+private local model credential, and starting the exact inherited middleware
+\cite{n8nExportImport}.
 Portable file hashes identify the committed definitions; separate semantic
 hashes were used to compare live imported workflows without exporting
 credentials or owner metadata. Repository-relative paths and frozen Git
@@ -712,9 +706,8 @@ identities are sufficient for the report; local temporary checkout paths and
 personal data are intentionally excluded.
 
 The frozen local identities support bounded reconstruction, not permanent
-reproduction of the remote provider or new physical Obid operation.
-
-% [REFERENCE NEEDED: reproducible workflow exports and model-service versioning]
+reproduction of the remote provider or new physical Obid operation
+\cite{kapoor2025agentsmatter}.
 
 \subsection{Summary of Implementation}\label{subsec:impl-summary}
 

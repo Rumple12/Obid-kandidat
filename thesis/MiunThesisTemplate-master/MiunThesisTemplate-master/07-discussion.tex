@@ -159,9 +159,8 @@ automation task may tolerate higher automated latency when stronger release
 controls matter more than response speed. Another task may require a tighter
 deadline and simpler controls. The present data cannot
 resolve that design decision outside the simulated fan scenario, and it provides
-no basis for an economic cost comparison.
-
-% [REFERENCE NEEDED: agent reliability and latency]
+no basis for an economic cost comparison
+\cite{kapoor2025agentsmatter}.
 
 \subsection{Role of Tools and Bounded Memory}\label{subsec:discussion-tools-memory}
 
@@ -169,9 +168,8 @@ The Memory-B contrast in Section~\ref{subsec:results-rq3-reliability} is
 consistent with the combined use of controlled tools, explicit state, and
 bounded memory, but no ablation isolates any one cause. The two-interaction
 state was process-local rather than durable and did not replace device
-confirmation or persistent history.
-
-% [REFERENCE NEEDED: ReAct/tool use and memory]
+confirmation or persistent history
+\cite{yao2023react,wang2024surveyagents,liu2024lostmiddle}.
 
 \subsection{Significance of Runtime Validation and HITL}\label{subsec:discussion-safety}
 
@@ -179,12 +177,14 @@ The safety results distinguish prompt instructions from executable release
 controls. Model output remained a candidate until contract validation,
 deterministic policy, and any required human decision permitted release; an
 invalid proposal stopped before HITL. This moved final release authority outside
-the model without implying that the model cannot err. The implementation path is
+the model without implying that the model cannot err
+\cite{wright2022jsonschemavalidation,schneider2000enforceable,wang2026agentspec}. The implementation path is
 documented in Sections~\ref{subsec:impl-validator}--\ref{subsec:impl-hitl}.
 
 The ten segmented HITL records add a separate timing implication. Human waiting
 was the largest segment in every observed trial. HITL therefore changes the
-completion model from purely automated processing to a human-dependent one.
+completion model from purely automated processing to a human-dependent one
+\cite{amershi2019guidelines,dzindolet2003trust,nist2023airmf}.
 Response time can vary with the person, interface, workload, and context, so
 these session-specific durations are not a general usability study. They were
 correctly excluded from the automated RQ3 latency comparison; mixing them with
@@ -196,9 +196,6 @@ as development evidence, not as an additional experimental result.
 
 These contract-specific trials do not establish generic cybersecurity,
 autonomous risk discovery, or production safety.
-
-% [REFERENCE NEEDED: validation and deterministic guardrails]
-% [REFERENCE NEEDED: HITL and human oversight]
 
 \subsection{Inherited and Obid Attribution}\label{subsec:discussion-provenance}
 
@@ -217,7 +214,7 @@ The main threats arise from when and how the runs were executed, what the frozen
 oracle represents, and how narrowly the configuration space was sampled.
 Table~\ref{tab:discussion-validity} pairs each category with the controls that
 were actually used and the risk that remains. The controls reduce uncertainty;
-they do not eliminate it.
+they do not eliminate it \cite{wohlin2012experimentation}.
 
 The rotation, pairing, resets, isolated sessions, and failure retention in
 Chapter~\ref{sec:method} reduce order and carry-over effects without removing
@@ -262,14 +259,12 @@ future reproduction or complete resource/cost coverage. \\
 \end{tabularx}
 \end{table}
 
-% [REFERENCE NEEDED: research-validity framework]
-
 \subsection{Broader IoT Relevance}\label{subsec:discussion-relevance}
 
 The scenario can be read as a small event--state--action proxy for contexts such
 as building ventilation, bounded industrial monitoring, environmental sensing,
 health or environmental monitoring workflows, and facility or laboratory
-automation. What may transfer conceptually is the control pattern, not the
+automation \cite{perera2014context,ur2016triggeraction,cui2025llmind}. What may transfer conceptually is the control pattern, not the
 measured performance:
 
 \begin{center}
@@ -294,8 +289,6 @@ observable so that approval can be audited. These are design implications from
 the prototype and its frozen evidence, not empirical proof that the same pattern
 will succeed in another sector.
 
-% [REFERENCE NEEDED: broader IoT control contexts]
-
 \subsection{Ethical and Societal Considerations}\label{subsec:discussion-ethics}
 
 AI-mediated control raises responsibility questions even when the action is as
@@ -303,7 +296,8 @@ limited as a simulated fan. An operator should be able to see what action is
 proposed, why it is within the allowed vocabulary, whether policy requires
 approval, and what decision released it. Moving release authority outside the
 model can support accountability only if the validation and policy are themselves
-understandable, maintained, and appropriate for the domain.
+understandable, maintained, and appropriate for the domain
+\cite{nist2023airmf}.
 
 Human oversight also creates risks. A reviewer may approve too quickly because
 the system appears reliable, misunderstand the consequence, or become fatigued
@@ -313,7 +307,8 @@ when human input differs from the planned procedure: the runtime followed the
 actual approval, while the evidence preserved that the assigned denial was not
 performed. A real deployment would need clear authority, escalation, timeout,
 and accountability rules rather than assuming that a human presence alone
-solves automation risk.
+solves automation risk
+\cite{parasuraman2010automationbias,amershi2019guidelines,dzindolet2003trust}.
 
 The study applied privacy minimization to its evidence. No personal reviewer
 identity was needed, credential values and transient private links were
@@ -321,7 +316,7 @@ excluded, and the extracted execution view was bounded to required evidence.
 These choices reduce unnecessary exposure but do not establish secure access
 control. A production system would still need authentication, authorization,
 credential management, integrity protection, and attention to potentially
-sensitive sensor data.
+sensitive sensor data \cite{nist2023airmf}.
 
 Finally, consequences rise with the domain. An incorrect ventilation command
 may cause discomfort or wasted energy; an incorrect industrial or health-related
@@ -330,8 +325,6 @@ approval, auditability, and retention of failures are therefore ethically
 relevant, but the prototype does not resolve automation bias, human workload,
 security, or responsibility. Hiding failed and unexpected trials would make
 those concerns harder to assess; retaining them supports more honest oversight.
-
-% [REFERENCE NEEDED: ethics of AI-mediated control and human oversight]
 
 \subsection{Future Work}\label{subsec:discussion-future}
 

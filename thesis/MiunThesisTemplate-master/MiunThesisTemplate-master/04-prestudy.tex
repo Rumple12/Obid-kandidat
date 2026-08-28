@@ -207,7 +207,8 @@ tools read-only reduces the number of paths through which a model-generated
 tool call could mutate the system and makes the observable interaction easier
 to attribute.
 
-The controlled ReAct-style cycle is correspondingly small:
+The controlled ReAct-style cycle is correspondingly small
+\cite{yao2023react,wang2024surveyagents}:
 
 \begin{center}
 event $\rightarrow$ threshold calculation and, when memory is cold, status observation
@@ -223,8 +224,6 @@ design records configured bounds and
 observable tool names, inputs, outputs, order, and counts. It does not use or
 claim access to hidden chain-of-thought or private model reasoning.
 
-% [REFERENCE NEEDED: ReAct and tool-using agents]
-
 \subsection{Bounded-Memory Design}\label{subsec:design-memory}
 
 State dependence in the selected scenario is narrow but real. A cold session
@@ -234,15 +233,14 @@ recent finalized decision envelope can provide a usable model-visible
 suppressed. This is remembered decision state rather than independent
 verification of endpoint execution. A later event requesting the opposite
 state must still be able to produce a new candidate. The memory design therefore
-needs recent finalized state, not a long-term record of the project or device.
+needs recent finalized state, not a long-term record of the project or device
+\cite{wang2024surveyagents,liu2024lostmiddle}.
 
 The selected window contains two completed interaction pairs, while synthetic
 session identifiers isolate controlled sequences without changing the shared
 sensor contract. It is process-local rather than restart-durable; leaving the
 model-visible window does not imply physical deletion from backing history.
 Section~\ref{subsec:impl-memory} describes the implementation mechanics.
-
-% [REFERENCE NEEDED: bounded agent memory]
 
 \subsection{Structured Output and Shared Contract Boundary}\label{subsec:design-output}
 
@@ -302,7 +300,7 @@ a release mechanism. A model can still return malformed JSON, omit a field,
 use an unsupported value, or supply the wrong type. Minimal extraction is also
 insufficient because successful parsing says nothing about conformance to the
 full frozen action contract. RQ2 therefore requires independently observable,
-post-agent controls.
+post-agent controls \cite{wright2022jsonschemavalidation}.
 
 The selected validator is contract-specific: an invalid candidate terminates
 without repair or release. This is an ordering invariant, not a generic schema
@@ -313,18 +311,18 @@ Only a schema-valid action reaches deterministic policy. Policy applies the
 frozen action/target allowlist and then distinguishes direct release, block, and
 approval-required hold. This produces the stable outcomes \texttt{ALLOW},
 \texttt{BLOCK}, and \mbox{\texttt{APPROVAL\_REQUIRED}} without asking another model to
-judge whether its own output should proceed. Invalid candidates stop before
+judge whether its own output should proceed
+\cite{schneider2000enforceable,wang2026agentspec}. Invalid candidates stop before
 policy and before HITL, so a human cannot rescue an action that is outside the
 shared contract. The detailed validation conditions and policy routing appear
 in Sections~\ref{subsec:impl-validator} and~\ref{subsec:impl-policy}.
-
-% [REFERENCE NEEDED: runtime validation and deterministic guardrails]
 
 \subsection{Human-in-the-Loop Design}\label{subsec:design-hitl}
 
 The inherited material described approval as a specification, but RQ2 asks
 about runtime prevention and release. The selected design therefore includes an
-executable HITL state rather than a documentation-only approval rule. Entry is
+executable HITL state rather than a documentation-only approval rule
+\cite{amershi2019guidelines,dzindolet2003trust,nist2023airmf}. Entry is
 conditional: the action must already be schema-valid, deterministic policy must
 require approval, the four-field action must be held, and no action may already
 have been released.
@@ -339,8 +337,6 @@ evidence that the Decision Agent autonomously discovers risk. Directly allowed
 actions bypass HITL, while invalid candidates stop before it. The final gate
 placement and integrity mechanics are documented in
 Section~\ref{subsec:impl-hitl}.
-
-% [REFERENCE NEEDED: HITL and human oversight]
 
 \subsection{Evaluation-Oriented Design Decisions}\label{subsec:design-evaluation}
 

@@ -1,12 +1,34 @@
 \section*{Terminology / Notation}\label{sec:terminology}
 \phantomsection
 \addcontentsline{toc}{section}{Terminology / Notation}
-% REPORT WRITER: Alphabetize and define terms after Chapters 2, 4, and 5 are
-% drafted. Explain each term again at first use in the body.
-% RESERVED TERMS: CONFIG-BASELINE; CONFIG-OBID; Agentic workflow; bounded
-% memory; Human-in-the-Loop (HITL); JSON Schema; middleware; n8n; ReAct;
-% research question (RQ); shared action interface; structured output.
-% EVIDENCE SOURCES: docs/ongoing/final-implementation-freeze.md;
-% cognitive_logic/obid/*; shared_interfaces/json-schema/*.
-% [REFERENCE NEEDED: terminology sources where definitions are not project-specific]
-% TABLE LATER: Term | Working definition | Project-specific qualification.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{0.92}
+\begin{tabularx}{\textwidth}{@{}L{0.30\textwidth}Y@{}}
+\toprule
+\textbf{Term} & \textbf{Working definition in this thesis} \\
+\midrule
+API & Application Programming Interface; a defined request/response boundary between software components. \\
+bounded memory & Session-scoped, process-local access to the two latest completed interactions. \\
+\texttt{CONFIG-BASELINE} & Inherited Yacoub-compatible minimal-agent comparator without the Obid runtime controls. \\
+\texttt{CONFIG-OBID} & Obid-created tool-using decision configuration with bounded memory and executable release controls. \\
+Decision Agent & The \texttt{CONFIG-OBID} AI Agent that proposes \texttt{emit\_action} or \texttt{no\_action}; it has no release authority. \\
+deterministic policy & Fixed allowlist and approval-routing logic applied after successful validation. \\
+HITL & Human-in-the-Loop; the runtime gate where an approval-required action remains held until an actual approve/deny decision. \\
+IoT & Internet of Things; connected devices and services that sense context and may trigger actions \cite{perera2014context}. \\
+JSON & JavaScript Object Notation, the text-based structured-data interchange format used by the contracts \cite{bray2017json}. \\
+JSON Schema & A vocabulary for describing and validating structural constraints on JSON instances \cite{wright2022jsonschemavalidation}. \\
+LLM & Large Language Model; the model class used by the workflow decision component. \\
+middleware & The inherited service between workflow calls and the simulated action API. \\
+n8n & The workflow-automation runtime used to connect triggers, decision nodes, controls, and actions \cite{n8nCreateRunWorkflows}. \\
+\texttt{no\_action} & Internal decision meaning that no shared action is formed or released. \\
+ReAct & A reasoning-and-acting pattern that interleaves model decisions, tool actions, and observations \cite{yao2023react}. \\
+RQ & Research Question; one of the three questions operationalized by the evaluation. \\
+runtime validation & Deterministic post-agent checks of a candidate against the frozen action constraints. \\
+shared action interface & The frozen four-field action contract preserved across inherited and Obid components. \\
+structured output & The machine-readable internal decision envelope returned by the Decision Agent. \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1}
+\endgroup

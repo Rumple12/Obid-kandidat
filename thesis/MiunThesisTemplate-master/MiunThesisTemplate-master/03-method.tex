@@ -14,11 +14,12 @@ was observed.
 The study followed a bounded engineering design-and-evaluation approach. A
 small inherited workflow-to-action system was extended with one agentic
 decision and reliability configuration, and the completed configurations were
-then compared under a frozen protocol. The engineering work and the evaluation
+then compared under a frozen protocol \cite{wohlin2012experimentation}. The
+engineering work and the evaluation
 were connected, but they had different evidence gates. Source files and
 one-off readiness executions could establish that a component existed and was
 ready to evaluate; claims about repeated behaviour required the separately
-locked experimental records.
+locked experimental records \cite{kapoor2025agentsmatter}.
 
 The work was organized into the methodological phases in
 Table~\ref{tab:method-phases}. This organization avoids treating repository
@@ -72,8 +73,6 @@ evidence: implementation claims required versioned artifacts and runtime
 evidence, while experimental claims required frozen raw records. Audit passes
 were quality gates rather than additional trials or data points.
 
-% [REFERENCE NEEDED: engineering design-and-evaluation or design science methodology]
-% [REFERENCE NEEDED: repeated LLM-agent evaluation]
 % [FIGURE LATER: evaluation-method flow]
 
 \subsection[Collaboration and Provenance Boundary]{Collaboration and
@@ -443,7 +442,8 @@ Before human input, a separate pending snapshot recorded a waiting execution,
 the held action, null release, both fan-endpoint counts, and the simulated fan
 state. The orchestration did not submit the human decision automatically. The
 researcher supplied \texttt{approve} or \texttt{deny} to the actual waiting
-form, after which the released action and terminal were observed. Approval
+form, after which the released action and terminal were observed
+\cite{amershi2019guidelines,nist2023airmf}. Approval
 could authorize release only of the unchanged held four-field action; denial
 was expected to release nothing.
 
@@ -456,8 +456,6 @@ correction, the method required an append-only record naming the affected
 run and preserving the original raw and processed artifacts. The run could
 not be repeated or rewritten. Chapter~6 shows how this distinction was applied
 to the observations.
-
-% [REFERENCE NEEDED: HITL evaluation]
 
 \subsection{Automated Latency Measurement}\label{subsec:method-latency}
 
@@ -473,17 +471,15 @@ run. Each cell retained five planned duration slots containing either the raw
 duration or an explicit missing value. Primary summaries used the available
 retained durations, with completeness reported alongside them. The summaries
 were median, minimum, and maximum; the arithmetic mean could be included only
-as a supplementary description. Missing timing remained missing, and no
+as a supplementary description \cite{nist2022descriptivestatistics}. Missing timing remained missing, and no
 outlier was removed.
 
 No significance test, p-value, confidence interval, or component-level causal
-attribution was planned. The configurations performed different complete
+attribution was planned \cite{wohlin2012experimentation}. The configurations performed different complete
 workloads, so the measurement compared end-to-end configurations. HITL human
 waiting was excluded. Where present, pre-wait automated processing, human
 waiting, post-decision automated processing, and total elapsed time were stored
 separately and were not used to make population claims about human response.
-
-% [REFERENCE NEEDED: descriptive latency statistics]
 
 \subsection[Raw-Data Retention and Failure Handling]{Raw-Data Retention and
 \texorpdfstring{\newline}{ }Failure Handling}\label{subsec:method-raw}
@@ -538,7 +534,7 @@ and missing values were retained; the program did not remove outliers, fill
 missing evidence, or estimate unavailable cost. A processed manifest recorded
 the resulting output identities.
 
-Traceability followed:
+Traceability followed \cite{moreau2013provdm}:
 \begin{quote}
 \centering
 \small
@@ -563,7 +559,6 @@ provider backend and unstored defaults may change, a private model credential
 must be attached locally, and process-local memory is not durable across a
 restart.
 
-% [REFERENCE NEEDED: data provenance/reproducibility]
 % [FIGURE LATER: raw-to-processing-to-claim traceability flow]
 
 \subsection{Threats and Limitations of the Method}\label{subsec:method-limitations}
@@ -572,7 +567,7 @@ The controls reduce identifiable threats but do not remove them. The principal
 issues and residual limits are summarized in
 Table~\ref{tab:method-limitations}. They constrain the claims that can be made
 from the method; interpretation of the observed outcomes belongs to
-Chapter~7.
+Chapter~7 \cite{wohlin2012experimentation}.
 
 \begin{table}[htbp]
 \centering
@@ -619,7 +614,5 @@ reliability or every route a naturally generated error might take. The domain,
 sampling, memory, hardware, latency-attribution, and reproducibility limits in
 Table~\ref{tab:method-limitations} bound the conclusions to the two frozen
 configurations, the stated scenario, and the retained evidence chain.
-
-% [REFERENCE NEEDED: research validity framework]
 
 \setlength{\emergencystretch}{0pt}

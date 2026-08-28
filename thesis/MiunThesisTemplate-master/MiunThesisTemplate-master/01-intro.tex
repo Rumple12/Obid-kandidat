@@ -5,25 +5,24 @@
 \subsection{Background and Motivation}\label{subsec:intro-background}
 
 IoT systems often transform sensor events into actions that change a device or
-service. Workflow automation can connect event intake, decision logic, and
-action execution in an inspectable sequence. A language-model-based component
+service \cite{perera2014context,ur2016triggeraction}. Workflow automation can
+connect event intake, decision logic, and action execution in an inspectable
+sequence \cite{vanderaalst2003workflowpatterns,bock2021lowcode}. A
+language-model-based component
 can make the decision stage responsive to event and state context rather than
-only a fixed branch. Its output, however, remains a generated proposal and
+only a fixed branch \cite{wang2024surveyagents}. Its output, however, remains a generated proposal and
 cannot by itself be assumed to satisfy an interface contract or to be
-authorized for release.
+authorized for release \cite{wright2022jsonschemavalidation,schneider2000enforceable}.
 
 Reliability therefore concerns more than whether an action appears plausible.
 Decision behaviour must be measured under defined conditions, while observable
 runtime controls determine whether a proposal is contract-valid, permitted, or
-subject to human approval before it reaches an action interface. Such controls
+subject to human approval before it reaches an action interface
+\cite{amershi2019guidelines,dzindolet2003trust}. Such controls
 also distinguish blocked, pending, failed, and released outcomes. This thesis
 examines the problem through a bounded extension of an inherited n8n-based
 workflow-to-action system in one defined IoT scenario, without seeking to
 establish universal LLM reliability or production safety.
-
-% [REFERENCE NEEDED: IoT event-action systems]
-% [REFERENCE NEEDED: workflow automation and LLM agents]
-% [REFERENCE NEEDED: runtime validation and human oversight]
 
 \subsection{Problem Statement}\label{subsec:intro-problem}
 
