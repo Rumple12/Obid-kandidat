@@ -1,52 +1,207 @@
-\section{Report Artifact Index}\label{app:artifact-index}
-% REPORT WRITER: Appendix skeleton only. Use repository-relative paths and
-% concise tables; do not reproduce full source code, local usernames, secrets,
-% credentials, or transient HITL URLs.
+\section{Repository Artifact Index}\label{app:artifact-index}
 
-\subsection{Final Implementation Artifacts}\label{app:final-implementation}
-% SOURCE: docs/ongoing/final-artifact-manifest.json.
-% TABLE LATER: artifact identity | repository path | SHA-256 | provenance.
+All paths in this appendix are relative to the repository root. The appendix is
+a concise index of the final artifacts, not a reproduction of source code or
+evidence contents. The index organization is Obid-created; each artifact
+retains the provenance stated below.
 
-\subsection{Baseline and Configuration Exports}\label{app:configurations}
-% SOURCES: cognitive_logic/baselines/yacoub/*; cognitive_logic/obid/workflows/*;
-% final-implementation-freeze.md.
+\subsection[Final Configurations and Shared Boundary]{Final Configurations and
+Shared\texorpdfstring{\newline}{ }Boundary}\label{app:configurations-boundary}
 
-\subsection{Prompts, Tools, and Memory}\label{app:cognition}
-% SOURCES: cognitive_logic/obid/prompts/; tools/; react/; memory/;
-% structured-output/.
+\begin{table}[H]
+\centering
+\caption{Final configurations and shared-boundary artifacts}
+\label{tab:app-configurations-boundary}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Artifact} & \textbf{Repository path} & \textbf{Role and provenance} \\
+\midrule
+\texttt{CONFIG-BASELINE} export &
+\codepath{cognitive\_logic/baselines/yacoub/minimal-agent-baseline.json} &
+Comparator semantics; \texttt{YACOUB\_INHERITED}. Obid-packaged compatible reproduction. \\
+\texttt{CONFIG-OBID} v3 export &
+\codepath{cognitive\_logic/obid/workflows/obid-agent-v3-hitl.json} &
+Final evaluated workflow; \texttt{OBID\_CREATED}. \\
+Baseline system prompt &
+\codepath{cognitive\_logic/baselines/yacoub/system-prompt-v1.md} &
+Comparator prompt; \texttt{YACOUB\_INHERITED}. \\
+Obid system prompt &
+\codepath{cognitive\_logic/obid/prompts/system-prompt-v1.md} &
+Decision-agent prompt; \texttt{OBID\_CREATED}. \\
+Tool definitions &
+\codepath{cognitive\_logic/obid/tools/tool-definitions-v1.md} &
+Two read-only tools; \texttt{OBID\_CREATED}. \\
+Bounded-memory specification &
+\codepath{cognitive\_logic/obid/memory/window-buffer-v1.md} &
+Two-interaction process-local window; \texttt{OBID\_CREATED}. \\
+Sensor-event schema &
+\codepath{shared\_interfaces/json-schema/sensor-event.schema.json} &
+Yacoub-originated \texttt{SHARED\_INTERFACE}. \\
+Agent-action schema &
+\codepath{shared\_interfaces/json-schema/agent-action.schema.json} &
+Yacoub-originated \texttt{SHARED\_INTERFACE}. \\
+Contract no-drift record &
+\codepath{shared\_interfaces/contract-freeze.md} &
+Obid verification of shared bytes and semantics; \texttt{OBID\_CREATED}. \\
+Interface provenance record &
+\codepath{docs/collaboration/shared-interface-provenance.md} &
+Records inherited origin and shared role; \texttt{OBID\_CREATED}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Shared Contracts}\label{app:contracts}
-% SOURCES: shared_interfaces/contract-freeze.md;
-% shared_interfaces/json-schema/sensor-event.schema.json;
-% shared_interfaces/json-schema/agent-action.schema.json.
-% PROVENANCE: Yacoub-originated SHARED_INTERFACE.
+\subsection{Runtime Safety and HITL}\label{app:runtime-safety-hitl}
 
-\subsection{Runtime Safety and Policy}\label{app:safety}
-% SOURCES: safety_layer/validator/; safety_layer/policies/;
-% safety_layer/outcomes/; safety_layer/workflows/.
+\begin{table}[H]
+\centering
+\caption{Runtime safety and human-in-the-loop artifacts}
+\label{tab:app-safety-hitl}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Artifact} & \textbf{Repository path} & \textbf{Role and provenance} \\
+\midrule
+Runtime safety v1 &
+\codepath{safety\_layer/workflows/runtime-safety-v1.json} &
+Step 8 validator/policy snapshot; \texttt{OBID\_CREATED}. \\
+Runtime safety v2 HITL &
+\codepath{safety\_layer/workflows/runtime-safety-v2-hitl.json} &
+Final policy-context and HITL component; \texttt{OBID\_CREATED}. \\
+Validator specification &
+\codepath{safety\_layer/validator/runtime-action-validator-v1.md} &
+Enforces the action \texttt{SHARED\_INTERFACE}; \texttt{OBID\_CREATED}. \\
+Policy specification &
+\codepath{safety\_layer/policies/runtime-action-policy-v1.md} &
+Deterministic release policy; \texttt{OBID\_CREATED}. \\
+HITL harness &
+\codepath{safety\_layer/hitl/workflows/step-09-hitl-harness.json} &
+Controlled seam with native Wait/form; \texttt{OBID\_CREATED}. \\
+Retained child-Wait workflow &
+\codepath{safety\_layer/hitl/workflows/runtime-hitl-v1.json} &
+Propagation-failure artifact, not final topology; \texttt{OBID\_CREATED}. \\
+HITL design/repair record &
+\codepath{safety\_layer/hitl/runtime-hitl-v1.md} &
+Failure and bounded repair rationale; \texttt{OBID\_CREATED}. \\
+HITL readiness evidence &
+\codepath{safety\_layer/hitl/evidence/step-09-hitl-verification.md} &
+Retained failure and repair observations; \texttt{OBID\_CREATED}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Human-in-the-Loop Artifacts}\label{app:hitl}
-% SOURCES: safety_layer/hitl/; final v3 workflow; Step 9 evidence.
-% Retain the final embedded gate and original child-Wait failure as distinct artifacts.
+\subsection{Evaluation and Results}\label{app:evaluation-results}
 
-\subsection{Evaluation Protocol}\label{app:evaluation-protocol}
-% SOURCES: evaluation/cases/obid-evaluation-cases.json;
-% evaluation/evaluation-protocol.md; experiment-freeze.json.
+\begin{table}[H]
+\centering
+\caption{Evaluation design and locked raw authority}
+\label{tab:app-evaluation-raw}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Artifact} & \textbf{Repository path} & \textbf{Role and provenance} \\
+\midrule
+Evaluation case manifest &
+\codepath{evaluation/cases/obid-evaluation-cases.json} &
+Pre-observation oracle; \texttt{OBID\_CREATED}. \\
+Evaluation protocol &
+\codepath{evaluation/evaluation-protocol.md} &
+Pre-observation procedure and metrics; \texttt{OBID\_CREATED}. \\
+Step 10 experiment freeze &
+\codepath{evaluation/results/step-10/experiment-freeze.json} &
+Configuration and run-plan freeze; \texttt{OBID\_CREATED}. \\
+Raw run records &
+\codepath{evaluation/results/step-10/raw/run-records.jsonl} &
+Eighty-five primary records; \texttt{OBID\_CREATED}. \\
+Raw-data manifest &
+\codepath{evaluation/results/step-10/raw/raw-data-manifest.json} &
+Raw lock and integrity index; \texttt{OBID\_CREATED}. \\
+Processing script &
+\codepath{evaluation/results/step-10/process\_results.py} &
+Deterministic derivation; \texttt{OBID\_CREATED}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Raw Step 10 Results}\label{app:raw-results}
-% SOURCES: evaluation/results/step-10/raw/ and raw/raw-data-manifest.json.
-% TABLE LATER: raw artifact | record count/use | SHA-256.
+\begin{table}[H]
+\centering
+\caption{Processed evaluation results and traceability}
+\label{tab:app-evaluation-processed}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Artifact} & \textbf{Repository path} & \textbf{Role and provenance} \\
+\midrule
+RQ1 summary &
+\codepath{evaluation/results/step-10/processed/rq1-summary.csv} &
+Frozen RQ1 derivation; \texttt{OBID\_CREATED}. \\
+RQ2 summary &
+\codepath{evaluation/results/step-10/processed/rq2-summary.csv} &
+Historical output; read with the R03 correction; \texttt{OBID\_CREATED}. \\
+RQ3 reliability &
+\codepath{evaluation/results/step-10/processed/rq3-reliability.csv} &
+Paired correct-run summary; \texttt{OBID\_CREATED}. \\
+RQ3 latency &
+\codepath{evaluation/results/step-10/processed/rq3-latency.csv} &
+Automated observations and summaries; \texttt{OBID\_CREATED}. \\
+HITL timing &
+\codepath{evaluation/results/step-10/processed/hitl-timing.csv} &
+Session-specific segmented timing; \texttt{OBID\_CREATED}. \\
+Telemetry &
+\codepath{evaluation/results/step-10/processed/llm-telemetry.csv} &
+Observed availability, preserving missing values; \texttt{OBID\_CREATED}. \\
+Traceability &
+\codepath{evaluation/results/step-10/processed/traceability.csv} &
+Summary-to-run-to-execution linkage; \texttt{OBID\_CREATED}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Processed Step 10 Results}\label{app:processed-results}
-% SOURCES: evaluation/results/step-10/processed/ and processed-data-manifest.json.
-% TABLE LATER: processed artifact | rows/use | interpretation boundary.
+\subsection{Corrections, Evidence, and Final Freeze}\label{app:corrections-freeze}
 
-\subsection{Correction and Traceability}\label{app:correction-traceability}
-% SOURCES: corrections/rq2-hitl-denial-r03-interpretation.md;
-% processed/traceability.csv.
-% WARNING: historical crossing=1 is not the final RQ2 safety interpretation.
-
-\subsection{Freeze Manifest}\label{app:freeze}
-% SOURCES: docs/ongoing/final-artifact-manifest.json;
-% final-evidence-inventory.md; final-claim-evidence-map.md;
-% final-implementation-freeze.md.
+\begin{table}[H]
+\centering
+\caption{Correction, evidence, and final-freeze records}
+\label{tab:app-corrections-freeze}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{L{0.19\textwidth}Y L{0.24\textwidth}}
+\toprule
+\textbf{Artifact} & \textbf{Repository path} & \textbf{Role and provenance} \\
+\midrule
+R03 correction &
+\codepath{evaluation/results/step-10/corrections/rq2-hitl-denial-r03-interpretation.md} &
+Append-only final interpretation; \texttt{OBID\_CREATED}. \\
+Step 10 evidence note &
+\codepath{evaluation/evidence/step-10-repeated-evaluation.md} &
+Repeated-evaluation evidence record; \texttt{OBID\_CREATED}. \\
+Final implementation freeze &
+\codepath{docs/ongoing/final-implementation-freeze.md} &
+Frozen architecture, results, and limits; \texttt{OBID\_CREATED}. \\
+Final artifact manifest &
+\codepath{docs/ongoing/final-artifact-manifest.json} &
+Frozen artifact-integrity index; \texttt{OBID\_CREATED}. \\
+Final evidence inventory &
+\codepath{docs/ongoing/final-evidence-inventory.md} &
+Evidence hierarchy and inventory; \texttt{OBID\_CREATED}. \\
+Final claim/evidence map &
+\codepath{docs/ongoing/final-claim-evidence-map.md} &
+Supported-claim boundaries; \texttt{OBID\_CREATED}. \\
+Step 10 report-support note &
+\codepath{docs/report-notes/step-10-repeated-reliability-evaluation.md} &
+Concise result-writing support; \texttt{OBID\_CREATED}. \\
+Step 11 report-support note &
+\codepath{docs/report-notes/step-11-final-implementation-and-evidence-freeze.md} &
+Concise freeze-writing support; \texttt{OBID\_CREATED}. \\
+\bottomrule
+\end{tabularx}
+\end{table}

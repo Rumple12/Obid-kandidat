@@ -73,7 +73,17 @@ evidence: implementation claims required versioned artifacts and runtime
 evidence, while experimental claims required frozen raw records. Audit passes
 were quality gates rather than additional trials or data points.
 
-% [FIGURE LATER: evaluation-method flow]
+The complete evaluation and evidence chain is summarized in
+Figure~\ref{fig:evaluation-evidence-flow}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{evaluation-evidence-flow.pdf}
+\caption{The frozen evaluation and evidence chain from predefined cases through
+repeated runtime execution, immutable raw evidence, deterministic processing,
+traceability, append-only correction, and audited thesis claims.}
+\label{fig:evaluation-evidence-flow}
+\end{figure}
 
 \subsection[Collaboration and Provenance Boundary]{Collaboration and
 Provenance\texorpdfstring{\newline}{ }Boundary}\label{subsec:method-provenance}
@@ -353,8 +363,6 @@ added to the four-field shared schema. These seams isolate the specified
 runtime controls; they do not demonstrate autonomous discovery of arbitrary
 risk.
 
-% [FIGURE LATER: case and injection-seam diagram]
-
 \subsection[Correctness and Consistency Measurement]{Correctness and
 Consistency\texorpdfstring{\newline}{ }Measurement}\label{subsec:method-rq1}
 
@@ -559,7 +567,9 @@ provider backend and unstored defaults may change, a private model credential
 must be attached locally, and process-local memory is not durable across a
 restart.
 
-% [FIGURE LATER: raw-to-processing-to-claim traceability flow]
+Figure~\ref{fig:evaluation-evidence-flow} links this locked raw authority to
+deterministic processing, run-level traceability, the append-only correction,
+and audited thesis claims.
 
 \subsection{Threats and Limitations of the Method}\label{subsec:method-limitations}
 

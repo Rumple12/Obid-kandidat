@@ -187,7 +187,8 @@ controls authorize, and inherited middleware performs the simulated action.
 The concrete workflow nodes and wiring are documented in
 Chapter~\ref{sec:implementation}.
 
-% [FIGURE LATER: final frozen Obid architecture]
+The complete path and its provenance boundary are shown in
+Figure~\ref{fig:final-system-architecture}.
 
 \subsection{Tool-Use and Controlled ReAct Design}\label{subsec:design-react}
 
@@ -369,9 +370,16 @@ simulated-fan path.
 The processing stages retain the provenance boundary established in
 Section~\ref{subsec:design-boundary}; integration does not merge authorship.
 
-% [FIGURE LATER: final agentic architecture with provenance bands]
-% FIGURE NOTE: Preserve provenance bands; omit credentials, transient form
-% locations, private metadata, unimplemented branches, and physical Obid hardware.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{final-system-architecture.pdf}
+\caption{The final architecture and provenance boundary. Yacoub-originated
+middleware and action infrastructure remain inherited, the shared contracts
+define the collaboration interface, and Obid adds the decision, runtime-control,
+HITL, and evaluation layers. The observable device boundary remains the
+inherited simulated fan.}
+\label{fig:final-system-architecture}
+\end{figure}
 
 \subsection{Summary of Chosen Approach}\label{subsec:design-summary}
 

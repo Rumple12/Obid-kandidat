@@ -133,8 +133,6 @@ not an additional shared action-contract value.
 The result is bounded to the defined cases and five repetitions per family;
 reason text was checked for a non-empty valid string rather than exact wording.
 
-% [FIGURE LATER: optional RQ1 case-family correctness chart]
-
 \subsection[RQ2 - Invalid-Action Validation Results]{RQ2 - Invalid-Action
 \texorpdfstring{\newline}{ }Validation Results}\label{subsec:results-rq2-invalid}
 
@@ -301,7 +299,8 @@ outcome. The table reports where the complete configurations produced the same
 or different outcomes. It does not attribute those differences to an
 individual component.
 
-% [FIGURE LATER: paired RQ3 reliability by case family]
+Figure~\ref{fig:rq3-results} combines these paired reliability counts with the
+automated-latency observations reported next.
 
 \subsection{RQ3 - Automated Latency Comparison}\label{subsec:results-rq3-latency}
 
@@ -338,7 +337,15 @@ remains in Table~\ref{tab:results-rq3-latency}; no outlier was removed, and the
 mean remains supplementary. These descriptive configuration-level values do
 not isolate component latency or support inferential claims.
 
-% [FIGURE LATER: RQ3 automated latency distributions/observations]
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{rq3-results.pdf}
+\caption{RQ3 reliability and automated-latency comparison. Reliability is shown
+as correct runs out of five for each frozen family; automated latency includes
+the five retained observations and median for High, Low, and Threshold only.
+Human waiting is excluded.}
+\label{fig:rq3-results}
+\end{figure}
 
 \subsection{HITL Timing Observations}\label{subsec:results-hitl-timing}
 
@@ -379,8 +386,6 @@ the controlled interaction, not estimates of general human response time.
 Every row is excluded from the RQ3 automated-latency calculation; neither the
 human-wait segment nor the total HITL elapsed value is mixed into that
 comparison.
-
-% [FIGURE LATER: optional segmented HITL timing observations]
 
 \subsection{LLM and Token Telemetry Availability}\label{subsec:results-telemetry}
 

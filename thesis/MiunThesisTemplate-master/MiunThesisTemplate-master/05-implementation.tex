@@ -21,7 +21,17 @@ state information to return a candidate action or internal
 and conditional HITL determine whether a candidate can reach an inherited fan
 route.
 
-% [FIGURE LATER: final CONFIG-OBID implementation flow]
+Figure~\ref{fig:config-obid-pipeline} summarizes the implemented decision and
+release path.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{config-obid-pipeline.pdf}
+\caption{The implemented \texttt{CONFIG-OBID} decision and release path. The
+model proposes an internal no-action or a candidate shared action, while
+deterministic validation, policy, and HITL control release.}
+\label{fig:config-obid-pipeline}
+\end{figure}
 
 \begin{table}[H]
 \centering
