@@ -17,7 +17,14 @@
 \usepackage{caption}
 
 \captionsetup[figure]{font=small,labelfont={bf,it},textfont=it}
-\hypersetup{hidelinks,hypertexnames=false}
+\hypersetup{
+  hidelinks,
+  hypertexnames=false,
+  pdftitle={A Controlled Agentic Decision Layer for IoT Workflows},
+  pdfauthor={Obid Alrhman Aljabi},
+  pdfsubject={Bachelor thesis in Computer Engineering},
+  pdfkeywords={n8n, agentic workflows, Internet of Things, runtime validation, Human-in-the-Loop, workflow automation}
+}
 \newcommand{\codepath}[1]{\texttt{\seqsplit{#1}}}
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 \newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
@@ -25,31 +32,23 @@
 \graphicspath{{Figures/}}
 \addbibresource{literature.bib}
 
-% [CHECK METADATA: final thesis title]
-\title{}
-% [CHECK METADATA: final thesis subtitle]
-% \subtitle{}
-% [CHECK METADATA: full Obid author name]
-\author{}
+\title{A Controlled Agentic Decision Layer for IoT Workflows}
+\subtitle{State Awareness, Runtime Validation, Human Approval, and Repeated Evaluation}
+\author{Obid Alrhman Aljabi}
 
-% Confirmed only at the project-type level by active Obid sources.
 \projecttype{Bachelor Thesis}
-% [CHECK METADATA: exact main field of study wording]
-\fieldofstudy{}
-% [CHECK METADATA: course credits]
-\coursecredits{}
-% [CHECK METADATA: supervisor]
-\supervisor{}
-% [CHECK METADATA: examiner]
-\examiner{}
-% [CHECK METADATA: course code]
-% \coursecode{}
-% [CHECK METADATA: registration number]
-% \registrationnr{}
-% [CHECK METADATA: exact study-programme wording]
-% \studyprogramme{}
-% [CHECK METADATA: final publication semester/year; the class derives these at build time]
-% [CHECK METADATA: publication choice and personal fields in Diva_publish.pdf]
+\fieldofstudy{Computer Engineering}
+\coursecredits{15 hp}
+\supervisor{Ali Hassan}
+\examiner{Patrik \"Osterberg}
+\coursecode{DT099G}
+\studyprogramme{Master of Science in Engineering- Computer Engineering}
+
+% Lock the confirmed publication semester and year independently of build time.
+\year=2026
+\makeatletter
+\renewcommand{\@miunthesis@semester}{Autumn}
+\makeatother
 
 \begin{document}
   \maketitle
