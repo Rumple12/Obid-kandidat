@@ -10,7 +10,7 @@ Allowed status values are used exactly as follows:
 
 - `SKELETON_ONLY`: heading and writing plan exist, but substantive drafting has not begun.
 - `READY_TO_DRAFT`: frozen source mapping is complete enough to draft. No evidence-heavy Chapter 4–6 entry remains at this status.
-- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. Chapter 8 is drafted and awaits independent audit; detailed mappings retain this drafting-stage vocabulary as historical bookkeeping for Chapters 1–7, which have completed the global redundancy audit/edit/repair/re-audit gate and are content-locked again.
+- `DRAFTED_NEEDS_AUDIT`: a substantive first draft exists within the audit/repair/re-audit gate. No substantive chapter remains at this gate; detailed mappings for Chapters 1–7 retain this drafting-stage vocabulary only as historical bookkeeping.
 - `NEEDS_REFERENCE`: external academic or authoritative literature must be researched and cited later.
 - `NEEDS_FIGURE`: a later figure may be derived from frozen architecture or evidence; no figure exists yet.
 - `CHECK_METADATA`: an Obid-specific metadata decision or confirmed value is missing.
@@ -19,9 +19,10 @@ Allowed status values are used exactly as follows:
 
 - Chapters 1–7: `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`.
 - Stage 13 chapter drafting and the global redundancy pass are complete.
-- Chapter 8 is `DRAFTED_NEEDS_AUDIT` and awaits independent audit.
+- Chapter 8 passed writer QA and independent audit and is `CONTENT_LOCKED_AFTER_INDEPENDENT_AUDIT`.
+- The substantive thesis body in Chapters 1–8 is complete; no substantive chapter awaits drafting or audit.
 - The bibliography contains 22 verified cited entries.
-- The next bounded task is the independent Chapter 8 audit.
+- The next phase is FINAL REPORT COMPLETION through separate bounded tasks, not another substantive chapter.
 
 ## Source-of-truth and evidence controls
 
@@ -69,6 +70,7 @@ Path convention: any entry using `raw/<file>` resolves to `evaluation/results/st
 | Step 10 | `docs/report-notes/step-10-repeated-reliability-evaluation.md` |
 | Step 11 | `docs/report-notes/step-11-final-implementation-and-evidence-freeze.md` |
 | Step 13 | `docs/report-notes/step-13-global-cross-chapter-redundancy-edit.md` |
+| Step 14 | `docs/report-notes/step-14-chapter-8-conclusions.md` |
 
 ### Frozen identities
 
@@ -1755,7 +1757,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** Mixed; final contribution must remain Obid-specific.
 - **Limitations/caveats:** Introduce no new results, methods, literature, or implementation claims.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ### 8.1 Direct Answers to the Research Questions
 
@@ -1770,7 +1772,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** RQ answers `OBID_CREATED` evaluation/analysis with inherited comparator labelled.
 - **Limitations/caveats:** RQ1 bounded cases only; RQ2 denial 4/5/deviation 1/crossings 0; RQ3 descriptive configuration differences with human wait excluded.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ### 8.2 Final Contribution
 
@@ -1785,7 +1787,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new.
 - **Provenance:** Stronger single-agent cognition, runtime validation/policy/HITL, and repeated evaluation `OBID_CREATED`; infrastructure/baselines/contracts excluded from authorship claim.
 - **Limitations/caveats:** Do not call inherited workflow-to-action infrastructure, middleware, contracts, baselines, or Pi evidence the Obid contribution.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ### 8.3 What Was Achieved
 
@@ -1800,7 +1802,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None.
 - **Provenance:** Obid-created capabilities/results with inherited boundary explicitly acknowledged.
 - **Limitations/caveats:** “Achieved” means within the frozen architecture, cases, seams, and simulated action boundary.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ### 8.4 What Was Not Achieved
 
@@ -1815,7 +1817,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None.
 - **Provenance:** Scope/limitations statement.
 - **Limitations/caveats:** Include no physical Obid hardware, multi-agent/validator comparison, model/memory/device comparison, production-safety proof, inferential generalization, direct cost comparison, or durable memory.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ### 8.5 Future Work
 
@@ -1830,7 +1832,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - **References needed later:** None new beyond Chapter 7.
 - **Provenance:** Proposed future work only.
 - **Limitations/caveats:** Clearly use future tense; validator agent remains deferred and was not part of the frozen thesis.
-- **Status:** `DRAFTED_NEEDS_AUDIT`.
+- **Status:** Content complete; independent audit passed; chapter locked.
 
 ## Appendix A — Report Artifact Index
 
@@ -2043,7 +2045,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Chapter 5 | 17 | Chapter overview plus all 16 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
-| Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Draft and writer QA complete; independent audit pending | `DRAFTED_NEEDS_AUDIT` |
+| Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Draft, writer QA, and independent audit complete | Content locked |
 | Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
 | References | 1 | 22 verified Chapter 2 entries; later-chapter reference work remains separately scoped | Chapter 2 source gate complete | `NEEDS_REFERENCE` for remaining report work |
 | **Total** | **120** | All current front-matter/report/appendix areas mapped | Current writing gates recorded | Complete |
@@ -2057,7 +2059,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] All current front-matter items and metadata gaps mapped.
 - [x] Every current Chapter 1–8 subsection mapped.
 - [x] Every current Appendix A subsection mapped.
-- [x] Chapters 1–7 completed the global redundancy audit/edit/repair/re-audit gate and are `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`. Chapter 8 is drafted, has passed writer QA, and remains `DRAFTED_NEEDS_AUDIT` pending independent audit.
+- [x] Chapters 1–7 remain `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`; Chapter 8 passed writer QA and independent audit and is `CONTENT_LOCKED_AFTER_INDEPENDENT_AUDIT`; the substantive Chapters 1–8 are complete.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
@@ -2065,6 +2067,17 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] Chapter 2 contains 22 verified citations and one related-work table; no figure was created. Later-chapter references and all figures remain separately scoped.
 - [x] No new experiment, image, implementation change, evidence rewrite, or substantive thesis prose is part of this map.
 
-## Recommended next bounded editorial task
+## Recommended next bounded editorial phase
 
-Run the independent Chapter 8 audit. Chapters 1–7 remain `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`; do not begin any later prose or style task yet.
+Proceed to FINAL REPORT COMPLETION. No substantive chapter awaits drafting or audit. Handle the remaining work only as separate bounded tasks:
+
+- abstracts/front matter;
+- terminology/abbreviations;
+- AI-use disclosure consistency;
+- contribution/provenance consistency;
+- remaining reference placeholders;
+- figures;
+- appendix/artifact index;
+- metadata;
+- thesis-wide consistency and visual QA; and
+- final PDF/package.
