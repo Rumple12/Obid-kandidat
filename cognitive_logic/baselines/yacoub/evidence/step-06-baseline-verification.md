@@ -14,7 +14,7 @@ These are bounded readiness observations, not Step 10 repetitions, RQ3 result ro
 | Obid container | `obid-n8n`, running |
 | n8n image/version | `n8nio/n8n:1.123.37`; runtime `1.123.37` |
 | Image digest | `sha256:913c83834b7130d701a121aab50c16dedd1739ab9317caa19d7ba2686d1de885` |
-| Yacoub execution checkout | `C:\Users\Jake_\AppData\Local\Temp\obid-step4-yacoub-78fabb31bf5f4ae6820746aa0093d8a3` |
+| Yacoub execution checkout | `<temporary-clean-yacoub-checkout>` |
 | Checkout state | clean detached checkout at the authoritative commit |
 | Middleware startup | `MIDDLEWARE_HOST=0.0.0.0`, `MIDDLEWARE_PORT=8000`, empty `N8N_WEBHOOK_URL`; `python -u -m middleware.api.app` |
 | Middleware addressing | host `http://127.0.0.1:8000`; n8n `http://host.docker.internal:8000` |

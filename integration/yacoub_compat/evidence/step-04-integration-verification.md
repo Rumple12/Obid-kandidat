@@ -52,7 +52,7 @@ The Set node copies the five received fields into a boundary receipt. It perform
 | Item | Observed value |
 | --- | --- |
 | Frozen commit | `278318340bfa4e4650a97a2baba73f63bd868ed9` |
-| Runtime checkout | `C:\Users\Jake_\AppData\Local\Temp\obid-step4-yacoub-78fabb31bf5f4ae6820746aa0093d8a3` |
+| Runtime checkout | `<temporary-clean-yacoub-checkout>` |
 | Checkout state | clean, detached, exact frozen commit |
 | Python | `3.13.14`; middleware uses only the Python standard library |
 | Source startup | `python -m middleware.api.app` from repository root |

@@ -152,19 +152,18 @@ record, or hidden reasoning was found in the new Step 11 package or frozen Step
 10 raw/evidence records. The Step 10 runner source contains only its non-secret
 localhost form-URL template; no run-specific form/resume value was retained.
 
-One pre-existing privacy-minimization issue remains visible in three frozen
-readiness/integration evidence files: each records the same absolute temporary
-checkout path and therefore includes the local operating-system username.
+The prior privacy-minimization issue in three readiness/integration evidence
+files has been resolved: the same absolute temporary checkout path was replaced
+with `<temporary-clean-yacoub-checkout>` in each file.
 
 - `integration/yacoub_compat/evidence/step-04-integration-verification.md:55`;
 - `cognitive_logic/baselines/yacoub/evidence/step-06-baseline-verification.md:17`; and
 - `cognitive_logic/obid/evidence/step-07-cognitive-verification.md:30`.
 
-The path is provenance/reproducibility metadata, not a credential, secret,
-thesis-owner record, or remote account identifier. Step 11 does not rewrite
-frozen evidence to redact it. The local username/path should not be reproduced
-in thesis prose, figures, tables, or screenshots; report references should use
-the frozen Yacoub commit and repository-relative artifact paths instead.
+This was a privacy-only documentation repair. It did not modify runtime
+observations, experimental evidence semantics, commands, results, commit
+identities, provenance, or interpretation. Report references continue to use
+the frozen Yacoub commit and repository-relative artifact paths.
 
 ## Figure and table inventory
 

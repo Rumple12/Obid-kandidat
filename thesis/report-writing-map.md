@@ -2,7 +2,7 @@
 
 ## Map purpose and use
 
-This file is a structured source-and-claim plan for the MIUN-based Obid thesis. It is not thesis prose and does not indicate that a chapter has been written. `READY_TO_DRAFT` means only that the frozen repository sources needed for a bounded first draft have been mapped.
+This file is the retained source-and-claim map for the completed MIUN-based Obid thesis. Detailed entries preserve their historical drafting-stage vocabulary; current completion is recorded in the high-level checkpoint and coverage index.
 
 The map follows the headings currently present under `thesis/MiunThesisTemplate-master/MiunThesisTemplate-master/`. Every entry records its purpose, intended claim or question, evidence sources, planned presentation, provenance, caveats, and status.
 
@@ -17,12 +17,14 @@ Allowed status values are used exactly as follows:
 
 ### Current chapter lock checkpoint
 
-- Chapters 1–7: `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`.
-- Stage 13 chapter drafting and the global redundancy pass are complete.
-- Chapter 8 passed writer QA and independent audit and is `CONTENT_LOCKED_AFTER_INDEPENDENT_AUDIT`.
-- The substantive thesis body in Chapters 1–8 is complete; no substantive chapter awaits drafting or audit.
-- The bibliography contains 22 verified cited entries.
-- The next phase is FINAL REPORT COMPLETION through separate bounded tasks, not another substantive chapter.
+- Chapters 1–8 have passed their full gates and are content-locked.
+- Step 13 chapter drafting and subsequent final report completion are complete.
+- The bibliography contains 36 verified cited entries, all 36 are cited, and no reference placeholder remains.
+- Four final report figures are complete, and no figure or diagram placeholder remains.
+- Appendix A is complete at three compiled pages.
+- Abstract, Sammanfattning, public metadata, and acknowledgements are complete.
+- The final whole-thesis audit is complete; its bounded repair is complete pending targeted re-audit.
+- After targeted re-audit, the next task is private DiVA completion and final packaging.
 
 ## Source-of-truth and evidence controls
 
@@ -177,27 +179,11 @@ Denial R03 must remain incorrect against its assigned denial oracle. Its actual 
 - Reproduction, verification, compatible configuration, integration, or comparison never transfers authorship.
 - The active minimal baseline is a provenance-labelled compatible reproduction with documented repairs, not a byte-identical copy of an incomplete draft.
 
-### Metadata gaps
+### Metadata and front-matter status
 
-Do not copy collaborator-specific personal metadata or guess any missing Obid value.
-
-| Missing or unconfirmed item | Required treatment |
-|---|---|
-| Final thesis title | Retain `% [CHECK METADATA: final thesis title]` |
-| Subtitle | Retain `% [CHECK METADATA: final thesis subtitle]` |
-| Full Obid author name | Confirm from an active authorized source |
-| Supervisor | Retain a check placeholder |
-| Examiner | Retain a check placeholder |
-| Registration number | Retain a check placeholder |
-| Exact main field of study wording | Retain a check placeholder |
-| Exact study-programme wording | Retain a check placeholder |
-| Course credits | Retain a check placeholder |
-| Course code | Retain a check placeholder |
-| Publication semester/year | Confirm; do not infer merely from build date |
-| DiVA publication choice and personal fields | Confirm before final submission |
-| Acknowledgements or foreword choice and approved names | Confirm with author |
-| English and Swedish keywords | Choose only after the abstract is stable |
-| Required AI-tool disclosure wording/location | Confirm MIUN/course requirement |
+Public thesis metadata, Abstract, Sammanfattning, and acknowledgements are
+complete. Private DiVA administrative fields remain outside Git and are deferred
+to private completion and final packaging.
 
 ### Source and reference caveats
 
@@ -206,10 +192,10 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - The approved Yacoub PDF is a visual/passing-format reference only. It cannot override frozen Obid evidence.
 - `reference/` is read-only source/history/collaborator material.
 - Yacoub's old two-case, single-run, specification-only-safety, stateless-Obid, Raspberry Pi-as-Obid, and CSV-measurement claims do not describe the final Obid study.
-- Chapter 2 reference research is complete with 22 verified, cited entries; no bibliography was imported wholesale. Later reference work remains separately scoped.
+- Thesis reference research is complete with 36 verified cited entries and zero reference placeholders; no bibliography was imported wholesale.
 - Repository implementation documents are not substitutes for external theory/related-work sources.
-- No active final report screenshots or figures exist. Later figures must be derived only from frozen architecture/data and must not expose credentials, owner/project data, transient HITL URLs, the retained local username/path, or hidden reasoning.
-- Use repository-relative paths in prose, tables, and figures; do not reproduce absolute temporary checkout paths found in three readiness evidence files.
+- Four final report figures are complete and contain no credentials, owner/project data, transient HITL URLs, local username/path, or hidden reasoning.
+- Use repository-relative paths in prose, tables, and figures; the temporary checkout paths in the three readiness evidence files have been neutralized.
 
 ## Front matter
 
@@ -2037,7 +2023,7 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 
 | Area | Current mapped entries | Heading coverage | Required status gate | Map result |
 |---|---:|---|---|---|
-| Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Metadata gaps explicit | Complete |
+| Front matter | 7 | Title metadata, DiVA sheet, Abstract, Sammanfattning, Acknowledgements/Foreword, contents, terminology | Public metadata and front matter complete; private DiVA fields remain external | Complete |
 | Chapter 1 | 10 | Chapter overview plus all 9 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 2 | 14 | Chapter overview plus all 13 current subsections; one related-work table; 22 verified cited entries; 8 printed pages | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 3 | 14 | Chapter overview plus all 13 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
@@ -2046,8 +2032,8 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 | Chapter 6 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 7 | 13 | Chapter overview plus all 12 current subsections | Global redundancy audit/edit/repair/re-audit complete | Content locked |
 | Chapter 8 | 6 | Chapter overview plus all 5 current subsections | Draft, writer QA, and independent audit complete | Content locked |
-| Appendix A | 12 | Appendix overview plus all 11 current subsections | Artifact index only | `SKELETON_ONLY` |
-| References | 1 | 22 verified Chapter 2 entries; later-chapter reference work remains separately scoped | Chapter 2 source gate complete | `NEEDS_REFERENCE` for remaining report work |
+| Appendix A | 12 | Complete three-page artifact index | Final whole-thesis audit complete | Complete |
+| References | 1 | 36 verified cited entries; zero reference placeholders | Final source gate complete | Complete |
 | **Total** | **120** | All current front-matter/report/appendix areas mapped | Current writing gates recorded | Complete |
 
 ### Validation checklist for the next report-writing task
@@ -2056,28 +2042,20 @@ Do not copy collaborator-specific personal metadata or guess any missing Obid va
 - [x] Evidence hierarchy recorded with the R03 correction above processed interpretation.
 - [x] Step 12 start HEAD, substantive content head, Step 11 metadata checkpoint, Yacoub commit, manifest, experiment freeze, raw lock, and freeze gate recorded.
 - [x] Final `CONFIG-BASELINE` and `CONFIG-OBID` identities, model/runtime, tools, memory, iteration bound, validation, policy, HITL, and simulated action boundary recorded.
-- [x] All current front-matter items and metadata gaps mapped.
+- [x] Public metadata, Abstract, Sammanfattning, and acknowledgements are complete; private DiVA fields remain external.
 - [x] Every current Chapter 1–8 subsection mapped.
-- [x] Every current Appendix A subsection mapped.
-- [x] Chapters 1–7 remain `CONTENT_LOCKED_AFTER_GLOBAL_REDUNDANCY_PASS`; Chapter 8 passed writer QA and independent audit and is `CONTENT_LOCKED_AFTER_INDEPENDENT_AUDIT`; the substantive Chapters 1–8 are complete.
+- [x] Appendix A is complete at three compiled pages.
+- [x] Chapters 1–8 have passed their full gates and are content-locked.
 - [x] Chapter 6 maps Step 10 raw and processed sources, R03 correction, negative evidence, telemetry, and automated-latency boundaries.
 - [x] All task-specified unsupported-claim warnings listed.
 - [x] Important component and evidence provenance warnings listed.
 - [x] Yacoub LaTeX/PDF use restricted to structural/visual reference; Yacoub content/results/metadata excluded.
-- [x] Chapter 2 contains 22 verified citations and one related-work table; no figure was created. Later-chapter references and all figures remain separately scoped.
+- [x] The bibliography contains 36 verified cited entries; four final figures are complete; zero reference or figure/diagram placeholders remain.
 - [x] No new experiment, image, implementation change, evidence rewrite, or substantive thesis prose is part of this map.
+- [x] The final whole-thesis audit is complete; its bounded repair is complete pending targeted re-audit.
 
 ## Recommended next bounded editorial phase
 
-Proceed to FINAL REPORT COMPLETION. No substantive chapter awaits drafting or audit. Handle the remaining work only as separate bounded tasks:
-
-- abstracts/front matter;
-- terminology/abbreviations;
-- AI-use disclosure consistency;
-- contribution/provenance consistency;
-- remaining reference placeholders;
-- figures;
-- appendix/artifact index;
-- metadata;
-- thesis-wide consistency and visual QA; and
-- final PDF/package.
+After targeted re-audit, proceed only to private DiVA completion and final
+packaging. Public thesis content is complete; do not reopen locked chapters or
+frozen evidence.

@@ -1,7 +1,6 @@
 % Author of the LaTeX class: Lennart Franked.
 % Main author of the official MIUN template contents: Stefan Forsstrom.
-% REPORT WRITER: Obid report bootstrap only. Chapter files contain headings and
-% source-mapping comments, not substantive thesis prose.
+% Final Obid thesis source with substantive locked chapter content.
 
 \documentclass[english]{miunthesis}
 \usepackage{csquotes}
@@ -63,8 +62,8 @@
   \tableofcontents
   \newpage
 
-  % The approved Yacoub reference omits separate lists of figures, tables, and
-  % algorithms. They can be reconsidered after the Obid figures/tables exist.
+  % The completed front-matter sequence omits separate lists of figures, tables,
+  % and algorithms.
   \include{00-terminology}
   \newpage
 
@@ -79,7 +78,11 @@
   \include{08-conclusions}
 
   \addcontentsline{toc}{section}{\translate{References}}
+  \begingroup
+  \setlength{\emergencystretch}{0.5em}
+  \sloppy
   \printbibliography{}
+  \endgroup
 
   \newpage\clearpage
   \pagestyle{fancy}

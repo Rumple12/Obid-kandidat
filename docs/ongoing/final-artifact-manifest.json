@@ -65,7 +65,7 @@
     {
       "artifact_id": "step4_integration_evidence",
       "path": "integration/yacoub_compat/evidence/step-04-integration-verification.md",
-      "sha256": "e00d8b849cf32947b3468c3f6d1d3291910d12b7b64ec8de2652e865a2f1a6e3",
+      "sha256": "0c56b828b1fe78c1849adfc1b07249f4f1dadbeedcf3eda108def4483f8558c3",
       "provenance": "OBID_CREATED",
       "role": "Yacoub-compatible seam evidence"
     },
@@ -144,7 +144,7 @@
     {
       "artifact_id": "step6_baseline_evidence",
       "path": "cognitive_logic/baselines/yacoub/evidence/step-06-baseline-verification.md",
-      "sha256": "6c59c802d6a3fdcd5eb1d2c234806d53abcfbf8efe42eff06767767e8ec1bb2f",
+      "sha256": "5444394277508e77746c9549ed9f449a8786ba89acc94a4987b325343d8654bf",
       "provenance": "OBID_CREATED"
     },
     {
@@ -199,7 +199,7 @@
     {
       "artifact_id": "step7_cognitive_evidence",
       "path": "cognitive_logic/obid/evidence/step-07-cognitive-verification.md",
-      "sha256": "d9c46c28c2ea1ba6f568f83b1ae3eeda740b36010dbc8fce1bb9c363adf74b0f",
+      "sha256": "45af845533d99a4d71e33c790bd0b6d875030d142c4937a640d8af32f9dc5b9c",
       "provenance": "OBID_CREATED"
     },
     {

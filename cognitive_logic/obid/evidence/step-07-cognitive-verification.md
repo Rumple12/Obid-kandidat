@@ -27,7 +27,7 @@ RQ percentages, latency comparison rows, or production-safety evidence.
 | Model | `models/gemini-2.5-flash`; stored generation options `{}` |
 | Workflow | `CONFIG-OBID - Single Agent v1`, ID `obid-agent-v1` |
 | Webhook | active production `POST /webhook/obid-agent-v1` |
-| Yacoub checkout | `C:\Users\Jake_\AppData\Local\Temp\obid-step4-yacoub-78fabb31bf5f4ae6820746aa0093d8a3` |
+| Yacoub checkout | `<temporary-clean-yacoub-checkout>` |
 | Frozen commit | `278318340bfa4e4650a97a2baba73f63bd868ed9` |
 | Middleware start | `MIDDLEWARE_HOST=0.0.0.0`, `MIDDLEWARE_PORT=8000`, empty `N8N_WEBHOOK_URL`; `python -u -m middleware.api.app` |
 | Addressing | host `127.0.0.1:8000`; n8n `host.docker.internal:8000` |
