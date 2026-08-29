@@ -29,37 +29,98 @@ changed after repeated observation began.
 
 \begin{table}[H]
 \centering
-\caption{Methodological phases and evidence gates}
+\caption{Methodological phases and corresponding evidence gates}
 \label{tab:method-phases}
-\footnotesize
-\begin{tabularx}{\textwidth}{L{0.20\textwidth}Y L{0.27\textwidth}}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.19\textwidth}
+  Y
+  L{0.28\textwidth}
+  @{}
+}
 \toprule
-\textbf{Phase} & \textbf{Conduct and controlled output} &
-\textbf{Evidence gate} \\
+\textbf{Phase}
+&
+\textbf{Conduct and controlled output}
+&
+\textbf{Evidence gate}
+\\
 \midrule
-Scope and provenance & Bound the contribution and collaboration; fix the
-research questions, ownership classes, scenario, and core comparison &
-Recorded human decisions and repository scope lock \\
-Contract and oracle definition & Freeze shared interfaces, cases,
-applicability, expected outcomes, repetition, order, resets, and timing &
-No-drift checks and pre-observation oracle \\
-Constructive development & Reproduce the inherited comparator; construct the
-Obid extension and controlled seams & Versioned configurations, compatibility,
-and bounded runtime readiness \\
-Controlled verification and freeze & Use one-off checks to establish readiness;
-record configuration, runtime, model, workflow, protocol, and contract
-identities & Readiness kept outside results; experiment freeze before
-repetition 1 \\
-Repeated evaluation and raw lock & Apply the same conditions with stable attempt
-identities and observable runtime records & Every attempt retained without
-replacement; raw integrity checks pass \\
-Evidence processing & Derive predefined summaries and traceability from the
-locked raw authority & Hash, completeness, denominator, and privacy checks \\
-Independent review & Check factual, provenance, and claim--evidence consistency;
-repair only accepted findings & Audit pass; audits are not experimental
-observations \\
+
+\textbf{Scope and provenance}
+&
+Define the contribution and collaboration boundary; fix the research
+questions, ownership classes, scenario, and core comparison.
+&
+Recorded human decisions and repository scope lock.
+\\
+\addlinespace[2pt]
+
+\textbf{Contract and oracle definition}
+&
+Freeze the shared interfaces, cases, applicability, expected outcomes,
+repetitions, execution order, resets, and timing rules.
+&
+No-drift checks and a pre-observation oracle.
+\\
+\addlinespace[2pt]
+
+\textbf{Constructive development}
+&
+Reproduce the inherited comparator; implement the Obid extension and
+controlled evaluation seams.
+&
+Versioned configurations, compatibility checks, and bounded runtime
+readiness.
+\\
+\addlinespace[2pt]
+
+\textbf{Controlled verification and freeze}
+&
+Use one-off checks to establish readiness; record the configuration,
+runtime, model, workflow, protocol, and contract identities.
+&
+Readiness excluded from the results; experiment frozen before
+repetition~1.
+\\
+\addlinespace[2pt]
+
+\textbf{Repeated evaluation and raw-data lock}
+&
+Execute the frozen conditions using stable attempt identities and
+observable runtime records.
+&
+Every attempt retained; no result replacement; raw-integrity checks
+passed.
+\\
+\addlinespace[2pt]
+
+\textbf{Evidence processing}
+&
+Derive predefined summaries and traceability from the locked raw
+records.
+&
+Hash, completeness, denominator, and privacy checks.
+\\
+\addlinespace[2pt]
+
+\textbf{Independent review}
+&
+Check factual, provenance, and claim--evidence consistency; repair only
+accepted findings.
+&
+Audit pass; audits excluded from experimental observations.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The formal wording of RQ1--RQ3 is given in
