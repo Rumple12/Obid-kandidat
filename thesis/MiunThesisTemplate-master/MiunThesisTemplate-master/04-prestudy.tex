@@ -50,30 +50,97 @@ about systems outside the thesis scope.
 \centering
 \caption{Design goals and constraints mapped to the selected response}
 \label{tab:design-goals}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.31\textwidth}L{0.09\textwidth}Y}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.14}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.20\textwidth}
+  L{0.34\textwidth}
+  >{\centering\arraybackslash}p{0.08\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Goal or constraint} & \textbf{Selected design response} &
-\textbf{RQ} & \textbf{Remaining boundary} \\
+\textbf{Goal or constraint}
+&
+\textbf{Selected design response}
+&
+\textbf{RQ}
+&
+\textbf{Remaining boundary}
+\\
 \midrule
-Expected and state-aware action choice & One Decision Agent with deterministic
-threshold calculation, current-state observation, bounded memory, and a
-structured decision & RQ1 & One temperature-to-fan scenario \\
-Malformed-input attribution & Deterministic Obid input handling at a controlled
-pre-decision ingress & RQ1, RQ3 & Not a general sensor-security gateway \\
-Controlled action release & Contract-specific validation followed by
-deterministic policy and conditional HITL & RQ2 & Narrow frozen action contract
-and policy context \\
-Comparable configurations & One inherited minimal-agent baseline and one
-extended Obid configuration using the same model and interface semantics & RQ3
-& No model-family or device comparison \\
-State dependence without open-ended history & One session-scoped,
-two-interaction memory window & RQ1, RQ3 & Process-local and not durable \\
-Attributable evidence & Controlled seams, observable terminals, stable run
-identity, and endpoint non-execution records & RQ1--RQ3 & Experimental controls,
-not production interfaces \\
+
+\textbf{Expected and state-aware action choice}
+&
+One Decision Agent using deterministic threshold calculation,
+current-state observation, bounded memory, and a structured decision.
+&
+RQ1
+&
+One temperature-to-fan scenario.
+\\
+\addlinespace[2pt]
+
+\textbf{Malformed-input attribution}
+&
+Deterministic Obid input handling at a controlled pre-decision ingress.
+&
+RQ1,\newline RQ3
+&
+Not a general sensor-security gateway.
+\\
+\addlinespace[2pt]
+
+\textbf{Controlled action release}
+&
+Contract-specific validation followed by deterministic policy and
+conditional HITL.
+&
+RQ2
+&
+One frozen action contract and controlled policy context.
+\\
+\addlinespace[2pt]
+
+\textbf{Comparable configurations}
+&
+One inherited minimal-agent baseline and one extended Obid
+configuration using the same model and interface semantics.
+&
+RQ3
+&
+No model-family or device comparison.
+\\
+\addlinespace[2pt]
+
+\textbf{Bounded state dependence}
+&
+One session-scoped, two-interaction memory window.
+&
+RQ1,\newline RQ3
+&
+Process-local and not durable.
+\\
+\addlinespace[2pt]
+
+\textbf{Attributable evidence}
+&
+Named seams, observable terminals, stable run identities, and endpoint
+non-execution records.
+&
+RQ1--RQ3
+&
+Experimental controls, not production interfaces.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 \subsection{Inherited Collaboration Boundary}\label{subsec:design-boundary}
@@ -117,41 +184,139 @@ than as evidence that one approach performed better than another.
 \centering
 \caption{Alternatives and frozen scope decisions}
 \label{tab:design-alternatives}
+
+\begingroup
 \footnotesize
-\begin{tabularx}{\textwidth}{L{0.19\textwidth}L{0.12\textwidth}L{0.31\textwidth}Y}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.18\textwidth}
+  L{0.13\textwidth}
+  L{0.31\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Alternative} & \textbf{Decision} & \textbf{Scope or RQ reason} &
-\textbf{Evidentiary boundary} \\
+\textbf{Alternative}
+&
+\textbf{Decision}
+&
+\textbf{Scope or RQ reason}
+&
+\textbf{Evidentiary boundary}
+\\
 \midrule
-Deterministic-only system & Not selected as the extension & Cannot examine the
-agentic decision behavior posed by RQ1 and RQ3 & Retained only as an inherited
-engineering anchor \\
-Broad multi-agent system & Excluded & RQ1--RQ3 do not require agent
-coordination; it would add stochastic roles and attribution paths & No
-single-versus-multi-agent comparison \\
-Optional validator agent & Deferred & Deterministic validation already retains
-release authority; a second agent would add another model-dependent axis & No
-validator-agent implementation or result \\
-Multiple LLMs & Excluded & One frozen model keeps RQ3 focused on workflow
-architecture rather than model-family differences & No model-superiority claim
-or benchmark \\
-Multiple memory strategies & Excluded & One bounded state mechanism is enough
-for the defined state-dependent requirement & No memory-strategy superiority or
-ablation claim \\
-Shared-contract redesign & Excluded & Compatibility and fair comparison require
-unchanged event/action semantics & Internal metadata cannot become shared
-fields \\
-Middleware rebuild & Excluded & It would duplicate inherited work and obscure
-the actual contribution & Middleware behavior remains inherited \\
-New Raspberry Pi or GPIO work & Excluded & The decision/reliability questions
-end at the compatible action boundary & No physical Obid hardware evidence \\
-Multiple devices & Excluded & A single fan target is sufficient for the bounded
-scenario & No device-generalization claim \\
-Production observability or security stack & Excluded & Deployment, scale, and
-generic security are outside the thesis questions & No production-safety or
-production-readiness claim \\
+
+\textbf{Deterministic-only extension}
+&
+\textbf{Not selected}
+&
+Cannot examine the agentic decision behaviour posed by RQ1 and RQ3.
+&
+Retained only as an inherited engineering anchor.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Broad multi-agent system}
+&
+\textbf{Excluded}
+&
+The RQs do not require agent coordination; additional agents would add
+stochastic roles and attribution paths.
+&
+No single-agent versus multi-agent comparison.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Optional validator agent}
+&
+\textbf{Deferred}
+&
+Deterministic validation already retains release authority; a second
+agent would add another model-dependent axis.
+&
+No validator-agent implementation or result.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Multiple LLMs}
+&
+\textbf{Excluded}
+&
+One frozen model keeps RQ3 focused on workflow configuration rather than
+model-family differences.
+&
+No model-superiority claim or benchmark.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Multiple memory strategies}
+&
+\textbf{Excluded}
+&
+One bounded state mechanism satisfies the defined state-dependent
+requirement.
+&
+No memory-strategy superiority or ablation claim.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Shared-contract redesign}
+&
+\textbf{Excluded}
+&
+Compatibility and fair comparison require unchanged event and action
+semantics.
+&
+Internal metadata remains outside the shared fields.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Middleware rebuild}
+&
+\textbf{Excluded}
+&
+It would duplicate inherited work and obscure the actual contribution.
+&
+Middleware behaviour remains inherited.
+\\
+\addlinespace[1.5pt]
+
+\textbf{New Raspberry Pi or GPIO work}
+&
+\textbf{Excluded}
+&
+The decision and reliability questions end at the compatible action
+boundary.
+&
+No physical Obid hardware evidence.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Multiple devices}
+&
+\textbf{Excluded}
+&
+One fan target is sufficient for the bounded scenario.
+&
+No device-generalization claim.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Production observability or security stack}
+&
+\textbf{Excluded}
+&
+Deployment, scale, and generic security are outside the thesis RQs.
+&
+No production-safety or production-readiness claim.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 One Decision Agent keeps responsibility attributable and both evaluated
@@ -264,28 +429,97 @@ shows the separation.
 \centering
 \caption{Internal decision representation and shared action boundary}
 \label{tab:design-output-boundary}
+
+\begingroup
 \footnotesize
-\begin{tabularx}{\textwidth}{L{0.16\textwidth}L{0.25\textwidth}L{0.25\textwidth}Y}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.14}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.17\textwidth}
+  L{0.24\textwidth}
+  L{0.29\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Element} & \textbf{Fields or values} & \textbf{Design purpose} &
-\textbf{Boundary} \\
+\textbf{Element}
+&
+\textbf{Fields or values}
+&
+\textbf{Design purpose}
+&
+\textbf{Boundary}
+\\
 \midrule
-Internal decision & \texttt{emit\_action} or \texttt{no\_action} & Distinguish
-state change from duplicate suppression & \texttt{OBID\_CREATED} only \\
-Internal state & \texttt{state\_before}, \texttt{state\_after} & Carry explicit
-state context for the bounded decision & Not a shared action field \\
-Internal reason code & \texttt{reason\_code} & Classify the decision outcome &
-Not endpoint or policy authority \\
-Nested action & \texttt{action\_id}, \texttt{target}, \texttt{reason},
-\texttt{requires\_approval} & Represent one candidate state change & Exact
-four-field \texttt{SHARED\_}\newline\texttt{INTERFACE} shape \\
-Internal no-op & \texttt{decision=}\newline\texttt{no\_action},
-\texttt{action=null} & Suppress a
-duplicate without emitting an action & No shared action is formed \\
-Policy metadata & Hold, release, and policy outcome fields & Control downstream
-authorization & Remains outside the shared schema \\
+
+\textbf{Internal decision}
+&
+\texttt{emit\_action} or \texttt{no\_action}
+&
+Distinguishes a required state change from duplicate suppression.
+&
+\texttt{OBID\_CREATED} only.
+\\
+\addlinespace[2pt]
+
+\textbf{Internal state}
+&
+\texttt{state\_before}, \texttt{state\_after}
+&
+Carries explicit state context for the bounded decision.
+&
+Not part of the shared action.
+\\
+\addlinespace[2pt]
+
+\textbf{Internal reason code}
+&
+\texttt{reason\_code}
+&
+Classifies the internal decision outcome.
+&
+Provides neither endpoint nor policy authority.
+\\
+\addlinespace[2pt]
+
+\textbf{Nested action}
+&
+\texttt{action\_id}, \texttt{target}, \texttt{reason},
+\texttt{requires\_approval}
+&
+Represents one candidate state change.
+&
+Exact four-field
+\texttt{SHARED\_}\newline\texttt{INTERFACE} shape.
+\\
+\addlinespace[2pt]
+
+\textbf{Internal no-op}
+&
+\texttt{decision=}\newline
+\texttt{no\_action},\newline
+\texttt{action=null}
+&
+Suppresses a duplicate without emitting an action.
+&
+No shared action is formed.
+\\
+\addlinespace[2pt]
+
+\textbf{Policy metadata}
+&
+Held action, released action, and policy outcome.
+&
+Controls downstream authorization.
+&
+Remains outside the shared schema.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 This separation allows Obid to add state-aware reasoning and runtime metadata

@@ -222,26 +222,88 @@ failure.
 \centering
 \caption{Denial-R03 evidence and final correction hierarchy}
 \label{tab:results-r03}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.31\textwidth}Y L{0.24\textwidth}}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.29\textwidth}
+  Y
+  L{0.25\textwidth}
+  @{}
+}
 \toprule
-\textbf{Measure or observation} & \textbf{Recorded value} &
-\textbf{Classification} \\
+\textbf{Measure or observation}
+&
+\textbf{Recorded value}
+&
+\textbf{Classification}
+\\
 \midrule
-Assigned and actual decision & Assigned \texttt{deny}; actual
-\texttt{approve} & One decision-protocol deviation \\
-Pending state & Waiting; held action present; release null; endpoints 0/0;
-fan off & Pending invariant satisfied \\
-Post-decision state & Unchanged valid action released after approval;
-\texttt{/fan/on} once; fan on & Approved release \\
-Assigned-denial correctness & 4/5 (80\%) & R03 remains oracle-incorrect \\
-Planned versus actual decisions & Planned 5 approve / 5 deny; actual 6 approve /
-4 deny & Assigned and submitted values separated \\
-Historical processed crossing flag & 1 & Frozen processing history retained \\
-Final invalid/unapproved crossings & 0 & Append-only correction controls final
-RQ2 interpretation \\
+
+\textbf{Assigned and actual decision}
+&
+Assigned \texttt{deny}; actual \texttt{approve}.
+&
+One decision-protocol deviation.
+\\
+\addlinespace[2pt]
+
+\textbf{Pending state}
+&
+Waiting; held action present; released action null; endpoints 0/0; fan
+off.
+&
+Pending invariant satisfied.
+\\
+\addlinespace[2pt]
+
+\textbf{Post-decision state}
+&
+Unchanged valid action released after approval; \texttt{/fan/on} called
+once; fan on.
+&
+Approved release.
+\\
+\addlinespace[2pt]
+
+\textbf{Assigned-denial correctness}
+&
+4/5 (80\%).
+&
+R03 remains oracle-incorrect.
+\\
+\addlinespace[2pt]
+
+\textbf{Planned versus actual decisions}
+&
+Planned 5 approve / 5 deny; actual 6 approve / 4 deny.
+&
+Assigned and submitted values remain separate.
+\\
+\addlinespace[2pt]
+
+\textbf{Historical processed crossing flag}
+&
+1.
+&
+Frozen processing history retained.
+\\
+\addlinespace[2pt]
+
+\textbf{Final invalid or unapproved crossings}
+&
+0.
+&
+Append-only correction controls the final RQ2 interpretation.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The original processed RQ2 files remain immutable. Their classifier marked

@@ -213,28 +213,97 @@ caller-side endpoint branches.
 \centering
 \caption{Implementation characteristics of the two core configurations}
 \label{tab:impl-configurations}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.24\textwidth}Y Y}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.14}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.23\textwidth}
+  Y
+  Y
+  @{}
+}
 \toprule
-\textbf{Characteristic} & \textbf{\texttt{CONFIG-BASELINE}} &
-\textbf{\texttt{CONFIG-OBID}} \\
+\textbf{Characteristic}
+&
+\textbf{\texttt{CONFIG-BASELINE}}
+&
+\textbf{\texttt{CONFIG-OBID}}
+\\
 \midrule
-Decision component & One Basic LLM Chain & One tool-using AI Agent v3 \\
-Model & One Gemini node; effective\newline
-\texttt{models/}\newline\texttt{gemini-2.5-flash} & One Gemini node;\newline
-\texttt{models/}\newline\texttt{gemini-2.5-flash} \\
-Stored options & \texttt{\{\}} & \texttt{\{\}} \\
-Tools & None & Exactly two read-only tools \\
-Memory & Stateless & Two completed interactions, session-scoped and
-process-local \\
-Output handling & Minimal object extraction and route checks & Internal
-decision envelope followed by contract-specific action validation \\
-Release controls & No Obid validator, policy, or HITL & Deterministic
-validation, policy, and caller-embedded HITL \\
-Provenance & Inherited semantics and configuration & Obid-created extension on
-the shared boundary \\
+
+\textbf{Decision component}
+&
+One Basic LLM Chain.
+&
+One tool-using AI Agent v3.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Model}
+&
+One Gemini node using
+\codepath{models/gemini-2.5-flash}.
+&
+One Gemini node using
+\codepath{models/gemini-2.5-flash}.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Stored options}
+&
+\texttt{\{\}}
+&
+\texttt{\{\}}
+\\
+\addlinespace[1.5pt]
+
+\textbf{Tools}
+&
+None.
+&
+Exactly two read-only tools.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Memory}
+&
+Stateless.
+&
+Two completed interactions; session-scoped and process-local.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Output handling}
+&
+Minimal object extraction and action-route checks.
+&
+Internal decision envelope followed by contract-specific action
+validation.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Release controls}
+&
+No Obid validator, policy, or HITL.
+&
+Deterministic validation, policy, and caller-embedded HITL.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Provenance}
+&
+Inherited semantics and configuration.
+&
+Obid-created extension operating on the shared boundary.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The versioned Obid exports preserve implementation lineage without changing
@@ -297,22 +366,57 @@ release controls.
 \centering
 \caption{Decision Agent tool implementations}
 \label{tab:impl-tools}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.24\textwidth}L{0.22\textwidth}Y L{0.18\textwidth}}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.24\textwidth}
+  L{0.19\textwidth}
+  Y
+  L{0.22\textwidth}
+  @{}
+}
 \toprule
-\textbf{Tool} & \textbf{Input} & \textbf{Output and role} &
-\textbf{Side-effect boundary} \\
+\textbf{Tool}
+&
+\textbf{Input}
+&
+\textbf{Output and decision role}
+&
+\textbf{Side-effect boundary}
+\\
 \midrule
-\texttt{temperature\_}\newline\texttt{threshold\_tool} & Finite numeric
-\texttt{value} and exact unit \texttt{C} & Returns the threshold, relation,
-desired action, and desired fan state using the inherited inclusive rule. &
-No state read, middleware call, memory mutation, or action call \\
-\texttt{fan\_status\_tool} & Literal target \texttt{fan\_1} & Runs an inline
-subworkflow that calls \texttt{GET /status} and normalizes target, fan state,
-simulated flag, and source. & No \texttt{/fan/on} or \texttt{/fan/off} route,
-agent recursion, or credential \\
+
+\texttt{temperature\_}\newline
+\texttt{threshold\_tool}
+&
+Finite numeric \texttt{value}; exact unit \texttt{C}.
+&
+Returns the threshold, relation, desired action, and desired fan state
+under the inherited inclusive rule.
+&
+No state read, middleware call, memory mutation, or action call.
+\\
+\addlinespace[2pt]
+
+\texttt{fan\_status\_tool}
+&
+Literal target \texttt{fan\_1}.
+&
+Runs an inline workflow that reads \texttt{GET /status} and normalizes
+the target, fan state, simulated flag, and source.
+&
+No \texttt{/fan/on} or \texttt{/fan/off} route, agent recursion, or
+credential.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 \texttt{temperature\_threshold\_tool} is an n8n Tool Code node, type version
@@ -454,22 +558,66 @@ not extend the shared action.
 \centering
 \caption{Deterministic policy and release semantics}
 \label{tab:impl-policy}
-\small
-\begin{tabularx}{\textwidth}{L{0.21\textwidth}Y L{0.23\textwidth}L{0.20\textwidth}}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.16}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.20\textwidth}
+  L{0.35\textwidth}
+  L{0.23\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Outcome} & \textbf{Condition} & \textbf{Stored action} &
-\textbf{Endpoint eligibility} \\
+\textbf{Outcome}
+&
+\textbf{Condition}
+&
+\textbf{Stored action state}
+&
+\textbf{Endpoint eligibility}
+\\
 \midrule
-\texttt{BLOCK} & Validation failed before policy, policy context was rejected,
-or the defensive allowlist mismatched. & No released action & None \\
-\texttt{ALLOW} & Valid \texttt{fan\_on}/\texttt{fan\_off} for
-\texttt{fan\_1}, with approval false. & Unchanged
-\texttt{released\_action} & Caller may select the mapped route \\
-\texttt{APPROVAL\_}\newline\texttt{REQUIRED} & Valid allowed action with approval true. &
-Unchanged \texttt{held\_action}; release remains null & HITL only; no action
-route while pending \\
+
+\textbf{\texttt{BLOCK}}
+&
+Validation failed before policy, the policy context was rejected, or
+the defensive allowlist mismatched.
+&
+No released action.
+&
+None.
+\\
+\addlinespace[2pt]
+
+\textbf{\texttt{ALLOW}}
+&
+Valid \texttt{fan\_on} or \texttt{fan\_off} for \texttt{fan\_1}, with
+approval false.
+&
+Unchanged \texttt{released\_action}.
+&
+Caller may select the mapped action route.
+\\
+\addlinespace[2pt]
+
+\textbf{\texttt{APPROVAL\_}}\newline
+\textbf{\texttt{REQUIRED}}
+&
+Valid allowed action with approval true.
+&
+Unchanged \texttt{held\_action}; released action remains null.
+&
+HITL only; no action route while pending.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The system prompt instructs normal Decision Agent output to carry
@@ -603,28 +751,61 @@ five invalid-action, and ten HITL attempts.
 \centering
 \caption{Repeated-evaluation tooling responsibilities}
 \label{tab:impl-evaluation-tools}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.25\textwidth}L{0.25\textwidth}Y}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.23\textwidth}
+  L{0.34\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Artifact} & \textbf{Primary responsibility} &
-\textbf{Integrity and privacy boundary} \\
+\textbf{Artifact}
+&
+\textbf{Primary responsibility}
+&
+\textbf{Integrity and privacy boundary}
+\\
 \midrule
-\codepath{run\_step10.py} & Builds the frozen order, checks runtime identities,
-restores preconditions, invokes workflows and seams, assigns run IDs, and
-appends attempt evidence. & Operates outside decision semantics; never retries
-or replaces a primary attempt and does not automatically choose HITL decisions
+
+\codepath{run\_step10.py}
+&
+Builds the frozen order, verifies runtime identities, restores
+preconditions, invokes workflows and seams, assigns run IDs, and
+appends attempt evidence.
+&
+Operates outside decision semantics; never retries or replaces a primary
+attempt and never selects the HITL decision.
 \\
-\texttt{extract\_n8n\_}\newline\texttt{execution.js} & Reads bounded node, model, tool,
-memory, timing, error, and child-execution observations from n8n. & Opens
-SQLite read-only, returns an allowlisted projection, redacts sensitive fields,
-and omits workflow credential data and form-resume URLs \\
-\texttt{process\_}\newline\texttt{results.py} & Verifies the raw lock and derives correctness,
-modal agreement, descriptive latency, separate HITL timing, telemetry, and
-traceability outputs. & Re-hashes locked inputs, retains failures, removes no
-outliers, estimates no unavailable cost, and does not collect hidden reasoning
+\addlinespace[2pt]
+
+\codepath{extract\_n8n\_execution.js}
+&
+Reads bounded node, model, tool, memory, timing, error, and linked
+child-execution observations from n8n.
+&
+Opens SQLite read-only; returns an allowlisted projection; redacts
+sensitive fields; omits workflow credentials and form-resume URLs.
 \\
+\addlinespace[2pt]
+
+\codepath{process\_results.py}
+&
+Verifies the raw lock and derives correctness, modal agreement,
+descriptive latency, separate HITL timing, telemetry, and traceability.
+&
+Re-hashes locked inputs; retains failures; removes no outliers;
+estimates no unavailable cost; collects no hidden reasoning.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The runner assigns stable run identities, controls preconditions, associates
@@ -668,41 +849,116 @@ outputs, and correction record; it does not replace those source artifacts.
 \centering
 \caption{Compact final configuration identity}
 \label{tab:impl-final-identity}
-\small
-\begin{tabularx}{\textwidth}{L{0.23\textwidth}Y L{0.23\textwidth}}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.13}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.20\textwidth}
+  Y
+  L{0.22\textwidth}
+  @{}
+}
 \toprule
-\textbf{Identity} & \textbf{Frozen artifact or value} &
-\textbf{Provenance} \\
+\textbf{Identity}
+&
+\textbf{Frozen artifact or value}
+&
+\textbf{Provenance}
+\\
 \midrule
-\texttt{CONFIG-BASELINE} &
-\texttt{cognitive\_logic/}\newline
-\texttt{baselines/yacoub/}\newline
-\texttt{minimal-agent-baseline.json};
-SHA-256 \texttt{\seqsplit{ed8697e07eb83deaecac3879c82b860e2c4b8f597bde1bc355a3c5b863c15585}}
-& {\footnotesize\texttt{YACOUB\_INHERITED}} semantics \\
-\texttt{CONFIG-OBID} &
-\texttt{cognitive\_logic/obid/}\newline
-\texttt{workflows/}\newline
-\texttt{obid-agent-v3-hitl.json};
-SHA-256 \texttt{\seqsplit{1a09ee5a3199289c39845f9b97a3a3f516f277924d6a8fcb52da52780b0eaf78}}
-& {\footnotesize\texttt{OBID\_CREATED}} \\
-Model control & \texttt{models/gemini-2.5-flash};
-\texttt{options: \{\}}; no fallback; \texttt{maxIterations: 3} &
-Frozen configuration \\
-Runtime & n8n \texttt{1.123.37}; pinned image and digest; local SQLite volume &
-{\footnotesize\texttt{OBID\_CREATED}} runtime \\
-Contracts & Frozen sensor-event and four-field action JSON schemas &
-{\footnotesize\texttt{SHARED\_INTERFACE}} \\
-Safety and HITL & \texttt{runtime-safety-v2-hitl} plus caller-embedded native
-Wait/form & {\footnotesize\texttt{OBID\_CREATED}} \\
-Evaluation definition & \texttt{OBID-EVALUATION-CASES-V1} and
-\texttt{OBID-EVALUATION-PROTOCOL-V1} & {\footnotesize\texttt{OBID\_CREATED}} \\
-Evidence integrity & Experiment freeze, raw lock, processed manifest,
-traceability, and 61-artifact final index & {\footnotesize\texttt{OBID\_CREATED}} \\
-Action boundary & Frozen Yacoub middleware and simulated fan &
-{\footnotesize\texttt{YACOUB\_INHERITED}} \\
+
+\textbf{\texttt{CONFIG-}}\newline
+\textbf{\texttt{BASELINE}}
+&
+\codepath{cognitive\_logic/baselines/yacoub/minimal-agent-baseline.json}
+\newline
+\textbf{SHA-256:}
+\codepath{ed8697e07eb83deaecac3879c82b860e2c4b8f597bde1bc355a3c5b863c15585}
+&
+\texttt{YACOUB\_}\newline
+\texttt{INHERITED} semantics.
+\\
+\addlinespace[2pt]
+
+\textbf{\texttt{CONFIG-OBID}}
+&
+\codepath{cognitive\_logic/obid/workflows/obid-agent-v3-hitl.json}
+\newline
+\textbf{SHA-256:}
+\codepath{1a09ee5a3199289c39845f9b97a3a3f516f277924d6a8fcb52da52780b0eaf78}
+&
+\texttt{OBID\_CREATED}.
+\\
+\addlinespace[2pt]
+
+\textbf{Model control}
+&
+\codepath{models/gemini-2.5-flash};
+\texttt{options: \{\}}; no fallback;
+\texttt{maxIterations: 3}.
+&
+Frozen configuration.
+\\
+\addlinespace[2pt]
+
+\textbf{Runtime}
+&
+n8n \texttt{1.123.37}; pinned image and digest; local SQLite volume.
+&
+\texttt{OBID\_CREATED} runtime.
+\\
+\addlinespace[2pt]
+
+\textbf{Contracts}
+&
+Frozen sensor-event schema and four-field action schema.
+&
+\texttt{SHARED\_}\newline
+\texttt{INTERFACE}.
+\\
+\addlinespace[2pt]
+
+\textbf{Safety and HITL}
+&
+\texttt{runtime-safety-v2-hitl} with caller-embedded native Wait/form.
+&
+\texttt{OBID\_CREATED}.
+\\
+\addlinespace[2pt]
+
+\textbf{Evaluation definition}
+&
+\texttt{OBID-EVALUATION-CASES-V1} and
+\texttt{OBID-EVALUATION-PROTOCOL-V1}.
+&
+\texttt{OBID\_CREATED}.
+\\
+\addlinespace[2pt]
+
+\textbf{Evidence integrity}
+&
+Experiment freeze, raw-data lock, processed manifest, traceability, and
+61-artifact final index.
+&
+\texttt{OBID\_CREATED}.
+\\
+\addlinespace[2pt]
+
+\textbf{Action boundary}
+&
+Frozen Yacoub middleware and simulated fan.
+&
+\texttt{YACOUB\_}\newline
+\texttt{INHERITED}.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The committed workflows are sanitized, inactive portable exports. Recreating

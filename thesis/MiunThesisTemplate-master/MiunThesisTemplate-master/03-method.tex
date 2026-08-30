@@ -161,29 +161,71 @@ work and were adopted unchanged as shared interfaces.
 \centering
 \caption{Provenance classes and their methodological use}
 \label{tab:method-provenance}
-\small
-\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.31\textwidth}Y L{0.19\textwidth}}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.18\textwidth}
+  L{0.27\textwidth}
+  L{0.29\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Class} & \textbf{Included material} & \textbf{Use in this study} &
-\textbf{Attribution rule} \\
+\textbf{Class}
+&
+\textbf{Included material}
+&
+\textbf{Role in this study}
+&
+\textbf{Attribution rule}
+\\
 \midrule
-\texttt{YACOUB\_}
-\texttt{INHERITED} & Workflow-to-action infrastructure, middleware/API,
-threshold/action semantics, deterministic anchor, minimal-agent baseline, and
-earlier Raspberry Pi/action-side evidence & Supplies inherited boundary
-context; the minimal-agent baseline is the RQ3 comparator & Reproduction,
-verification, or measurement does not transfer authorship \\
-\texttt{SHARED\_}
-\texttt{INTERFACE} & Sensor contract, action contract, and compatible endpoint
-meanings & Fixes the common observable input/action vocabulary & Original
-Yacoub authorship remains explicit \\
-\texttt{OBID\_CREATED} & Extended single-agent configuration, tools, bounded
-memory, validation, policy, executable HITL, seams, protocol, orchestration,
-raw observations, processing, and correction mechanism & Defines the
-extension and produces the new evaluation evidence & Claims require an Obid
-artifact or retained observation \\
+
+\textbf{\texttt{YACOUB\_}}\newline
+\textbf{\texttt{INHERITED}}
+&
+Workflow-to-action infrastructure; middleware/API; threshold and action
+semantics; deterministic anchor; minimal-agent baseline; earlier
+Raspberry Pi/action-side evidence.
+&
+Provides inherited boundary context. The minimal-agent baseline is the
+RQ3 comparator.
+&
+Reuse, verification, or measurement does not transfer authorship.
+\\
+\addlinespace[2pt]
+
+\textbf{\texttt{SHARED\_}}\newline
+\textbf{\texttt{INTERFACE}}
+&
+Sensor contract, action contract, and compatible endpoint meanings.
+&
+Fixes the common observable input and action vocabulary.
+&
+Yacoub origin remains explicit; shared use means compatibility, not
+joint authorship.
+\\
+\addlinespace[2pt]
+
+\textbf{\texttt{OBID\_CREATED}}
+&
+Extended single-agent configuration, tools, bounded memory, validation,
+policy, executable HITL, controlled seams, protocol, orchestration,
+observations, processing, and correction mechanism.
+&
+Defines the Obid extension and produces the new evaluation evidence.
+&
+A claim requires an Obid artifact or a retained runtime observation.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The inherited minimal-agent design therefore remains Yacoub-owned even though
@@ -239,29 +281,92 @@ configurations.
 \centering
 \caption{Core configurations and comparison controls}
 \label{tab:method-configurations}
-\footnotesize
-\begin{tabularx}{\textwidth}{L{0.19\textwidth}L{0.34\textwidth}Y}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.14}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.21\textwidth}
+  L{0.35\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Dimension} & \textbf{CONFIG-BASELINE} & \textbf{CONFIG-OBID} \\
+\textbf{Dimension}
+&
+\textbf{\texttt{CONFIG-BASELINE}}
+&
+\textbf{\texttt{CONFIG-OBID}}
+\\
 \midrule
-Provenance & \texttt{YACOUB\_INHERITED} minimal-agent semantics &
-\texttt{OBID\_CREATED} extended configuration \\
-Decision path & One minimal Gemini decision path & One Decision Agent and one
-Gemini model node; no validator-agent or multi-agent configuration \\
-Tools & No explicit Obid tools & Exactly two read-only tools \\
-Memory & Stateless/no memory; memory fields not applicable & One process-local
-two-interaction memory window \\
-Bounded cognition & One decision and minimal parsing/routing & Tool-capable
-cycle with \texttt{maxIterations: 3}; internal structured decision and
-internal \texttt{no\_action}, which never enters the shared contract \\
-Reliability controls & No Obid validation, policy, or HITL stack & Input
-handling, runtime contract validation, deterministic policy, and actual HITL \\
-Common controls & \multicolumn{2}{L{0.70\textwidth}}{Model identifier
-\texttt{models/gemini-2.5-flash}; stored model options \texttt{\{\}}; no
-fallback; identical threshold/action semantics, shared contracts, target,
-simulated boundary, applicable core stimuli, and repetition count} \\
+
+\textbf{Provenance}
+&
+\texttt{YACOUB\_INHERITED} minimal-agent configuration.
+&
+\texttt{OBID\_CREATED} extended configuration.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Decision path}
+&
+One minimal Gemini decision path.
+&
+One Decision Agent and one Gemini node; no second or validator agent.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Tools}
+&
+No explicit Obid tools.
+&
+Exactly two read-only tools.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Memory}
+&
+Stateless; memory fields are not applicable.
+&
+Two-interaction, session-scoped, process-local memory window.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Bounded cognition}
+&
+One decision with minimal parsing and routing.
+&
+Tool-capable cycle with \texttt{maxIterations: 3}, a structured internal
+decision, and internal \texttt{no\_action}.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Release controls}
+&
+No Obid validator, deterministic policy, or HITL.
+&
+Input handling, contract validation, deterministic policy, and
+executable HITL.
+\\
+\addlinespace[1.5pt]
+
+\textbf{Common controls}
+&
+\multicolumn{2}{
+  >{\RaggedRight\arraybackslash}p{0.70\textwidth}@{}
+}{
+Model \texttt{models/gemini-2.5-flash}; stored options \texttt{\{\}};
+no fallback; identical threshold and action semantics, contracts,
+target, simulated boundary, applicable stimuli, and repetition count.
+}
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The two tools were read-only and could not call an action endpoint. Candidate
@@ -370,39 +475,161 @@ actual execution, not this section.
 \centering
 \caption{Frozen case matrix and observable oracle}
 \label{tab:method-cases}
+
+\begingroup
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{L{0.18\textwidth}L{0.14\textwidth}L{0.24\textwidth}Y L{0.16\textwidth}}
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.18\textwidth}
+  L{0.105\textwidth}
+  L{0.215\textwidth}
+  Y
+  L{0.145\textwidth}
+  @{}
+}
 \toprule
-\textbf{Family and stimulus} & \textbf{Applicable}\newline\textbf{config.} &
-\textbf{Injection point} & \textbf{Expected observable terminal/action} &
-\textbf{RQ, repetitions, latency} \\
+\textbf{Case and stimulus}
+&
+\textbf{Config.}
+&
+\textbf{Injection point}
+&
+\textbf{Pre-observation oracle}
+&
+\textbf{RQ / repetitions / latency}
+\\
 \midrule
-High: off, 31.4 C & Both &
-\texttt{CORE\_CONFIG\_}\newline\texttt{WORKFLOW\_INGRESS} &
-\texttt{fan\_on}, target \texttt{fan\_1}, approval false; on endpoint; final
-state on & RQ1/RQ3; five each; eligible \\
-Low: on, 25.0 C & Both & Same core ingress & \texttt{fan\_off}; off endpoint;
-final state off & RQ1/RQ3; five each; eligible \\
-Threshold: off, 30.0 C & Both & Same core ingress & Inclusive rule gives
-\texttt{fan\_on}; final state on & RQ1/RQ3; five each; eligible \\
-Malformed: missing \texttt{value} & Both & Comparable direct seams:
-\texttt{BASELINE\_EVAL\_}\newline\texttt{PRE\_DECISION\_}\newline\texttt{INGRESS} and
-\texttt{OBID\_EVAL\_PRE\_}\newline\texttt{AGENT\_INGRESS} & No shared action or endpoint;
-CONFIG-OBID terminal \texttt{OBID\_INPUT\_}\newline\texttt{HANDLING} & RQ1/RQ3; five each;
-final state off; not eligible \\
-Memory S: A off + 31.4 C; B on + 31.4 C; C on + 25.0 C & Both & Core ingress; one
-indivisible sequence & A: \texttt{fan\_on}/on; B: no duplicate action/on; C:
-\texttt{fan\_off}/off & RQ1/RQ3; five sequences each; not eligible \\
-Invalid candidate: \texttt{fan\_reverse} & CONFIG-OBID &
-\texttt{OBID\_POST\_AGENT\_}\newline\texttt{PRE\_VALIDATOR} & Validator block; no shared
-action, fan endpoint, or state change & RQ2; five; not eligible \\
-HITL: approval and denial variants & CONFIG-OBID &
-\texttt{OBID\_POLICY\_INPUT} & Pending releases nothing; approval may release
-the unchanged held \texttt{fan\_on} and end on; denial releases nothing and
-ends off & RQ2; five per variant; excluded \\
+
+\textbf{High}\newline
+Off; 31.4 C
+&
+Both
+&
+\texttt{CORE\_CONFIG\_}\newline
+\texttt{WORKFLOW\_}\newline
+\texttt{INGRESS}
+&
+\texttt{fan\_on} for \texttt{fan\_1}; approval false;
+\texttt{/fan/on} reached; final state on.
+&
+RQ1/RQ3\newline
+5 per config.\newline
+Latency: yes
+\\
+\addlinespace[1.5pt]
+
+\textbf{Low}\newline
+On; 25.0 C
+&
+Both
+&
+Same core ingress
+&
+\texttt{fan\_off}; \texttt{/fan/off} reached; final state off.
+&
+RQ1/RQ3\newline
+5 per config.\newline
+Latency: yes
+\\
+\addlinespace[1.5pt]
+
+\textbf{Threshold}\newline
+Off; 30.0 C
+&
+Both
+&
+Same core ingress
+&
+Inclusive threshold gives \texttt{fan\_on}; final state on.
+&
+RQ1/RQ3\newline
+5 per config.\newline
+Latency: yes
+\\
+\addlinespace[1.5pt]
+
+\textbf{Malformed}\newline
+Missing \texttt{value}
+&
+Both
+&
+\texttt{BASELINE\_EVAL\_}\newline
+\texttt{PRE\_DECISION\_}\newline
+\texttt{INGRESS}\newline
+and\newline
+\texttt{OBID\_EVAL\_PRE\_}\newline
+\texttt{AGENT\_INGRESS}
+&
+No shared action or endpoint. \texttt{CONFIG-OBID} terminates at
+\texttt{OBID\_INPUT\_HANDLING}; final state off.
+&
+RQ1/RQ3\newline
+5 per config.\newline
+Latency: no
+\\
+\addlinespace[1.5pt]
+
+\textbf{Memory sequence}\newline
+A: off + 31.4 C\newline
+B: on + 31.4 C\newline
+C: on + 25.0 C
+&
+Both
+&
+Core ingress; one indivisible A--B--C sequence.
+&
+A: \texttt{fan\_on}, final on.\newline
+B: no duplicate action, final on.\newline
+C: \texttt{fan\_off}, final off.
+&
+RQ1/RQ3\newline
+5 sequences per config.\newline
+Latency: no
+\\
+\addlinespace[1.5pt]
+
+\textbf{Invalid candidate}\newline
+\texttt{fan\_reverse}
+&
+\texttt{CONFIG-}\newline
+\texttt{OBID}
+&
+\texttt{OBID\_POST\_}\newline
+\texttt{AGENT\_}\newline
+\texttt{PRE\_VALIDATOR}
+&
+Blocked at the validator; no shared action, endpoint request, or state
+change.
+&
+RQ2\newline
+5 attempts\newline
+Latency: no
+\\
+\addlinespace[1.5pt]
+
+\textbf{HITL}\newline
+Approval and denial
+&
+\texttt{CONFIG-}\newline
+\texttt{OBID}
+&
+\texttt{OBID\_POLICY\_}\newline
+\texttt{INPUT}
+&
+Pending releases nothing. Approval may release the unchanged held
+\texttt{fan\_on} and end on; denial releases nothing and ends off.
+&
+RQ2\newline
+5 per variant\newline
+Latency: excluded
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 Table~\ref{tab:method-cases} condenses the frozen cases and their
@@ -464,30 +691,91 @@ the three research questions.
 \centering
 \caption{Measurement definitions and retained evidence}
 \label{tab:method-measures}
+
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{L{0.20\textwidth}L{0.22\textwidth}Y L{0.22\textwidth}}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.18\textwidth}
+  L{0.20\textwidth}
+  Y
+  L{0.24\textwidth}
+  @{}
+}
 \toprule
-\textbf{Measure} & \textbf{Applicability} & \textbf{Rule} &
-\textbf{Key retained evidence} \\
+\textbf{Measure}
+&
+\textbf{Applicability}
+&
+\textbf{Measurement rule}
+&
+\textbf{Retained evidence}
+\\
 \midrule
-Correctness & RQ1 and comparable RQ3 cases; assigned RQ2 cases & Complete
-observable oracle match; all attempts remain in denominator & Expected and
-observed terminal/action, endpoint, state, status/error \\
-Modal agreement & Repeated RQ1/RQ3 family & Largest identical normalized
-observable signature divided by attempts & Observable signature and family
-membership; no hidden reasoning \\
-Safety crossing & CONFIG-OBID RQ2 & Whether an invalid or unapproved action
-crossed the shared interface & Candidate, validation, policy, held/released
-action, actual decision, endpoint and state \\
-Automated latency & High, Low, Threshold under both configurations & Ingress
-start to automated terminal including endpoint response & Five planned duration
-slots per cell, including explicit missingness; median, minimum, maximum; mean
-supplementary \\
-HITL timing & Approval-required trials only & Separate pre-wait, human-wait,
-post-decision, and total intervals & Waiting snapshot and four timestamps;
-excluded from RQ3 automated latency \\
+
+\textbf{Correctness}
+&
+RQ1, comparable RQ3 cases, and assigned RQ2 cases.
+&
+Complete match with the observable oracle; every attempt remains in the
+denominator.
+&
+Expected and observed terminal, action, endpoint, state, and
+status/error.
+\\
+\addlinespace[2pt]
+
+\textbf{Modal agreement}
+&
+Repeated RQ1 and RQ3 case families.
+&
+Largest count of one identical normalized observable signature divided
+by all attempts.
+&
+Observable signature and family membership; no hidden reasoning.
+\\
+\addlinespace[2pt]
+
+\textbf{Safety crossing}
+&
+\texttt{CONFIG-OBID} RQ2 cases.
+&
+Whether an invalid or unapproved action crossed the shared interface.
+&
+Candidate, validation, policy, held/released action, actual decision,
+endpoint, and final state.
+\\
+\addlinespace[2pt]
+
+\textbf{Automated latency}
+&
+High, Low, and Threshold under both configurations.
+&
+Configuration ingress to the final automated terminal, including the
+endpoint response.
+&
+Five retained duration slots per cell; missingness explicit; median,
+minimum, and maximum primary; mean supplementary.
+\\
+\addlinespace[2pt]
+
+\textbf{HITL timing}
+&
+Approval-required trials only.
+&
+Separate pre-wait automation, human wait, post-decision automation, and
+total elapsed time.
+&
+Pending snapshot and four timestamps; excluded from RQ3 automated
+latency.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 Each relevant CONFIG-OBID primary record was linked by case identity to its
@@ -645,40 +933,88 @@ Chapter~7 \cite{wohlin2012experimentation}.
 \centering
 \caption{Methodological threats, controls, and residual limitations}
 \label{tab:method-limitations}
+
+\begingroup
 \footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{L{0.27\textwidth}L{0.34\textwidth}Y}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.14}
+
+\begin{tabularx}{\textwidth}{
+  @{}
+  L{0.25\textwidth}
+  L{0.34\textwidth}
+  Y
+  @{}
+}
 \toprule
-\textbf{Category and potential issue} & \textbf{Control} &
-\textbf{Residual limitation} \\
+\textbf{Category and potential issue}
+&
+\textbf{Control}
+&
+\textbf{Residual limitation}
+\\
 \midrule
-Internal validity: order/time effects, residual state, process-local memory,
-manual HITL input, and provider interruptions & Frozen rotation and pairing,
-recorded preconditions, resets, synthetic sessions, pending snapshots, and
-raw failure retention & Five repetitions in one execution period cannot
-remove every temporal or provider effect \\
-Construct validity: correctness depends on a predefined oracle; controlled
-seams bypass transport; \texttt{fan\_reverse} is injected; modal sameness may
-be wrong; latency combines components & Frozen observable cases, explicit
-seams, separate measures for correctness, consistency, safety, and timing, and
-traceability & The fault and HITL conditions are controlled, and
-configuration latency cannot isolate causes \\
-External validity: one temperature/fan domain and simulated boundary & Small,
-fully specified event--state--action proxy and unchanged shared interface &
-One model, target, bounded-memory strategy, and simulated fan; no hardware or
-multi-agent comparison and no comparison among alternative models, memory
-strategies, or devices \\
-Statistical validity: small repeated cells and variable runtime conditions &
-All five attempts retained; median, minimum, maximum, and supplementary mean
-reported & Descriptive evidence only; no significance inference, confidence interval,
-or population estimate \\
-Reproducibility: provider/backend drift, private credentials, unstored
-defaults, process-local memory, and incomplete telemetry & Pinned local
-runtime, frozen model, options, and artifacts, manifests, hashes, and explicit
-missing values & External service behaviour and credential attachment cannot
-be reconstructed perfectly \\
+
+\textbf{Internal validity}\newline
+Order and time effects, residual state, process-local memory, manual
+HITL input, and provider interruptions.
+&
+Frozen rotation and pairing; recorded preconditions and resets;
+synthetic sessions; pending snapshots; raw failure retention.
+&
+Five repetitions in one execution period cannot remove every temporal
+or provider effect.
+\\
+\addlinespace[2pt]
+
+\textbf{Construct validity}\newline
+Oracle dependence, injected faults, transport-bypassing seams,
+potentially wrong modal sameness, and end-to-end latency.
+&
+Frozen observable cases; explicit seams; separate correctness,
+consistency, safety, and timing measures; run-level traceability.
+&
+Fault and HITL conditions are controlled, and configuration latency
+cannot isolate component-level causes.
+\\
+\addlinespace[2pt]
+
+\textbf{External validity}\newline
+One temperature/fan domain and a simulated action boundary.
+&
+A small, fully specified event--state--action proxy using the unchanged
+shared interface.
+&
+One model, target, memory strategy, and simulated fan; no hardware,
+multi-agent, model, memory, or device comparison.
+\\
+\addlinespace[2pt]
+
+\textbf{Statistical validity}\newline
+Small repeated cells and variable runtime conditions.
+&
+All five attempts retained; median, minimum, maximum, and supplementary
+mean reported.
+&
+Descriptive evidence only; no significance test, confidence interval,
+or population estimate.
+\\
+\addlinespace[2pt]
+
+\textbf{Reproducibility}\newline
+Provider drift, private credentials, unstored defaults, process-local
+memory, and incomplete telemetry.
+&
+Pinned local runtime; frozen model, options, and artifacts; manifests,
+hashes, and explicit missing values.
+&
+External service behaviour and credential attachment cannot be
+reconstructed perfectly.
+\\
+
 \bottomrule
 \end{tabularx}
+\endgroup
 \end{table}
 
 The oracle and controlled injections test named observable paths, not universal
