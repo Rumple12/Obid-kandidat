@@ -488,6 +488,25 @@ def generate_final_system_architecture(output: Path) -> None:
 
 
 def generate_config_obid_pipeline(output: Path) -> None:
+    source_image = Path(__file__).with_name("config-obid-pipeline-figure3.png")
+    if not source_image.is_file():
+        _generate_config_obid_pipeline_fallback(output)
+        return
+
+    image = plt.imread(source_image)
+    # The supplied artwork includes a copy of the thesis caption below the
+    # diagram. Crop that copy so the unchanged LaTeX caption appears once.
+    diagram = image[:1325, :, :]
+    width_inches = 7.25
+    height_inches = width_inches * diagram.shape[0] / diagram.shape[1]
+    fig = plt.figure(figsize=(width_inches, height_inches), facecolor=COLORS["white"])
+    ax = fig.add_axes((0, 0, 1, 1))
+    ax.imshow(diagram, interpolation="none")
+    ax.set_axis_off()
+    save_figure(fig, output, "CONFIG-OBID decision and release pipeline")
+
+
+def _generate_config_obid_pipeline_fallback(output: Path) -> None:
     fig, ax = canvas((7.4, 5.65))
 
     ax.add_patch(Rectangle((0.015, 0.69), 0.97, 0.27, facecolor=COLORS["blue_pale"], edgecolor=COLORS["blue_dark"], linewidth=1.0, zorder=0))

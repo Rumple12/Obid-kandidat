@@ -313,23 +313,26 @@ after the candidate seam. Version 3 retains those components and adds actual
 HITL. The final v3 export, rather than the earlier step-specific manifests, is
 the workflow identity used for the frozen system.
 
-Figure~\ref{fig:config-obid-n8n-canvas} shows the authoritative final-v3
-caller canvas and two enlarged regions that make its implementation structure
-legible.
+Figure~\ref{fig:config-obid-n8n-canvas} shows an n8n canvas representation of
+the authoritative final-v3 caller workflow, together with two enlarged regions
+that make its implementation structure legible.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{config-obid-n8n-canvas.pdf}
-\caption{Authoritative n8n canvas of \texttt{CONFIG-OBID - Single Agent v3
-HITL}: (a) the complete caller workflow, (b) an enlarged input and
-cognitive-decision region, and (c) an enlarged release-control and HITL region.
-It documents the implemented caller structure---ingress and input handling, one
-Decision Agent with a Gemini model, two read-only tools, bounded memory,
-decision parsing, \texttt{no\_action}/candidate routing, the runtime-safety
-subworkflow call, approval/denial/HITL routing, and release to the inherited
-simulated fan endpoints---rather than experimental proof of successful runtime
-execution. The called subworkflow's internal validator and policy nodes are not
-expanded here.}
+\caption{n8n canvas representation of the authoritative
+\texttt{CONFIG-OBID - Single Agent v3 HITL} workflow: (a) the complete caller
+workflow, (b) an enlarged input and cognitive-decision region, and (c) an
+enlarged release-control and HITL region. The screenshots were taken from a
+non-executed presentation copy in which node positions were adjusted for
+readability; the figure represents the frozen final-v3 implementation
+structure. It shows ingress and input handling, one Decision Agent with a
+Gemini model, two read-only tools, bounded memory, decision parsing,
+\texttt{no\_action}/candidate routing, the runtime-safety subworkflow call,
+approval/denial/HITL routing, and release to the inherited simulated fan
+endpoints. The figure documents implementation structure rather than
+experimental proof of successful runtime execution, and the called
+subworkflow's internal validator and policy nodes are not expanded here.}
 \label{fig:config-obid-n8n-canvas}
 \end{figure}
 
