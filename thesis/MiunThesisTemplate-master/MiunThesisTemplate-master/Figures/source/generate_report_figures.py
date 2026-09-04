@@ -801,67 +801,101 @@ def generate_rq3_results(
     reliability: dict[tuple[str, str], dict[str, str]],
     latency: dict[tuple[str, str], dict[str, object]],
 ) -> None:
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(7.25, 3.55), gridspec_kw={"width_ratios": [1.12, 1.0]})
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(7.25, 3.60), gridspec_kw={"width_ratios": [1.05, 1.0]})
 
-    x = list(range(len(CASE_IDS)))
-    width = 0.36
+    family_centers = list(range(len(CASE_IDS)))
+    bar_height = 0.27
+    baseline_positions = [center - 0.17 for center in family_centers]
+    obid_positions = [center + 0.17 for center in family_centers]
     baseline = [int(reliability[(case_id, "CONFIG-BASELINE")]["correct"]) for case_id in CASE_IDS]
     obid = [int(reliability[(case_id, "CONFIG-OBID")]["correct"]) for case_id in CASE_IDS]
 
-    bars_baseline = ax_a.bar(
-        [value - width / 2 for value in x],
+    ax_a.barh(
+        baseline_positions,
         baseline,
-        width,
-        label="CONFIG-BASELINE",
-        color=COLORS["gray"],
+        bar_height,
+        color=COLORS["gray_pale"],
         edgecolor=COLORS["line"],
         linewidth=0.8,
         hatch="////",
+        zorder=2,
     )
-    bars_obid = ax_a.bar(
-        [value + width / 2 for value in x],
+    ax_a.barh(
+        obid_positions,
         obid,
-        width,
-        label="CONFIG-OBID",
+        bar_height,
         color=COLORS["blue"],
         edgecolor=COLORS["blue_dark"],
         linewidth=0.8,
         hatch="....",
+        zorder=2,
     )
-    for bars, counts, textcolor in (
-        (bars_baseline, baseline, COLORS["ink"]),
-        (bars_obid, obid, COLORS["white"]),
-    ):
-        for bar, count in zip(bars, counts):
-            y = 4.55 if count else 0.16
-            ax_a.text(
-                bar.get_x() + bar.get_width() / 2,
-                y,
-                f"{count}/5",
-                ha="center",
-                va="center",
-                rotation=90,
-                fontsize=7.8,
-                fontweight="bold",
-                color=textcolor if count else COLORS["ink"],
-            )
 
-    ax_a.set_title("A. Reliability - correct runs out of five", loc="left", fontweight="bold")
-    ax_a.set_ylabel("Correct runs")
-    ax_a.set_xticks(x, CASE_LABELS, rotation=28, ha="right", rotation_mode="anchor")
-    ax_a.set_ylim(0, 5.65)
-    ax_a.set_yticks(range(0, 6))
-    ax_a.tick_params(axis="both", labelsize=7.8)
-    ax_a.grid(axis="y", color="#D7DADD", linewidth=0.6, alpha=0.9)
+    ax_a.scatter(
+        baseline,
+        baseline_positions,
+        s=25,
+        marker="o",
+        facecolors=COLORS["white"],
+        edgecolors=COLORS["line"],
+        linewidths=1.0,
+        zorder=4,
+    )
+    ax_a.scatter(
+        obid,
+        obid_positions,
+        s=25,
+        marker="s",
+        facecolors=COLORS["blue"],
+        edgecolors=COLORS["blue_dark"],
+        linewidths=1.0,
+        zorder=4,
+    )
+    for count, y_position in zip(baseline, baseline_positions):
+        if count == 0:
+            ax_a.scatter(0, y_position, s=34, marker="x", color=COLORS["red"], linewidths=1.5, zorder=5)
+        ax_a.text(
+            4.48 if count else 0.20,
+            y_position,
+            f"{count}/5",
+            ha="center" if count else "left",
+            va="center",
+            fontsize=7.4,
+            fontweight="bold",
+            color=COLORS["ink"] if count else COLORS["red"],
+            zorder=6,
+        )
+    for count, y_position in zip(obid, obid_positions):
+        ax_a.text(
+            4.48,
+            y_position,
+            f"{count}/5",
+            ha="center",
+            va="center",
+            fontsize=7.4,
+            fontweight="bold",
+            color=COLORS["white"],
+            zorder=6,
+        )
+
+    ax_a.set_title("(a) Reliability correctness", loc="left", fontweight="bold", pad=8)
+    ax_a.set_xlabel("Correct runs (out of 5)")
+    ax_a.set_yticks(family_centers, CASE_LABELS)
+    ax_a.set_xlim(-0.24, 5.66)
+    ax_a.set_xticks(range(0, 6))
+    ax_a.set_ylim(-0.58, len(CASE_IDS) - 0.42)
+    ax_a.invert_yaxis()
+    ax_a.tick_params(axis="both", labelsize=7.7)
+    ax_a.grid(axis="x", color="#D7DADD", linewidth=0.6, alpha=0.85)
     ax_a.set_axisbelow(True)
-    ax_a.spines[["top", "right"]].set_visible(False)
-    ax_a.legend(loc="upper left", ncols=2, frameon=False, handlelength=1.8, columnspacing=0.9, fontsize=8.0)
+    ax_a.spines[["top", "right", "left"]].set_visible(False)
+    ax_a.tick_params(axis="y", length=0)
 
-    case_centers = [0.0, 1.15, 2.30]
-    config_offsets = {"CONFIG-BASELINE": -0.18, "CONFIG-OBID": 0.18}
-    jitter = (-0.065, -0.0325, 0.0, 0.0325, 0.065)
+    case_centers = [0.0, 1.0, 2.0]
+    config_offsets = {"CONFIG-BASELINE": -0.16, "CONFIG-OBID": 0.16}
+    point_spread = (-0.050, -0.025, 0.0, 0.025, 0.050)
     marker_styles = {
-        "CONFIG-BASELINE": dict(marker="o", facecolors="white", edgecolors=COLORS["line"]),
+        "CONFIG-BASELINE": dict(marker="o", facecolors=COLORS["white"], edgecolors=COLORS["line"]),
         "CONFIG-OBID": dict(marker="s", facecolors=COLORS["blue"], edgecolors=COLORS["blue_dark"]),
     }
 
@@ -870,42 +904,72 @@ def generate_rq3_results(
             position = center + config_offsets[config]
             values = latency[(case_id, config)]["values"]
             median = int(latency[(case_id, config)]["median"])
+            ax_b.plot(
+                [position - 0.105, position + 0.105],
+                [median, median],
+                color=COLORS["ink"],
+                linewidth=2.0,
+                solid_capstyle="butt",
+                zorder=2,
+            )
             ax_b.scatter(
-                [position + amount for amount in jitter],
+                [position + amount for amount in point_spread],
                 values,
                 s=24,
-                linewidths=0.9,
+                linewidths=1.0,
                 zorder=3,
                 **marker_styles[config],
             )
-            ax_b.plot([position - 0.11, position + 0.11], [median, median], color=COLORS["ink"], linewidth=1.7, zorder=4)
-            label_offset = 135 if config == "CONFIG-OBID" else -175
-            ax_b.text(position, median + label_offset, f"{median}", ha="center", va="center", fontsize=8.0, fontweight="bold")
+            ax_b.text(
+                position - 0.13 if config == "CONFIG-BASELINE" else position + 0.13,
+                median,
+                f"{median}",
+                ha="right" if config == "CONFIG-BASELINE" else "left",
+                va="center",
+                fontsize=7.1,
+                fontweight="bold",
+                bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.35, "alpha": 0.88},
+                zorder=5,
+            )
 
-    ax_b.set_title("B. Automated latency - human waiting excluded", loc="left", fontweight="bold")
+    ax_b.set_title("(b) Automated latency", loc="left", fontweight="bold", pad=8)
     ax_b.set_ylabel("Duration (ms)")
     ax_b.set_xticks(case_centers, ("High", "Low", "Threshold"))
-    ax_b.set_xlim(-0.48, 2.78)
-    ax_b.set_ylim(1500, 6000)
-    ax_b.set_yticks((2000, 3000, 4000, 5000, 6000))
-    ax_b.tick_params(axis="both", labelsize=7.8)
-    ax_b.grid(axis="y", color="#D7DADD", linewidth=0.6, alpha=0.9)
+    ax_b.set_xlim(-0.52, 2.52)
+    ax_b.set_ylim(1700, 5850)
+    ax_b.set_yticks((2000, 3000, 4000, 5000))
+    ax_b.tick_params(axis="both", labelsize=7.7)
+    ax_b.grid(axis="y", color="#D7DADD", linewidth=0.6, alpha=0.85)
     ax_b.set_axisbelow(True)
     ax_b.spines[["top", "right"]].set_visible(False)
-    ax_b.legend(
+    ax_b.text(
+        0.99,
+        0.985,
+        "Five raw observations per cell\nhuman waiting excluded",
+        transform=ax_b.transAxes,
+        ha="right",
+        va="top",
+        fontsize=6.8,
+        color=COLORS["muted"],
+        linespacing=1.25,
+    )
+
+    fig.legend(
         handles=(
             Line2D([0], [0], marker="o", color="none", markerfacecolor="white", markeredgecolor=COLORS["line"], label="CONFIG-BASELINE"),
             Line2D([0], [0], marker="s", color="none", markerfacecolor=COLORS["blue"], markeredgecolor=COLORS["blue_dark"], label="CONFIG-OBID"),
-            Line2D([0], [0], color=COLORS["ink"], linewidth=1.7, label="Median"),
+            Line2D([0], [0], color=COLORS["ink"], linewidth=2.0, label="Median"),
         ),
-        loc="upper left",
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.005),
+        ncols=3,
         frameon=False,
-        handlelength=1.6,
-        fontsize=8.0,
+        handlelength=1.8,
+        columnspacing=1.8,
+        fontsize=7.7,
     )
-    ax_b.text(0.99, 0.02, "Five retained observations per cell", transform=ax_b.transAxes, ha="right", va="bottom", fontsize=7.4, color=COLORS["muted"])
 
-    fig.subplots_adjust(left=0.075, right=0.99, bottom=0.16, top=0.90, wspace=0.28)
+    fig.subplots_adjust(left=0.105, right=0.985, bottom=0.165, top=0.90, wspace=0.31)
     save_figure(fig, output, "RQ3 reliability and automated latency results")
 
 
